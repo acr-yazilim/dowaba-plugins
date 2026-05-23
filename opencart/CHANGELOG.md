@@ -44,6 +44,18 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 ### Added
 - Canlı Dowaba prod entegrasyon doğrulandı (Cloudflare tunnel + site_id=57): manifest fetch + auto_activate ✓, opc_product_search canlı çağrı 3 ürün döndü ✓.
 
-### Known issues (v0.1.3)
-- Dowaba HttpHandler POST endpoint'lerinde `body_template` substitute sonrası body `[]` (boş) gönderiyor — `body_template` ile substituteTree etkileşiminde regression. Plugin endpoint'leri (`order_preview`, `order_confirm`, `cart_recover`) bu nedenle prod'da Dowaba'dan çağrılamıyor. Lokal `curl` ile çalışıyor. Dowaba tarafında `HttpHandler::substituteTree` + `pruneEmpties` debug gerek.
-- `opc_product_compare` array parameter (`product_ids`) Dowaba substitute'da boş geliyor — aynı kök sorun.
+### Known issues — ÇÖZÜLDÜ (Dowaba HttpHandler d2829ad, 2026-05-23 17:52)
+- ~~Dowaba HttpHandler POST `body_template` empty~~ ✅
+- ~~`opc_product_compare` array parameter boş~~ ✅
+
+**Kök sebep:** Dowaba `HttpHandler::buildSubstitutes()` `Arr::dot()` ile nested array'leri leaf-key'lere flatten ediyor; top-level array referansları (`arg.items`, `arg.product_ids`) kayboluyordu. Template `'{{arg.items}}'` single-token resolve null dönüyor → `pruneEmpties` drop → boş body.
+
+**Fix:** Raw `$args`'ı `'arg.{key}'` formatında ÖNCE substitutes'a ekle (top-level array refs korunur), `Arr::dot` SONRA leaf-key'leri append (geriye-uyumlu).
+
+**Canlı doğrulama (2026-05-23):**
+- `opc_product_compare` 3 ürün karşılaştırması Dowaba prod'tan ✓
+- `opc_order_preview` → preview_id + summary ✓
+- `opc_order_confirm` → DB'de order #9 yaratıldı, COD payment, comment'te preview_id ✓
+- Replay attack → 410 Gone ✓
+
+Plugin tarafında değişiklik yok — v0.1.2 stabil ve prod kullanılabilir.
