@@ -1,6 +1,15 @@
 <?php
 namespace Opencart\Catalog\Controller\Extension\DowabaAi;
 
+// Library autoload — OC4 system/library altında PSR-4 yok, manuel require
+require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/Auth.php';
+require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/ScopeGuard.php';
+require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/AuditLogger.php';
+
+use Dowaba\Ai\Auth;
+use Dowaba\Ai\ScopeGuard;
+use Dowaba\Ai\AuditLogger;
+
 /**
  * Dowaba AI — Catalog REST API Controller
  *
@@ -10,18 +19,18 @@ namespace Opencart\Catalog\Controller\Extension\DowabaAi;
  *   /index.php?route=extension/dowaba_ai/api.<method>
  *   Örn: ?route=extension/dowaba_ai/api.products&q=iphone&limit=10
  *
- * Auth: Her method başında self::guard() çağrılır:
- *   - Bearer token verify (Auth.php — Faz 2)
- *   - IP whitelist
- *   - Scope (read/write)
- *   - Audit log (AuditLogger.php — Faz 2)
+ * Auth flow (her method başında self::guard($scope) çağrılır):
+ *   1. Auth::verify        — module aktif + bearer token + IP whitelist + last_used update
+ *   2. ScopeGuard::check   — read/write toggle
+ *   3. AuditLogger::write  — respond() içinde, başarı/başarısızlık tüm istekleri loglar
  *
- * Şu an (Faz 1): Auth + scope stub'lar — Faz 2'de gerçek implementation gelecek.
+ * Faz 3'te orderPreview/orderConfirm doldurulacak (şu an 501 stub).
  */
 class Api extends \Opencart\System\Engine\Controller {
 
     private float $startTime;
     private string $currentSlug = '';
+    private string $clientIp = '0.0.0.0';
 
     public function __construct($registry) {
         parent::__construct($registry);
@@ -361,72 +370,35 @@ class Api extends \Opencart\System\Engine\Controller {
     // ============================================================ helpers
 
     /**
-     * Auth + scope + audit guard.
-     * Faz 1: STUB — Faz 2'de gerçek Auth.php + ScopeGuard.php + AuditLogger.php devreye girecek.
+     * Auth + scope guard.
+     *
+     * Sırasıyla:
+     *   1. Auth::verify — bearer + IP whitelist + module status
+     *   2. ScopeGuard::check — read/write
+     *
+     * Fail durumunda respond() çağrılır (audit log dahil) ve false döner.
+     * Success durumunda $this->clientIp set edilir, true döner.
      *
      * @return bool true if request authorized
      */
     private function guard(string $requiredScope): bool {
-        // Module aktif mi?
-        if (!$this->config->get('module_dowaba_ai_status')) {
-            $this->respond(503, ['error' => 'Dowaba AI module is disabled']);
+        // 1) Auth (module + bearer + ip whitelist)
+        $auth = Auth::verify($this->registry);
+        $this->clientIp = $auth['client_ip'];
+
+        if (!$auth['success']) {
+            $this->respond($auth['status'], ['error' => $auth['error']]);
             return false;
         }
 
-        // Authorization header
-        $authHeader = $this->getAuthHeader();
-        if ($authHeader === '' || !preg_match('/^Bearer\s+(\S+)$/i', $authHeader, $m)) {
-            $this->respond(401, ['error' => 'Bearer token required']);
+        // 2) Scope guard
+        $scope = ScopeGuard::check($this->registry, $requiredScope);
+        if (!$scope['allowed']) {
+            $this->respond($scope['status'], ['error' => $scope['error']]);
             return false;
-        }
-        $providedKey = $m[1];
-
-        // Stored hash
-        $storedHash = (string) $this->config->get('module_dowaba_ai_api_key_hash');
-        if ($storedHash === '') {
-            $this->respond(503, ['error' => 'API key not yet generated — admin must regenerate']);
-            return false;
-        }
-
-        // Constant-time compare
-        if (!hash_equals($storedHash, hash('sha256', $providedKey))) {
-            $this->respond(401, ['error' => 'Invalid bearer token']);
-            return false;
-        }
-
-        // Scope check
-        $scopeSetting = 'module_dowaba_ai_scope_' . $requiredScope;
-        if (!$this->config->get($scopeSetting)) {
-            $this->respond(403, ['error' => 'Scope "' . $requiredScope . '" is disabled in plugin settings']);
-            return false;
-        }
-
-        // IP whitelist (Faz 2'de Auth.php'ye taşınacak — şimdilik basit inline)
-        $ipWhitelist = trim((string) $this->config->get('module_dowaba_ai_ip_whitelist'));
-        if ($ipWhitelist !== '') {
-            $allowed = array_map('trim', explode(',', $ipWhitelist));
-            $clientIp = $this->getClientIp();
-            if (!in_array($clientIp, $allowed, true)) {
-                $this->respond(403, ['error' => 'IP not whitelisted', 'your_ip' => $clientIp]);
-                return false;
-            }
         }
 
         return true;
-    }
-
-    private function getAuthHeader(): string {
-        // OC4 request header'ları SERVER super'inde
-        $hdr = $this->request->server['HTTP_AUTHORIZATION'] ?? '';
-        if ($hdr === '' && function_exists('getallheaders')) {
-            $headers = getallheaders();
-            $hdr = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
-        }
-        return (string) $hdr;
-    }
-
-    private function getClientIp(): string {
-        return (string) ($this->request->server['REMOTE_ADDR'] ?? '0.0.0.0');
     }
 
     private function readJsonBody(): array {
@@ -438,7 +410,20 @@ class Api extends \Opencart\System\Engine\Controller {
     private function respond(int $status, array $payload): void {
         $duration = (int) round((microtime(true) - $this->startTime) * 1000);
 
-        // TODO Faz 2: AuditLogger::write($this->currentSlug, $this->getClientIp(), $status, $duration, $payload['error'] ?? null)
+        // Audit log — her response (auth fail dahil) loglanır
+        // clientIp henüz set edilmemişse (Auth verify'dan önce respond çağrıldıysa) REMOTE_ADDR fallback
+        $ip = $this->clientIp !== '0.0.0.0'
+            ? $this->clientIp
+            : (string) ($this->request->server['REMOTE_ADDR'] ?? '0.0.0.0');
+
+        AuditLogger::write(
+            $this->registry,
+            $this->currentSlug ?: 'unknown',
+            $ip,
+            $status,
+            $duration,
+            $status >= 400 ? (string) ($payload['error'] ?? null) : null
+        );
 
         http_response_code($status);
         $this->response->addHeader('Content-Type: application/json; charset=utf-8');

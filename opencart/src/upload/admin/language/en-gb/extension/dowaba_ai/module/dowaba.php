@@ -40,6 +40,18 @@ $_['button_regenerate']        = 'Regenerate API Key';
 $_['button_copy']              = 'Copy';
 $_['button_test']              = 'Test connection';
 
+// Audit Log
+$_['text_audit_log_title']     = 'Audit Log — Recent API requests';
+$_['text_audit_log_desc']      = 'Last requests from Dowaba. Filter by function slug or status code (4xx/5xx for errors).';
+$_['column_when']              = 'When';
+$_['column_function']          = 'Function';
+$_['column_ip']                = 'Client IP';
+$_['column_status']            = 'Status';
+$_['column_duration']          = 'ms';
+$_['column_error']             = 'Error';
+$_['text_no_audit_rows']       = 'No requests logged yet. Once Dowaba calls a function, entries will appear here.';
+$_['button_refresh']           = 'Refresh';
+
 // Error
 $_['error_permission']         = 'Warning: You do not have permission to modify Dowaba AI module!';
 $_['error_invalid_ip']         = 'Invalid IP address: %s';

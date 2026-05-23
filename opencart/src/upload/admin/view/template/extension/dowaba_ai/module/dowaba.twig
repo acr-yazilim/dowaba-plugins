@@ -164,6 +164,67 @@
       </div>
     </div>
 
+    {# ============ Audit Log ============ #}
+    <div class="card mb-3">
+      <div class="card-header"><i class="fa-solid fa-list-check"></i> {{ text_audit_log_title }}</div>
+      <div class="card-body">
+        <p class="text-muted">{{ text_audit_log_desc }}</p>
+
+        <div class="row mb-3 g-2">
+          <div class="col-sm-4">
+            <select id="audit-filter-function" class="form-select form-select-sm">
+              <option value="">(tüm function'lar)</option>
+              <option>opc_product_search</option>
+              <option>opc_product_detail</option>
+              <option>opc_product_compare</option>
+              <option>opc_stock_check</option>
+              <option>opc_category_list</option>
+              <option>opc_order_status</option>
+              <option>opc_customer_lookup</option>
+              <option>opc_cart_recover</option>
+              <option>opc_order_preview</option>
+              <option>opc_order_confirm</option>
+            </select>
+          </div>
+          <div class="col-sm-3">
+            <select id="audit-filter-status" class="form-select form-select-sm">
+              <option value="">(tüm status'ler)</option>
+              <option value="200">200 OK</option>
+              <option value="400">400 Bad Request</option>
+              <option value="401">401 Unauthorized</option>
+              <option value="403">403 Forbidden</option>
+              <option value="404">404 Not Found</option>
+              <option value="500">500 Server Error</option>
+              <option value="503">503 Service Unavailable</option>
+            </select>
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-light btn-sm w-100" id="btn-audit-refresh">
+              <i class="fa-solid fa-rotate"></i> {{ button_refresh }}
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>{{ column_when }}</th>
+                <th>{{ column_function }}</th>
+                <th>{{ column_ip }}</th>
+                <th class="text-center">{{ column_status }}</th>
+                <th class="text-end">{{ column_duration }}</th>
+                <th>{{ column_error }}</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody">
+              <tr><td colspan="6" class="text-center text-muted">{{ text_no_audit_rows }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -233,6 +294,64 @@
     const url = document.getElementById('manifest-url').value;
     copyToClipboard(url).then(() => showToast('Manifest URL kopyalandı', 'success'));
   });
+
+  // Audit log — fetch & render
+  function statusBadge(code) {
+    if (code === 200) return '<span class="badge bg-success">' + code + '</span>';
+    if (code >= 500)  return '<span class="badge bg-danger">' + code + '</span>';
+    if (code >= 400)  return '<span class="badge bg-warning text-dark">' + code + '</span>';
+    return '<span class="badge bg-secondary">' + code + '</span>';
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function loadAuditLog() {
+    const fn = document.getElementById('audit-filter-function').value;
+    const st = document.getElementById('audit-filter-status').value;
+    const params = new URLSearchParams();
+    params.set('limit', '100');
+    if (fn) params.set('function_slug', fn);
+    if (st) params.set('status', st);
+
+    const url = '{{ audit_log_url }}&' + params.toString();
+    const tbody = document.getElementById('audit-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>';
+
+    fetch(url, { credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-danger">' + escapeHtml(data.error || 'Hata') + '</td></tr>';
+          return;
+        }
+        if (!data.rows || data.rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">{{ text_no_audit_rows }}</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.rows.map(r =>
+          '<tr>' +
+          '<td><small>' + escapeHtml(r.created_at) + '</small></td>' +
+          '<td><code>' + escapeHtml(r.function_slug) + '</code></td>' +
+          '<td><small>' + escapeHtml(r.request_ip) + '</small></td>' +
+          '<td class="text-center">' + statusBadge(r.status_code) + '</td>' +
+          '<td class="text-end"><small>' + r.duration_ms + '</small></td>' +
+          '<td><small class="text-muted">' + escapeHtml(r.error_message || '') + '</small></td>' +
+          '</tr>'
+        ).join('');
+      })
+      .catch(err => {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-danger">Network error: ' + escapeHtml(err.message) + '</td></tr>';
+      });
+  }
+
+  document.getElementById('btn-audit-refresh').addEventListener('click', loadAuditLog);
+  document.getElementById('audit-filter-function').addEventListener('change', loadAuditLog);
+  document.getElementById('audit-filter-status').addEventListener('change', loadAuditLog);
+
+  // Auto-load on page open
+  loadAuditLog();
 
   // STEP 5 — Test connection
   document.getElementById('btn-test-connection').addEventListener('click', function() {

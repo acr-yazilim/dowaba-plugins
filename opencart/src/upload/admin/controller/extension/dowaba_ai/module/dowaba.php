@@ -183,6 +183,44 @@ class Dowaba extends \Opencart\System\Engine\Controller {
         ]));
     }
 
+    /**
+     * AJAX endpoint: Audit log — son N kayıt + opsiyonel filter.
+     * Route: extension/dowaba_ai/module/dowaba|auditLog
+     */
+    public function auditLog(): void {
+        $this->load->language('extension/dowaba_ai/module/dowaba');
+        $this->response->addHeader('Content-Type: application/json');
+
+        if (!$this->user->hasPermission('access', 'extension/dowaba_ai/module/dowaba')) {
+            $this->response->setOutput(json_encode([
+                'success' => false,
+                'error'   => $this->language->get('error_permission'),
+            ]));
+            return;
+        }
+
+        $limit = max(10, min(500, (int) ($this->request->get['limit'] ?? 100)));
+        $functionSlug = trim((string) ($this->request->get['function_slug'] ?? '')) ?: null;
+        $statusFilter = isset($this->request->get['status']) ? (int) $this->request->get['status'] : null;
+
+        $this->load->model('extension/dowaba_ai/module/dowaba');
+        $rows = $this->model_extension_dowaba_ai_module_dowaba->getAuditLog($limit, $functionSlug, $statusFilter);
+
+        $this->response->setOutput(json_encode([
+            'success' => true,
+            'count'   => count($rows),
+            'rows'    => array_map(fn($r) => [
+                'audit_id'      => (int) $r['audit_id'],
+                'function_slug' => $r['function_slug'],
+                'request_ip'    => $r['request_ip'],
+                'status_code'   => (int) $r['status_code'],
+                'duration_ms'   => (int) $r['duration_ms'],
+                'error_message' => $r['error_message'],
+                'created_at'    => $r['created_at'],
+            ], $rows),
+        ]));
+    }
+
     // ---------------------------------------------------------------- helpers
 
     /**
@@ -200,6 +238,7 @@ class Dowaba extends \Opencart\System\Engine\Controller {
         $data['cancel']           = $this->url->link('marketplace/extension', 'user_token=' . $data['user_token'] . '&type=module', true);
         $data['regenerate_url']   = $this->url->link('extension/dowaba_ai/module/dowaba.regenerateKey', 'user_token=' . $data['user_token'], true);
         $data['test_url']         = $this->url->link('extension/dowaba_ai/module/dowaba.testConnection', 'user_token=' . $data['user_token'], true);
+        $data['audit_log_url']    = $this->url->link('extension/dowaba_ai/module/dowaba.auditLog', 'user_token=' . $data['user_token'], true);
         $data['manifest_url']     = $this->buildManifestUrl();
 
         // Mevcut ayarlar

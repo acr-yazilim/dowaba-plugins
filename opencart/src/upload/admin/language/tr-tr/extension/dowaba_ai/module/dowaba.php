@@ -40,6 +40,18 @@ $_['button_regenerate']        = 'API Anahtarı Yenile';
 $_['button_copy']              = 'Kopyala';
 $_['button_test']              = 'Bağlantı testi';
 
+// Audit Log
+$_['text_audit_log_title']     = 'Audit Log — Son API istekleri';
+$_['text_audit_log_desc']      = 'Dowaba\'dan gelen son istekler. Function slug veya status code ile filtreleyebilirsin (4xx/5xx = hata).';
+$_['column_when']              = 'Tarih';
+$_['column_function']          = 'Function';
+$_['column_ip']                = 'IP';
+$_['column_status']            = 'Durum';
+$_['column_duration']          = 'ms';
+$_['column_error']             = 'Hata';
+$_['text_no_audit_rows']       = 'Henüz hiç istek loglanmadı. Dowaba bir function çağırınca burada satır göreceksin.';
+$_['button_refresh']           = 'Yenile';
+
 // Hata
 $_['error_permission']         = 'Uyarı: Dowaba AI modülünü düzenleme izniniz yok!';
 $_['error_invalid_ip']         = 'Geçersiz IP adresi: %s';
