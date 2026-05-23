@@ -1,0 +1,42 @@
+name: Release PrestaShop module
+
+on:
+  push:
+    tags:
+      - 'prestashop-v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Extract version
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/prestashop-v}"
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build .zip
+        working-directory: prestashop
+        run: bash build.sh "${{ steps.version.outputs.version }}"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: PrestaShop v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            # DoWaba AI for PrestaShop v${{ steps.version.outputs.version }}
+
+            📦 Download: `dowaba-ai-prestashop-${{ steps.version.outputs.version }}.zip`
+
+            ## Install
+            PrestaShop admin → Modules → Module Manager → Upload a module
+          files: prestashop/dist/dowaba-ai-prestashop-${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}

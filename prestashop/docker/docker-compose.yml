@@ -1,0 +1,50 @@
+# PrestaShop 8.1 + MariaDB lokal test ortamı
+#
+# URL: http://localhost:8091
+# Admin: http://localhost:8091/admin-dowaba (admin@dowaba.local / admin123)
+
+services:
+  prestashop:
+    image: prestashop/prestashop:8.1-apache
+    container_name: dwb-prestashop
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8091:80"
+    environment:
+      DB_SERVER: mariadb
+      DB_NAME: pstest
+      DB_USER: ps
+      DB_PASSWD: pstest
+      PS_INSTALL_AUTO: 1
+      PS_DOMAIN: localhost:8091
+      PS_FOLDER_ADMIN: admin-dowaba
+      PS_FOLDER_INSTALL: install
+      PS_COUNTRY: us
+      PS_LANGUAGE: en
+      ADMIN_MAIL: admin@dowaba.local
+      ADMIN_PASSWD: admin123
+    volumes:
+      - ../src/dowaba_ai:/var/www/html/modules/dowaba_ai:ro
+
+  mariadb:
+    image: mariadb:11
+    container_name: dwb-ps-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: pstest_root
+      MARIADB_DATABASE: pstest
+      MARIADB_USER: ps
+      MARIADB_PASSWORD: pstest
+    volumes:
+      - mariadb-ps-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  mariadb-ps-data:
