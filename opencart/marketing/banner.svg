@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Dowaba AI for OpenCart — Marketplace Banner (600x300)
+
+  PNG'ye export:
+    rsvg-convert -h 300 banner.svg > banner-600x300.png
+
+  Veya online (cloudconvert.com, svg2png.com).
+
+  Figma/Sketch'te aç → rafine et → export.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+
+  <!-- Gradient background — dark blue → purple -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="50%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#581c87"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="300" fill="url(#bg)"/>
+
+  <!-- Decorative dots pattern (üst sol) -->
+  <g opacity="0.15">
+    <circle cx="30"  cy="30" r="2" fill="#fff"/>
+    <circle cx="50"  cy="30" r="2" fill="#fff"/>
+    <circle cx="70"  cy="30" r="2" fill="#fff"/>
+    <circle cx="30"  cy="50" r="2" fill="#fff"/>
+    <circle cx="50"  cy="50" r="2" fill="#fff"/>
+    <circle cx="30"  cy="70" r="2" fill="#fff"/>
+  </g>
+
+  <!-- Robot/AI icon (sol taraf) -->
+  <g transform="translate(40, 100)" filter="url(#glow)">
+    <!-- AI head -->
+    <rect x="0" y="0" width="100" height="80" rx="15" fill="url(#accent)" opacity="0.9"/>
+    <!-- Eyes -->
+    <circle cx="30" cy="30" r="8" fill="#fff"/>
+    <circle cx="70" cy="30" r="8" fill="#fff"/>
+    <circle cx="30" cy="30" r="4" fill="#1e1b4b"/>
+    <circle cx="70" cy="30" r="4" fill="#1e1b4b"/>
+    <!-- Smile -->
+    <path d="M 30 55 Q 50 70 70 55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Antenna -->
+    <line x1="50" y1="0" x2="50" y2="-15" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="-18" r="4" fill="#06b6d4"/>
+  </g>
+
+  <!-- Channel icons (orta — WhatsApp, Instagram, Mail, Voice) -->
+  <g transform="translate(170, 130)">
+    <!-- Arrow from AI to channels -->
+    <path d="M 0 10 L 50 10" stroke="#06b6d4" stroke-width="2" fill="none" marker-end="url(#arrow)" opacity="0.7"/>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#06b6d4"/>
+      </marker>
+    </defs>
+  </g>
+
+  <!-- Text — başlık -->
+  <text x="240" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" font-weight="800" fill="#fff">Dowaba AI</text>
+
+  <!-- Text — alt başlık -->
+  <text x="240" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="500" fill="#06b6d4" letter-spacing="2">AI CHATBOT FOR OPENCART</text>
+
+  <!-- Channel badges -->
+  <g transform="translate(240, 130)" font-family="-apple-system, sans-serif" font-size="11" fill="#fff">
+    <!-- WhatsApp -->
+    <rect x="0"   y="0" width="80" height="24" rx="12" fill="#25D366" opacity="0.95"/>
+    <text x="40" y="16" text-anchor="middle" font-weight="600">WhatsApp</text>
+    <!-- Instagram -->
+    <rect x="90"  y="0" width="80" height="24" rx="12" fill="#E4405F" opacity="0.95"/>
+    <text x="130" y="16" text-anchor="middle" font-weight="600">Instagram</text>
+    <!-- Mail -->
+    <rect x="180" y="0" width="60" height="24" rx="12" fill="#0EA5E9" opacity="0.95"/>
+    <text x="210" y="16" text-anchor="middle" font-weight="600">Mail</text>
+    <!-- Voice -->
+    <rect x="250" y="0" width="60" height="24" rx="12" fill="#A855F7" opacity="0.95"/>
+    <text x="280" y="16" text-anchor="middle" font-weight="600">Voice</text>
+  </g>
+
+  <!-- Feature list -->
+  <g transform="translate(240, 180)" font-family="-apple-system, sans-serif" font-size="13" fill="#cbd5e1">
+    <text x="0" y="0">✓ 10 AI Functions — search, compare, order</text>
+    <text x="0" y="20">✓ Multi-language (TR + 30 languages)</text>
+    <text x="0" y="40">✓ OpenCart 3.x &amp; 4.x dual support</text>
+  </g>
+
+  <!-- Footer — version + free badge -->
+  <g transform="translate(40, 270)">
+    <text font-family="-apple-system, sans-serif" font-size="11" fill="#94a3b8">v0.2.1 • MIT License • dowaba.com</text>
+  </g>
+
+  <!-- Free badge (üst sağ) -->
+  <g transform="translate(520, 30)">
+    <rect x="0" y="0" width="60" height="26" rx="13" fill="#10b981"/>
+    <text x="30" y="18" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#fff">FREE</text>
+  </g>
+
+</svg>
