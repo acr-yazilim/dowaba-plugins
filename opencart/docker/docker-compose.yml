@@ -1,0 +1,78 @@
+# Lokal test ortamı: OpenCart 4.x + MariaDB 11 + Mailpit
+#
+# Usage:
+#   cd docker/
+#   docker compose up -d              # start
+#   docker compose logs -f opencart   # tail logs
+#   docker compose down -v            # stop + reset DB
+#
+# URLs:
+#   OpenCart storefront: http://localhost:8080
+#   OpenCart admin:      http://localhost:8080/admin  (admin / admin123)
+#   Mailpit UI:          http://localhost:8025
+#
+# Notes:
+#   - seed.sql 10 dummy product + 3 dummy order + admin user
+#   - host.docker.internal → host machine'e ulaşmak için (Dowaba prod manifest import için lokal URL)
+
+services:
+  opencart:
+    image: opencartcommunity/opencart:4.0.2.3-php8.2
+    container_name: dwb-opencart
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOSTNAME: mariadb
+      DB_DATABASE: opencart
+      DB_USERNAME: opencart
+      DB_PASSWORD: dwbtest
+      DB_PORT: 3306
+      DB_PREFIX: oc_
+      OPENCART_ADMIN_EMAIL: admin@dowaba.local
+      OPENCART_ADMIN_USERNAME: admin
+      OPENCART_ADMIN_PASSWORD: admin123
+      OPENCART_HTTP_SERVER: http://localhost:8080/
+    volumes:
+      # Mount plugin source — değişiklik anında OpenCart'ta görünür (dev loop)
+      - ../src/upload:/var/www/html/extension/dowaba/src/upload:ro
+      # Mail testi için
+      - opencart-storage:/var/www/html/storage
+
+  mariadb:
+    image: mariadb:11
+    container_name: dwb-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: dwbtest_root
+      MARIADB_DATABASE: opencart
+      MARIADB_USER: opencart
+      MARIADB_PASSWORD: dwbtest
+    volumes:
+      - ./seed.sql:/docker-entrypoint-initdb.d/01-seed.sql:ro
+      - mariadb-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: dwb-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  mariadb-data:
+  opencart-storage:

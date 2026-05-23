@@ -1,0 +1,47 @@
+name: Release OpenCart plugin
+
+on:
+  push:
+    tags:
+      - 'opencart-v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # for release upload
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/opencart-v}"
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+          echo "🏷️  Building opencart-v$TAG"
+
+      - name: Build .ocmod.zip
+        working-directory: opencart
+        run: bash build.sh "${{ steps.version.outputs.version }}"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: OpenCart v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            Dowaba AI Integration for OpenCart v${{ steps.version.outputs.version }}
+
+            📦 İndir: `dowaba-opencart-${{ steps.version.outputs.version }}.ocmod.zip`
+            📚 Kurulum: [README](./opencart/README.md)
+            📝 Değişiklikler: [CHANGELOG](./opencart/CHANGELOG.md)
+          files: opencart/dist/dowaba-opencart-${{ steps.version.outputs.version }}.ocmod.zip
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
