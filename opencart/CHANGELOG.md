@@ -18,3 +18,18 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 - e2e smoke test (`test/e2e.sh`)
 - PHPUnit unit testler (`test/phpunit/`: AuthTest, ScopeGuardTest, OrderPreviewTest)
 - GitHub Actions release pipeline (`tag:opencart-v*` → `.ocmod.zip` artifact)
+
+## [0.1.1] - 2026-05-23
+
+### Fixed
+- **KRİTİK** `OrderPreview::peek()` OpenCart File cache `get()` cache miss'te `[]` (boş array) döndürür, `null` değil. Replay protection bozuktu — aynı preview_id ile birden fazla order yaratılabiliyordu. Fix: `empty($value) || !isset($value['_preview_id'])` ek check.
+- **KRİTİK** `Api::respond()` HTTP status code OC4 Response sınıfı tarafından yutuluyordu. Fix: 3 mekanizma birlikte (http_response_code + header() + response->addHeader).
+- `Manifest` endpoint `config('config_url')` statik kurulum URL'i döndürüyordu — Cloudflare tunnel / ngrok / reverse proxy ortamlarında Dowaba'nın manifest'i okuduğu URL ile API çağırdığı URL farklı oluyordu (fail). Fix: `resolveBaseUrl()` — X-Forwarded-Host + HTTP_HOST + admin override fallback'leri.
+- `orderConfirm()` order create transaction wrap yoktu, exception durumunda partial order DB'de kalabilirdi. Fix: START TRANSACTION / COMMIT / ROLLBACK.
+- OC4 4.0.2.3 `model_checkout_order::addOrder()` PHP Warning'leri (master_id, subscription, payment_address_id, shipping_address_id) — bunlar product-level field. Fix: `orderProducts[]` her item'a `master_id` + `subscription` eklendi; order-level'a `payment_address_id` + `shipping_address_id`.
+- OC4 totals modeli `'extension' => 'total'` yerine `'extension' => 'opencart'` — opencart extension'ı altındaki Total\SubTotal model'i load edilebilsin.
+- `AuditLogger::ensureTable()` defensive — admin install hook tetiklenmediği durumlarda ilk write'ta tablo otomatik oluşur (idempotent CREATE IF NOT EXISTS).
+
+### Changed
+- GitHub Actions workflow `opencart/.github/workflows/` → repo root `.github/workflows/release-opencart.yml` (umbrella repo'da workflow tetiklenebilir hale geldi).
+- Manifest'e `module_dowaba_ai_manifest_base_url` admin setting override eklendi (rakip CDN ardındaki kurulumlar için).

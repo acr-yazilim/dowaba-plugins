@@ -20,7 +20,14 @@ class Manifest extends \Opencart\System\Engine\Controller {
     public function index(): void {
         $this->load->language('extension/dowaba_ai/module/dowaba');
 
-        $base = rtrim($this->config->get('config_url'), '/');
+        // v0.1.1 fix: Dinamik base URL — request host/scheme'inden inşa edilir.
+        // Eskiden $config->get('config_url') statik OC kurulum URL'i dönüyordu.
+        // Cloudflare tunnel / ngrok / reverse proxy ortamlarında manifest base_url'inin
+        // dış URL ile aynı olması ŞART — yoksa Dowaba manifest çekemez veya API'yi
+        // yanlış host'a çağırır (örn manifest'i tunnel'dan çekip API'yi localhost'a
+        // atmaya çalışır → fail).
+        // Override için (rakip CDN'ler ardında): module_dowaba_ai_manifest_base_url setting.
+        $base = $this->resolveBaseUrl();
         $apiBase = $base . '/index.php?route=extension/dowaba_ai/api';
         $host = parse_url($base, PHP_URL_HOST) ?: '';
         $storeName = $this->config->get('config_name') ?: 'OpenCart Store';
@@ -58,6 +65,44 @@ class Manifest extends \Opencart\System\Engine\Controller {
     }
 
     // ---------------------------------------------------------------- helpers
+
+    /**
+     * Tunnel/proxy-aware base URL resolver.
+     *
+     * Sıra (öncelik):
+     *   1. Admin setting `module_dowaba_ai_manifest_base_url` (manuel override)
+     *   2. X-Forwarded-Proto + X-Forwarded-Host (CDN/load-balancer)
+     *   3. HTTPS + HTTP_HOST (direct request)
+     *   4. config_url fallback (eski davranış, install URL)
+     */
+    private function resolveBaseUrl(): string {
+        // 1. Manuel override (admin settings'te ayarlanabilir)
+        $override = trim((string) $this->config->get('module_dowaba_ai_manifest_base_url'));
+        if ($override !== '') {
+            return rtrim($override, '/');
+        }
+
+        $server = $this->request->server;
+
+        // 2. Proxy header'ları — reverse proxy / CDN ardında
+        $forwardedHost = $server['HTTP_X_FORWARDED_HOST']  ?? '';
+        $forwardedProto = $server['HTTP_X_FORWARDED_PROTO'] ?? '';
+        if ($forwardedHost !== '') {
+            $scheme = $forwardedProto !== '' ? $forwardedProto : 'https';
+            return $scheme . '://' . $forwardedHost;
+        }
+
+        // 3. Direct request
+        $host = $server['HTTP_HOST'] ?? '';
+        if ($host !== '') {
+            $https = $server['HTTPS'] ?? '';
+            $isHttps = ($https && $https !== 'off') || ($server['SERVER_PORT'] ?? '') == 443;
+            return ($isHttps ? 'https' : 'http') . '://' . $host;
+        }
+
+        // 4. Fallback — OC install URL
+        return rtrim((string) $this->config->get('config_url'), '/');
+    }
 
     private function getPluginVersion(): string {
         $installFile = DIR_OPENCART . 'extension/dowaba_ai/install.json';

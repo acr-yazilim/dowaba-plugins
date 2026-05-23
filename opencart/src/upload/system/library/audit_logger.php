@@ -14,6 +14,43 @@ namespace Opencart\System\Library\Extension\DowabaAi;
 final class AuditLogger {
 
     /**
+     * Per-request flag — ensureTable bir kez çağrılır.
+     * (v0.1.1: defensive — admin install hook tetiklenmediyse bile tablo otomatik oluşur.)
+     */
+    private static bool $tableEnsured = false;
+
+    /**
+     * Tablo varlığını garanti et. Admin install hook tetiklenmediği durumlarda
+     * (manuel DB manipulation, custom install scenarios) ilk write çağrısında
+     * otomatik CREATE. Idempotent: IF NOT EXISTS, request başına 1 kez.
+     */
+    public static function ensureTable($registry): void {
+        if (self::$tableEnsured) return;
+
+        try {
+            $db = $registry->get('db');
+            $db->query("
+                CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "dowaba_audit` (
+                    `audit_id`       INT(11) NOT NULL AUTO_INCREMENT,
+                    `function_slug`  VARCHAR(64) NOT NULL,
+                    `request_ip`     VARCHAR(45) NOT NULL,
+                    `status_code`    SMALLINT(3) NOT NULL,
+                    `duration_ms`    INT(11) NOT NULL DEFAULT 0,
+                    `error_message`  TEXT NULL,
+                    `created_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    PRIMARY KEY (`audit_id`),
+                    INDEX `idx_created_at`   (`created_at`),
+                    INDEX `idx_function_slug`(`function_slug`),
+                    INDEX `idx_status_code`  (`status_code`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            ");
+            self::$tableEnsured = true;
+        } catch (\Throwable $e) {
+            // Silent — write() catch'i de zaten var
+        }
+    }
+
+    /**
      * Audit kaydı yaz.
      *
      * @param \Opencart\System\Engine\Registry $registry
@@ -32,6 +69,8 @@ final class AuditLogger {
         ?string $errorMessage = null
     ): void {
         try {
+            self::ensureTable($registry);
+
             $db = $registry->get('db');
             $errorSafe = $errorMessage !== null
                 ? mb_substr($errorMessage, 0, 500, 'UTF-8')

@@ -68,7 +68,14 @@ final class OrderPreview {
         $key = self::CACHE_PREFIX . $previewId;
         $value = $cache->get($key);
 
-        if (!is_array($value)) return null;
+        // v0.1.1 KRİTİK FIX: OpenCart File cache `get()` cache miss'te `[]` (boş array)
+        // döndürür, `null` değil! (system/library/cache/file.php line 38: return [])
+        // Bizim payload'da `_preview_id` zorunlu — bu yokken payload yarım demek.
+        // Replay protection için bu check ŞART; yoksa consume() sonsuza dek aynı
+        // boş array'i döndürür ve aynı preview_id ile birden fazla order yaratılır.
+        if (!is_array($value) || empty($value) || !isset($value['_preview_id'])) {
+            return null;
+        }
 
         // Manuel expire check (cache backend'i TTL'i ignore ederse — file cache OC bug history)
         if (isset($value['_expires_at']) && time() > (int) $value['_expires_at']) {

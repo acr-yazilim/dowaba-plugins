@@ -511,14 +511,20 @@ class Api extends \Opencart\System\Engine\Controller {
             return;
         }
 
-        // OpenCart order create
+        // v0.1.1 fix: OpenCart order create transaction'a sarıldı.
+        // addOrder + addHistory ardışık çağrılır; biri fail olursa rollback ile yarısı kalmasın.
+        $this->db->query('START TRANSACTION');
         try {
             $orderId = $this->createOrderFromPreview($preview);
+            $this->db->query('COMMIT');
         } catch (\Throwable $e) {
+            // Rollback + audit log için error mesajını payload'da göster
+            try { $this->db->query('ROLLBACK'); } catch (\Throwable $ignore) {}
+
             $this->respond(500, [
-                'error' => 'order creation failed',
+                'error'  => 'order creation failed',
                 'detail' => $e->getMessage(),
-                'note'  => 'AI\'ya: müşteriye teknik bir hata oluştu, manuel olarak siparişi tekrar deneyecek',
+                'note'   => 'AI\'ya: müşteriye teknik bir hata oluştu, manuel olarak siparişi tekrar deneyecek. Sipariş veritabanına yazılmadı (rollback).',
             ]);
             return;
         }
@@ -554,39 +560,41 @@ class Api extends \Opencart\System\Engine\Controller {
         $firstname = $nameParts[0] ?? 'Misafir';
         $lastname = $nameParts[1] ?? 'Müşteri';
 
-        // Products payload
+        // Products payload — OC4 order_product schema ile birebir
         $orderProducts = array_map(fn($it) => [
-            'product_id' => (int) $it['product_id'],
-            'name'       => $it['name'],
-            'model'      => $it['sku'] ?: 'N/A',
-            'price'      => $it['unit_price'],
-            'total'      => $it['line_total'],
-            'tax'        => 0,
-            'quantity'   => $it['quantity'],
-            'option'     => [],
-            'download'   => [],
-            'reward'     => 0,
-            'subtract'   => 1,  // stoktan düş
+            'product_id'   => (int) $it['product_id'],
+            'master_id'    => 0,       // OC4: parent_product (variant) için, default 0
+            'name'         => $it['name'],
+            'model'        => $it['sku'] ?: 'N/A',
+            'price'        => $it['unit_price'],
+            'total'        => $it['line_total'],
+            'tax'          => 0,
+            'quantity'     => $it['quantity'],
+            'option'       => [],
+            'download'     => [],
+            'subscription' => [],      // OC4: tekrarlanan abonelik bilgisi, default boş
+            'reward'       => 0,
+            'subtract'     => 1,       // stoktan düş
         ], $items);
 
         // Totals payload (OpenCart format)
         $orderTotals = [
             [
-                'extension'  => 'total',
+                'extension'  => 'opencart',
                 'code'       => 'sub_total',
                 'title'      => 'Sub-Total',
                 'value'      => $preview['subtotal'],
                 'sort_order' => 1,
             ],
             [
-                'extension'  => 'total',
+                'extension'  => 'opencart',
                 'code'       => 'shipping',
                 'title'      => 'Shipping (Flat rate)',
                 'value'      => $preview['shipping_cost'],
                 'sort_order' => 2,
             ],
             [
-                'extension'  => 'total',
+                'extension'  => 'opencart',
                 'code'       => 'total',
                 'title'      => 'Total',
                 'value'      => $preview['total'],
@@ -607,6 +615,9 @@ class Api extends \Opencart\System\Engine\Controller {
             'email'             => $customer['email'] ?: 'guest@dowaba.local',
             'telephone'         => $customer['phone'],
             'custom_field'      => [],
+            // OC4 4.0.2.3 — order-level address ID'leri (guest order için 0)
+            'payment_address_id'  => 0,
+            'shipping_address_id' => 0,
 
             // Payment — Cash on Delivery default (v0.1)
             'payment_firstname'   => $firstname,
@@ -735,11 +746,40 @@ class Api extends \Opencart\System\Engine\Controller {
             $status >= 400 ? (string) ($payload['error'] ?? null) : null
         );
 
+        // v0.1.1 fix: HTTP status code'u 3 mekanizmayla set ediyoruz, OC4'ün
+        // headers_sent() guard'ını ve replace timing'ini atlatmak için:
+        //   1. http_response_code() — PHP native, headers_sent() check geçer
+        //   2. header('HTTP/1.1 X Y', true, $status) — direkt headers'a yaz
+        //   3. response->addHeader('HTTP/1.1 X Y') — OC4 buffer'ına da koy (output() sırasında)
+        // Sebebi: OC4 framework headers_sent()'ten ÖNCE bazı header'lar gönderiyor,
+        // sadece response->addHeader yetersiz kalabiliyor.
+        $statusText = self::HTTP_STATUS_TEXTS[$status] ?? 'OK';
         http_response_code($status);
+        if (!headers_sent()) {
+            header('HTTP/1.1 ' . $status . ' ' . $statusText, true, $status);
+        }
+        $this->response->addHeader('HTTP/1.1 ' . $status . ' ' . $statusText);
         $this->response->addHeader('Content-Type: application/json; charset=utf-8');
         $this->response->addHeader('X-Dowaba-Duration: ' . $duration);
         $this->response->setOutput(json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
+
+    /** HTTP status reason phrases — RFC 7231 + 4 ekstra (410, 422, 501, 503). */
+    private const HTTP_STATUS_TEXTS = [
+        200 => 'OK',
+        201 => 'Created',
+        204 => 'No Content',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        409 => 'Conflict',
+        410 => 'Gone',
+        422 => 'Unprocessable Entity',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        503 => 'Service Unavailable',
+    ];
 
     private function shapeProduct(array $p): array {
         $price = (float) ($p['price'] ?? 0);
