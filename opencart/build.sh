@@ -57,9 +57,9 @@ find src -name "*.php" -print0 | while IFS= read -r -d '' f; do
 done
 echo "✅ PHP syntax OK (all files in src/)"
 
-# OC4 build
+# OC4 build — install.json (OC4 native) + install.xml (Cloud Marketplace compat)
 echo "📦 OC4: building $OUT_OC4..."
-(cd src/oc4 && zip -qr "../../$OUT_OC4" install.json upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
+(cd src/oc4 && zip -qr "../../$OUT_OC4" install.json install.xml upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
 SIZE_OC4=$(du -k "$OUT_OC4" | cut -f1)
 echo "  ✅ $OUT_OC4 (${SIZE_OC4} KB)"
 

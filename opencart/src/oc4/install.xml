@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dowaba AI Integration — OpenCart 4.x Cloud Marketplace compatibility wrapper.
+
+  Bu dosya OpenCart Cloud Marketplace'in submission gereksinimi gereği
+  ekleniyor (install.xml + upload/ zorunlu). OC4'ün native format'ı zaten
+  install.json (aynı zip'te bulunur); install.xml sadece Cloud onay
+  sürecinin "format compliance" kontrolünü geçmek için.
+
+  OCMOD format burada NO-OP — gerçek değişiklik yok. OC4 için tüm dosya
+  kopyalama upload/ klasörü üzerinden yapılır (OC4 extension installer
+  upload/'yi alıp extension/<code>/ altına çıkarır).
+
+  Tek aktif modifier: admin column_left'e Dowaba AI menü item (görsel UX).
+-->
+<modification>
+    <name>Dowaba AI Integration</name>
+    <code>dowaba_ai</code>
+    <version>0.2.2</version>
+    <author>Aydın Acar (Dowaba)</author>
+    <link>https://github.com/rdtvaacar/dowaba-plugins</link>
+
+    <!-- Admin column_left menüye "Dowaba AI" item ekle (OC4 default theme) -->
+    <file path="admin/controller/common/column_left.php">
+        <operation error="skip">
+            <search><![CDATA[$data['menus'][] = []]></search>
+            <add position="before"><![CDATA[
+            // Dowaba AI — direct admin menu shortcut
+            if ($this->user->hasPermission('access', 'extension/dowaba_ai/module/dowaba')) {
+                $dowaba_ai_menu = [
+                    'id'       => 'dwb-menu-dowaba-ai',
+                    'icon'     => 'fa-robot',
+                    'name'     => 'Dowaba AI',
+                    'href'     => $this->url->link('extension/dowaba_ai/module/dowaba', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => []
+                ];
+                $data['menus'][] = $dowaba_ai_menu;
+            }
+            ]]></add>
+        </operation>
+    </file>
+</modification>

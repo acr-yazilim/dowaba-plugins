@@ -2,6 +2,23 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.2] - 2026-05-23
+
+### Added — OpenCart Cloud Marketplace compatibility
+- **OC4 paketine `install.xml` eklendi** — OpenCart Cloud Marketplace submission gereksinimi.
+  Cloud zorunlulukları: (1) OC 3.0+, (2) `install.xml` + `upload/` folder, (3) zip format.
+  Mevcut OC4 paketi sadece `install.json` içeriyordu → Cloud reddediyordu.
+  Çözüm: Aynı zip içine `install.xml` (no-op OCMOD wrapper) eklendi. `install.json`
+  OC4 native install için korundu — OC4 installer ikisini de görür, sadece JSON'u kullanır.
+  Cloud Marketplace XML format compliance kontrolünü artık geçer.
+- **build.sh OC4 build**: zip'e `install.xml` de eklendi (`zip ... install.json install.xml upload/`)
+
+### Notes
+- OC4 native install hala `install.json` üzerinden (Cloud sadece format check yapıyor)
+- `install.xml` aktif modifier'ı: admin column_left'e "Dowaba AI" menü item (UX bonus)
+- OC3 paketi zaten Cloud-uyumlu (install.xml + upload/ vardı)
+- Hem standart Marketplace hem Cloud Marketplace tek zip ile çalışır
+
 ## [0.2.1] - 2026-05-23
 
 ### Fixed — OC3 order create regression (canlı test'te yakalandı)
