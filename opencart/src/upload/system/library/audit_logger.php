@@ -1,5 +1,5 @@
 <?php
-namespace Dowaba\Ai;
+namespace Opencart\System\Library\Extension\DowabaAi;
 
 /**
  * Dowaba AI — Audit Logger.

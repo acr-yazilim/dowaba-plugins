@@ -1,16 +1,12 @@
 <?php
 namespace Opencart\Catalog\Controller\Extension\DowabaAi;
 
-// Library autoload — OC4 system/library altında PSR-4 yok, manuel require
-require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/Auth.php';
-require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/ScopeGuard.php';
-require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/AuditLogger.php';
-require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/OrderPreview.php';
-
-use Dowaba\Ai\Auth;
-use Dowaba\Ai\ScopeGuard;
-use Dowaba\Ai\AuditLogger;
-use Dowaba\Ai\OrderPreview;
+// Library'ler OC4 startup/extension tarafından autoload edilir
+// (registered namespace: Opencart\System\Library\Extension\DowabaAi → extension/dowaba_ai/system/library/)
+use Opencart\System\Library\Extension\DowabaAi\Auth;
+use Opencart\System\Library\Extension\DowabaAi\ScopeGuard;
+use Opencart\System\Library\Extension\DowabaAi\AuditLogger;
+use Opencart\System\Library\Extension\DowabaAi\OrderPreview;
 
 /**
  * Dowaba AI — Catalog REST API Controller

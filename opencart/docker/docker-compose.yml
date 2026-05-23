@@ -17,7 +17,9 @@
 
 services:
   opencart:
-    image: opencartcommunity/opencart:4.0.2.3-php8.2
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: dwb-opencart
     restart: unless-stopped
     depends_on:
@@ -25,22 +27,11 @@ services:
         condition: service_healthy
     ports:
       - "8080:80"
-    environment:
-      DB_HOSTNAME: mariadb
-      DB_DATABASE: opencart
-      DB_USERNAME: opencart
-      DB_PASSWORD: dwbtest
-      DB_PORT: 3306
-      DB_PREFIX: oc_
-      OPENCART_ADMIN_EMAIL: admin@dowaba.local
-      OPENCART_ADMIN_USERNAME: admin
-      OPENCART_ADMIN_PASSWORD: admin123
-      OPENCART_HTTP_SERVER: http://localhost:8080/
     volumes:
-      # Mount plugin source — değişiklik anında OpenCart'ta görünür (dev loop)
-      - ../src/upload:/var/www/html/extension/dowaba/src/upload:ro
-      # Mail testi için
-      - opencart-storage:/var/www/html/storage
+      # OpenCart 4.0.2.3 source (host'a /tmp altına indirildi)
+      - /tmp/dwb-oc4-src/opencart-4.0.2.3/upload:/var/www/html
+      # Plugin kaynağımız (storage area, install sırasında manuel kopyalanır veya OCMOD install ile)
+      - ../src:/var/www/html/dwb-plugin-src:ro
 
   mariadb:
     image: mariadb:11
@@ -54,8 +45,8 @@ services:
     volumes:
       - ./seed.sql:/docker-entrypoint-initdb.d/01-seed.sql:ro
       - mariadb-data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+    # NOT: 3306 dışarı expose edilmedi — host'ta zaten MariaDB var. Plugin container'dan
+    # `mariadb` hostname'iyle bağlanıyor, dış erişim Faz 4'te gereksiz.
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
@@ -75,4 +66,3 @@ services:
 
 volumes:
   mariadb-data:
-  opencart-storage:
