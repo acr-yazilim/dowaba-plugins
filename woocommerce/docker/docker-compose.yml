@@ -1,0 +1,68 @@
+# Lokal test: WordPress + WooCommerce + MariaDB + Mailpit
+#
+# Usage:
+#   cd docker/
+#   docker compose up -d
+#   docker compose logs -f wordpress
+#
+# URLs:
+#   WordPress storefront: http://localhost:8090
+#   WP admin:             http://localhost:8090/wp-admin (admin / admin123)
+#   Mailpit:              http://localhost:8026
+
+services:
+  wordpress:
+    image: wordpress:6.7-php8.2-apache
+    container_name: dwb-wordpress
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8090:80"
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wptest
+      WORDPRESS_DB_NAME: wptest
+      WORDPRESS_TABLE_PREFIX: wp_
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_DEBUG_DISPLAY', false);
+        define('WP_DEBUG_LOG', true);
+    volumes:
+      # Plugin source — wp-content/plugins/dowaba-ai/'e mount
+      - ..:/var/www/html/wp-content/plugins/dowaba-ai:ro
+      - wp-data:/var/www/html
+
+  mariadb:
+    image: mariadb:11
+    container_name: dwb-wp-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: wptest_root
+      MARIADB_DATABASE: wptest
+      MARIADB_USER: wp
+      MARIADB_PASSWORD: wptest
+    volumes:
+      - mariadb-wp-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: dwb-wp-mailpit
+    restart: unless-stopped
+    ports:
+      - "1026:1025"
+      - "8026:8025"
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  wp-data:
+  mariadb-wp-data:
