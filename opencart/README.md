@@ -4,10 +4,13 @@
 
 OpenCart mağazalarını **Dowaba AI**'ya bağlar. Müşteriler WhatsApp / Instagram / Mail / Voice (telefon) kanallarından doğal dilde ürün arar, karşılaştırır, sipariş verir. 7/24 AI asistan, Türkçe + 30+ dil.
 
+[![OpenCart Marketplace](https://img.shields.io/badge/OpenCart_Marketplace-Live-success?logo=opencart)](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
 [![Latest Release](https://img.shields.io/github/v/release/rdtvaacar/dowaba-plugins?label=latest&color=blue)](https://github.com/rdtvaacar/dowaba-plugins/releases)
 [![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.0.3.x-success)](https://www.opencart.com/)
 [![OpenCart 4.x](https://img.shields.io/badge/OpenCart-4.0.x-success)](https://www.opencart.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+📦 **[Install from OpenCart Marketplace →](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)**
 
 ---
 
