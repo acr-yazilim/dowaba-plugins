@@ -28,7 +28,11 @@ class Manifest extends \Opencart\System\Engine\Controller {
         // atmaya çalışır → fail).
         // Override için (rakip CDN'ler ardında): module_dowaba_ai_manifest_base_url setting.
         $base = $this->resolveBaseUrl();
-        $apiBase = $base . '/index.php?route=extension/dowaba_ai/api';
+        // v0.1.2 fix: Dowaba HttpHandler URL parse + query string DROP davranışı.
+        // base_url'a `?route=...` koyduğumuzda HttpHandler bu query'i silip kendi
+        // query_template'ini yazıyor → route param kaybolur. Çözüm: base_url SADECE
+        // schema+host+path, route query_template'e ayrı parametre olarak konur.
+        $apiBase = $base . '/index.php';
         $host = parse_url($base, PHP_URL_HOST) ?: '';
         $storeName = $this->config->get('config_name') ?: 'OpenCart Store';
         $pluginVersion = $this->getPluginVersion();
@@ -132,8 +136,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.products',
-                'query_template' => ['q' => '{{arg.query}}', 'limit' => '{{arg.limit}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'products', 'q' => '{{arg.query}}', 'limit' => '{{arg.limit}}'],
                 'timeout_ms'     => 5000,
                 'response'       => ['data_path' => 'data', 'fields' => ['product_id', 'name', 'price', 'stock', 'url', 'thumb']],
             ],
@@ -156,8 +160,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.product',
-                'query_template' => ['id' => '{{arg.product_id}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'product', 'id' => '{{arg.product_id}}'],
                 'timeout_ms'     => 5000,
             ],
         ];
@@ -185,8 +189,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.compare',
-                'query_template' => ['ids' => '{{arg.product_ids}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'compare', 'ids' => '{{arg.product_ids}}'],
                 'timeout_ms'     => 8000,
             ],
         ];
@@ -208,8 +212,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.stock',
-                'query_template' => ['product_id' => '{{arg.product_id}}', 'sku' => '{{arg.sku}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'stock', 'product_id' => '{{arg.product_id}}', 'sku' => '{{arg.sku}}'],
                 'timeout_ms'     => 3000,
             ],
         ];
@@ -230,8 +234,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.categories',
-                'query_template' => ['parent_id' => '{{arg.parent_id}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'categories', 'parent_id' => '{{arg.parent_id}}'],
                 'timeout_ms'     => 5000,
             ],
         ];
@@ -254,8 +258,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.order',
-                'query_template' => ['id' => '{{arg.order_id}}', 'email' => '{{arg.email}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'order', 'id' => '{{arg.order_id}}', 'email' => '{{arg.email}}'],
                 'timeout_ms'     => 5000,
             ],
         ];
@@ -277,8 +281,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'         => 'GET',
-                'url_template'   => '{{connection.base_url}}.customerLookup',
-                'query_template' => ['phone' => '{{arg.phone}}', 'email' => '{{arg.email}}'],
+                'url_template'   => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'customer_lookup', 'phone' => '{{arg.phone}}', 'email' => '{{arg.email}}'],
                 'timeout_ms'     => 5000,
             ],
         ];
@@ -300,7 +304,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'        => 'POST',
-                'url_template'  => '{{connection.base_url}}.cartRecover',
+                'url_template'  => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'cart_recover'],
                 'body_template' => ['email' => '{{arg.email}}', 'customer_id' => '{{arg.customer_id}}'],
                 'timeout_ms'    => 5000,
             ],
@@ -343,7 +348,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'        => 'POST',
-                'url_template'  => '{{connection.base_url}}.orderPreview',
+                'url_template'  => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'order_preview'],
                 'body_template' => ['items' => '{{arg.items}}', 'customer' => '{{arg.customer}}'],
                 'timeout_ms'    => 8000,
             ],
@@ -367,7 +373,8 @@ class Manifest extends \Opencart\System\Engine\Controller {
             ],
             'http_config' => [
                 'method'        => 'POST',
-                'url_template'  => '{{connection.base_url}}.orderConfirm',
+                'url_template'  => '{{connection.base_url}}',
+                'query_template' => ['route' => 'extension/dowaba_ai/api', 'action' => 'order_confirm'],
                 'body_template' => ['preview_id' => '{{arg.preview_id}}', 'confirmed' => '{{arg.confirmed}}'],
                 'timeout_ms'    => 10000,
             ],

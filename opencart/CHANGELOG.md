@@ -33,3 +33,17 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 ### Changed
 - GitHub Actions workflow `opencart/.github/workflows/` → repo root `.github/workflows/release-opencart.yml` (umbrella repo'da workflow tetiklenebilir hale geldi).
 - Manifest'e `module_dowaba_ai_manifest_base_url` admin setting override eklendi (rakip CDN ardındaki kurulumlar için).
+
+## [0.1.2] - 2026-05-23
+
+### Fixed
+- **KRİTİK** OC4 routing `.` ve `|` notation Dowaba HttpHandler tarafından URL-encode ediliyor (`%2E` / `%7C`) → route resolve fail. Çözüm: `api.php` tek `index()` + `?action=<method>` query dispatch. Whitelisted action map prompt injection koruması.
+- **KRİTİK** Manifest `base_url` `?route=...` query string'i Dowaba HttpHandler tarafından DROP ediliyor (Guzzle URL parse + query overwrite). Çözüm: `base_url` SADECE schema+host+path; `route` query_template'e ayrı param olarak konur.
+- `Api::readJsonBody()` content-type bağımsız body parse — JSON → $_POST → raw form-encoded fallback chain.
+
+### Added
+- Canlı Dowaba prod entegrasyon doğrulandı (Cloudflare tunnel + site_id=57): manifest fetch + auto_activate ✓, opc_product_search canlı çağrı 3 ürün döndü ✓.
+
+### Known issues (v0.1.3)
+- Dowaba HttpHandler POST endpoint'lerinde `body_template` substitute sonrası body `[]` (boş) gönderiyor — `body_template` ile substituteTree etkileşiminde regression. Plugin endpoint'leri (`order_preview`, `order_confirm`, `cart_recover`) bu nedenle prod'da Dowaba'dan çağrılamıyor. Lokal `curl` ile çalışıyor. Dowaba tarafında `HttpHandler::substituteTree` + `pruneEmpties` debug gerek.
+- `opc_product_compare` array parameter (`product_ids`) Dowaba substitute'da boş geliyor — aynı kök sorun.

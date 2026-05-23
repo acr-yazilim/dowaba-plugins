@@ -35,6 +35,45 @@ class Api extends \Opencart\System\Engine\Controller {
         $this->startTime = microtime(true);
     }
 
+    /**
+     * Default route handler — query string'deki `action` parametresine göre dispatch.
+     *
+     * OC4'ün dot/pipe notation'ı bazı HTTP client'larda URL-encode oluyor (Dowaba
+     * HttpHandler `.` veya `|` karakterini `%2E` / `%7C` yapıyor) → route resolve
+     * fail oluyor. Bunun yerine query param ile dispatch en sağlam çözüm.
+     *
+     * URL: ?route=extension/dowaba_ai/api&action=products&q=iphone&limit=3
+     */
+    public function index(): void {
+        $action = (string) ($this->request->get['action'] ?? '');
+
+        // Whitelisted dispatcher — saldırgan arbitrary method çağıramasın
+        $allowed = [
+            'products'         => 'products',
+            'product'          => 'product',
+            'compare'          => 'compare',
+            'stock'            => 'stock',
+            'categories'       => 'categories',
+            'order'            => 'order',
+            'customer_lookup'  => 'customerLookup',
+            'cart_recover'     => 'cartRecover',
+            'order_preview'    => 'orderPreview',
+            'order_confirm'    => 'orderConfirm',
+        ];
+
+        if (!isset($allowed[$action])) {
+            $this->currentSlug = 'unknown';
+            $this->respond(400, [
+                'error' => 'Invalid or missing action parameter',
+                'valid_actions' => array_keys($allowed),
+            ]);
+            return;
+        }
+
+        $method = $allowed[$action];
+        $this->$method();
+    }
+
     // ============================================================ READ functions
 
     public function products(): void {
@@ -723,9 +762,27 @@ class Api extends \Opencart\System\Engine\Controller {
     }
 
     private function readJsonBody(): array {
+        // v0.1.2 fix: Dowaba HttpHandler Laravel Http facade kullanıyor; bazı
+        // versiyonlarda content-type application/json değil application/x-www-form-urlencoded
+        // gönderiyor → json_decode boş array döner. Fallback: $_POST + raw decode.
         $raw = file_get_contents('php://input') ?: '';
-        $data = json_decode($raw, true);
-        return is_array($data) ? $data : [];
+
+        // 1. Önce JSON dene
+        if ($raw !== '') {
+            $data = json_decode($raw, true);
+            if (is_array($data) && !empty($data)) return $data;
+        }
+
+        // 2. Form-encoded fallback ($_POST OC4 request'inde de var)
+        if (!empty($this->request->post)) return $this->request->post;
+
+        // 3. Raw form-encoded parse fallback
+        if ($raw !== '') {
+            parse_str($raw, $parsed);
+            if (!empty($parsed)) return $parsed;
+        }
+
+        return [];
     }
 
     private function respond(int $status, array $payload): void {
