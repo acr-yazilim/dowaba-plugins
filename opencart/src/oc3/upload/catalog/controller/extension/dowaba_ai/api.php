@@ -658,11 +658,12 @@ class ControllerExtensionDowabaAiApi extends Controller {
             'email'             => $customer['email'] ?: 'guest@dowaba.local',
             'telephone'         => $customer['phone'],
             'custom_field'      => [],
-            // OC4 4.0.2.3 — order-level address ID'leri (guest order için 0)
-            'payment_address_id'  => 0,
-            'shipping_address_id' => 0,
 
-            // Payment — Cash on Delivery default (v0.1)
+            // OC3 schema farkları: payment_method/shipping_method STRING (OC4 array),
+            // payment_code/shipping_code AYRI ZORUNLU field'lar. payment_address_id /
+            // shipping_address_id OC3'te yok.
+
+            // Payment — Cash on Delivery default
             'payment_firstname'   => $firstname,
             'payment_lastname'    => $lastname,
             'payment_company'     => '',
@@ -671,12 +672,13 @@ class ControllerExtensionDowabaAiApi extends Controller {
             'payment_city'        => $customer['city'] ?: '—',
             'payment_postcode'    => '',
             'payment_country'     => 'Türkiye',
-            'payment_country_id'  => 215,  // TR
+            'payment_country_id'  => 215,
             'payment_zone'        => '',
             'payment_zone_id'     => 0,
             'payment_address_format' => '',
             'payment_custom_field' => [],
-            'payment_method'      => ['code' => 'cod', 'name' => 'Cash on Delivery'],
+            'payment_method'      => 'Cash On Delivery',  // OC3 string
+            'payment_code'        => 'cod',               // OC3 ayrı field
 
             // Shipping — aynı adres
             'shipping_firstname'   => $firstname,
@@ -692,7 +694,8 @@ class ControllerExtensionDowabaAiApi extends Controller {
             'shipping_zone_id'     => 0,
             'shipping_address_format' => '',
             'shipping_custom_field' => [],
-            'shipping_method'      => ['code' => 'flat.flat', 'name' => 'Flat Shipping Rate'],
+            'shipping_method'      => 'Flat Shipping Rate',  // OC3 string
+            'shipping_code'        => 'flat.flat',           // OC3 ayrı field
 
             'comment' => 'Sipariş Dowaba AI üzerinden oluşturuldu (preview_id: ' . ($preview['_preview_id'] ?? '') . ')',
             'total'   => $preview['total'],
@@ -717,7 +720,8 @@ class ControllerExtensionDowabaAiApi extends Controller {
         $orderId = $this->model_checkout_order->addOrder($data);
 
         // Order status: Pending (1)
-        $this->model_checkout_order->addHistory($orderId, 1, 'Sipariş Dowaba AI ile oluşturuldu — ödeme bekleniyor');
+        // OC3'te method ismi addOrderHistory (OC4'te addHistory)
+        $this->model_checkout_order->addOrderHistory($orderId, 1, 'Sipariş Dowaba AI ile oluşturuldu — ödeme bekleniyor');
 
         return (int) $orderId;
     }

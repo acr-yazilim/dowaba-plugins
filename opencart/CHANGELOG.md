@@ -2,6 +2,28 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.1] - 2026-05-23
+
+### Fixed — OC3 order create regression (canlı test'te yakalandı)
+- **OC3 schema farkı: `payment_method` STRING** (OC4'te array `{code, name}`)
+  - OC4: `'payment_method' => ['code' => 'cod', 'name' => 'Cash on Delivery']`
+  - OC3: `'payment_method' => 'Cash On Delivery'` + ayrı `'payment_code' => 'cod'`
+  - `mysqli::real_escape_string(): Argument #1 ($string) must be of type string, array given` hatası fix
+- **OC3 schema farkı: `shipping_method` STRING** (aynı OC4 array → OC3 string fix)
+  - `'shipping_method' => 'Flat Shipping Rate'` + `'shipping_code' => 'flat.flat'`
+- **OC3 model method ismi**: `addHistory()` → `addOrderHistory()` — OC3'te status history method'u farklı isim
+- **OC3 schema'da yok**: `payment_address_id`, `shipping_address_id` field'ları kaldırıldı (OC3'te bu kolonlar yok, undefined index warning'i atıyordu)
+
+### Canlı doğrulama (Dowaba prod → Cloudflare tunnel → docker OC3 8081)
+- ✅ OC3 site_id=75 ("OpenCart 3 Test") bundle import + 10 fn auto_activate
+- ✅ `opc_product_search` → iPhone döndü
+- ✅ `opc_product_compare` → 3 ürün karşılaştırması
+- ✅ `opc_order_preview` → preview_id + 5dk TTL
+- ✅ `opc_order_confirm` → DB'de **order #1 (150 USD) + order #2 (249 USD COD)** yaratıldı
+
+### Paralel OC4 doğrulama (regression check)
+- ✅ OC4 site_id=57 `opc_product_search` hala çalışıyor (bozulmadı)
+
 ## [0.2.0] - 2026-05-23
 
 ### Added — OpenCart 3.x dual support
