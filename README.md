@@ -1,64 +1,112 @@
-# Dowaba Plugins
+# DoWaba Plugins
 
-[Dowaba](https://dowaba.com) için resmi e-commerce platform entegrasyonları. Her plugin, kendi platformunun ürün/sipariş/müşteri verilerini Dowaba AI'ya **HTTP function** olarak sunar.
+[DoWaba](https://dowaba.com) için resmi e-commerce platform entegrasyonları. Her plugin, kendi platformunun ürün/sipariş/müşteri verilerini DoWaba AI'ya **HTTP function** olarak sunar.
 
-## Mimari
+[![OpenCart Marketplace](https://img.shields.io/badge/OpenCart_Marketplace-Live-success?logo=opencart)](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
+[![WordPress.org](https://img.shields.io/badge/WordPress.org-Submitted-yellow?logo=wordpress)](https://wordpress.org/plugins/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./opencart/LICENSE)
 
-Dowaba **Bundle Import** sistemi sayesinde bu plugin'ler `.well-known/dowaba-bundle.json` formatında bir manifest yayınlar. Dowaba manifest'i çekip otomatik olarak `SiteConnection` + `FunctionDefinition` kayıtları üretir; AI çalıştırma zamanında plugin'in REST endpoint'lerini çağırır.
+---
+
+## 🎯 Ne Yapıyor?
+
+Müşteriler **WhatsApp**, **Instagram DM**, **TikTok** üzerinden yazıyor. DoWaba AI mağazandan **canlı** veri çekip cevaplıyor, ürün karşılaştırıyor, müşteri onayıyla sipariş açıyor.
 
 ```
-┌─────────────────┐    1. Müşteri sorar    ┌──────────────┐
-│  WhatsApp/IG/   │ ─────────────────────► │  Dowaba AI   │
-│  Mail/Voice     │                        └──────┬───────┘
-└─────────────────┘                               │
-                                                  │ 2. HTTP function call
-                                                  ▼
-                                          ┌───────────────────┐
-                                          │  Plugin REST API  │
-                                          │  (OpenCart/Woo/   │
-                                          │   Shopify/...)    │
-                                          └───────────────────┘
+Müşteri Instagram'dan: "iPhone 15 Pro var mı?"
+   ↓
+DoWaba AI → mağazadan canlı → "Evet, 64.999 TL stokta"
+   ↓
+Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
+   ↓
+✅ Mağaza siparişi #12345 oluştu
 ```
 
-## Plugin'ler
+## 📦 Plugins
 
-| Platform | Durum | Versiyon | Dizin |
+| Platform | Versiyon | Status | Marketplace |
 |---|---|---|---|
-| **OpenCart 4.x** | 🚧 v0.1.0 geliştirme | — | [`opencart/`](./opencart/) |
-| WooCommerce | 📋 Planlandı | — | — |
+| **OpenCart 4.x** | v0.2.2 | ✅ Live | [📦 Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
+| **OpenCart 3.x** | v0.2.2 | ✅ Live | [📦 Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
+| **WooCommerce** | v0.1.0 | ✅ GitHub | ⏳ wp.org submission |
+| PrestaShop | 📋 Planlandı | — | — |
+| İkas | 📋 Planlandı | — | — |
 | Shopify | 📋 Planlandı | — | — |
-| OpenCart 3.x | 📋 v0.2 (dual support) | — | — |
+| Magento 2 | 📋 Planlandı | — | — |
 
-## Repo yapısı
+## 🚀 Hızlı kurulum
+
+### OpenCart
+1. [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) sayfasından indir
+2. Admin → Extensions → Installer → Upload
+3. 5-step wizard → DoWaba Bundle Import
+
+### WooCommerce
+1. [Releases](https://github.com/rdtvaacar/dowaba-plugins/releases/latest) sayfasından `dowaba-ai-X.Y.Z.zip` indir
+2. WP admin → Plugins → Add New → Upload Plugin
+3. **DoWaba AI** menü → 5-step wizard → Bundle Import
+
+Detaylı kurulum: her plugin'in kendi README'sinde.
+
+## 📁 Repo yapısı
 
 ```
 dowaba-plugins/
-├─ README.md              # bu dosya
-├─ .gitignore
-└─ opencart/              # OpenCart plugin (ilk)
-   ├─ src/                # OCMOD content
-   ├─ docker/             # lokal test ortamı
-   ├─ test/               # e2e + phpunit
-   ├─ build.sh            # → dist/*.ocmod.zip
-   └─ README.md           # OpenCart-spesifik kurulum
+├─ opencart/              # OpenCart 3.x + 4.x dual support
+│  ├─ src/{oc3,oc4}/      # Platform-spesifik kaynak
+│  ├─ docker/             # Lokal test
+│  ├─ marketing/          # Banner, screenshot guide, listing copy
+│  ├─ CHANGELOG.md
+│  └─ README.md
+├─ woocommerce/           # WordPress + WooCommerce
+│  ├─ dowaba-ai.php       # Plugin main file
+│  ├─ includes/           # Auth, ScopeGuard, AuditLogger, OrderPreview, Manifest, Api, Admin
+│  ├─ admin/views/        # Settings page
+│  ├─ docker/             # Lokal WP+WC test
+│  └─ readme.txt          # wp.org format
+├─ .github/workflows/     # GH Actions release per platform
+├─ LESSONS_LEARNED.md     # 🧠 Retrospective + reusable patterns
+└─ README.md              # bu dosya
 ```
 
-## Genel kurallar
+## 🛡️ Güvenlik (her plugin'de)
 
-- Her plugin **ayrı semver** (`v0.1.0`, `v0.2.0`...)
-- Tag formatı: `<platform>-vX.Y.Z` (örn `opencart-v0.1.0`)
-- Lisans: MIT
-- Auth: Plugin kurulumda random bearer token üretir, Dowaba panel'de yapıştırılır → her HTTP function call'da `Authorization: Bearer <token>` header'ı
+| Katman | Detay |
+|---|---|
+| Bearer auth | SHA-256 hashed token, plain key never stored |
+| IP whitelist | Opsiyonel — DoWaba prod IP: `178.105.68.170, 49.13.120.112` |
+| Scope guard | `read` default ON, `write` default OFF |
+| Order confirmation | 2-step preview → "yes" → confirm (replay-protected) |
+| Audit log | 30-day retention, viewable in admin |
+| Compliance | GDPR + KVKK uyumlu |
 
-## Geliştirme
+## 🌍 Dil Desteği
 
-```bash
-cd opencart/
-docker compose -f docker/docker-compose.yml up -d
-# OpenCart admin: http://localhost:8080/admin (admin/admin123)
-# Plugin upload: Extensions → Installer → dowaba-opencart-X.Y.Z.ocmod.zip
-```
+- **Plugin admin**: 🇬🇧 English + 🇹🇷 Türkçe
+- **AI customer chat**: 30+ languages (TR, EN, AR, DE, ES, FR, RU, ...)
 
-## Lisans
+## 📚 Documentation
 
-[MIT](./opencart/LICENSE) — her plugin için ayrı dosya (gelecekte WooCommerce GPLv2 vs. farklı lisans gerekebilir).
+- [LESSONS_LEARNED.md](./LESSONS_LEARNED.md) — Mimari pattern, reusable artifacts, bug catalog
+- [opencart/README.md](./opencart/README.md) — OpenCart-spesifik
+- [woocommerce/README.md](./woocommerce/README.md) — WooCommerce-spesifik
+
+## 💰 Pricing
+
+Plugin'ler **100% free** (MIT License). DoWaba SaaS:
+- **Free**: 100 messages/month
+- **Starter**: $19/month — 1,000 messages
+- **Pro**: $49/month — 10,000 messages
+- **Enterprise**: Custom
+
+https://dowaba.com/pricing
+
+## 🆘 Destek
+
+- 📧 [dowaba.com/destek](https://dowaba.com/destek)
+- 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
+- 📚 [docs.dowaba.com](https://dowaba.com/docs)
+
+## 📜 Lisans
+
+[MIT](./opencart/LICENSE) — Aydın Acar (DoWaba) © 2026
