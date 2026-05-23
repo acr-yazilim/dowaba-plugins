@@ -126,7 +126,7 @@ bash test/e2e.sh
 
 ## 🆘 Destek
 
-- 📧 [support@dowaba.com](mailto:support@dowaba.com)
+- 📧 [dowaba.com/destek](https://dowaba.com/destek)
 - 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
 - 📖 [Dowaba dokümantasyonu](https://dowaba.com/docs)
 
@@ -166,7 +166,7 @@ Bearer token (sha256 hashed), optional IP whitelist, scope guard (read/write tog
 
 ### Support
 
-- 📧 [support@dowaba.com](mailto:support@dowaba.com)
+- 📧 [dowaba.com/destek](https://dowaba.com/destek)
 - 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
 
 [MIT License](./LICENSE).

@@ -13,7 +13,7 @@ This document describes how the Dowaba AI Integration plugin processes data from
 
 - **Plugin operator**: You (the OpenCart store owner)
 - **Data processor**: Dowaba (Aydın Acar, Turkey)
-- **Contact**: support@dowaba.com
+- **Contact**: https://dowaba.com/destek
 
 ## 2. What data flows where
 
@@ -55,7 +55,7 @@ Customers can request:
 - **Deletion** ("right to be forgotten")
 - **Portability** (export of their conversation history)
 
-Submit requests to: support@dowaba.com (24h response time).
+Submit requests to: https://dowaba.com/destek (24h response time).
 
 ## 6. Security measures
 
@@ -113,7 +113,7 @@ Dowaba account deletion (separate): https://dowaba.com/account/delete
 
 - **Plugin operatörü**: Mağaza sahibi (sen)
 - **Veri işleyen**: Dowaba (Aydın Acar, Türkiye)
-- **İletişim**: support@dowaba.com
+- **İletişim**: https://dowaba.com/destek
 
 ### 2. Hangi veriler nereye gidiyor?
 
@@ -140,7 +140,7 @@ Müşteri verisi mağaza dışına otomatik gönderilmez — Dowaba çağrı yap
 - Düzeltme talebi
 - İşleme itiraz
 
-Talep adresi: support@dowaba.com (24 saat yanıt).
+Talep adresi: https://dowaba.com/destek (24 saat yanıt).
 
 ### 5. Güvenlik
 
@@ -155,7 +155,7 @@ Talep adresi: support@dowaba.com (24 saat yanıt).
 
 - Madde 5/2: meşru menfaat + açık rıza
 - Madde 9: sınır ötesi aktarım (AI inference için) açık rıza ile
-- Madde 11: hak kullanımı support@dowaba.com üzerinden
+- Madde 11: hak kullanımı https://dowaba.com/destek üzerinden
 - KVKK Aydınlatma Metni: dowaba.com/kvkk
 
 ### 7. Plugin kaldırma

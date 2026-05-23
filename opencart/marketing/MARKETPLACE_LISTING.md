@@ -142,7 +142,7 @@ Detaylar: https://dowaba.com/pricing
 
 ## 🆘 Destek
 
-- 📧 support@dowaba.com (24 saat içinde yanıt)
+- 📧 https://dowaba.com/destek (24 saat içinde yanıt)
 - 💬 GitHub Issues: https://github.com/rdtvaacar/dowaba-plugins/issues
 - 📚 Dokümantasyon: https://docs.dowaba.com/opencart
 - 🎬 Video demo: [YouTube link burada]

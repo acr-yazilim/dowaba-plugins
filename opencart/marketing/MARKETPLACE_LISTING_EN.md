@@ -172,7 +172,7 @@ See: https://dowaba.com/pricing
 
 ## 🆘 Support
 
-- 📧 support@dowaba.com (24h response)
+- 📧 https://dowaba.com/destek (24h response)
 - 💬 GitHub Issues: https://github.com/rdtvaacar/dowaba-plugins/issues
 - 📚 Docs: https://docs.dowaba.com/opencart
 

@@ -19,7 +19,7 @@ Adım adım kontrol listesi. Her checkbox tamamlanınca işaretle. Tahmini topla
   - Country: Türkiye
   - Bio: "AI customer engagement platform — WhatsApp/IG/Mail/Voice integrations"
   - Website: https://dowaba.com
-  - Support email: support@dowaba.com (test mail at, alıyor musun?)
+  - Support email: https://dowaba.com/destek (test mail at, alıyor musun?)
   - Logo: 200x200 PNG (dowaba.com logo download et)
 - [ ] **Tax info** (ücretsiz extension için opsiyonel — atlayabilirsin)
 
@@ -65,7 +65,7 @@ docker compose -f /Users/aydinacar/Documents/dowaba-plugins/opencart/docker/dock
 ### Phase 5: Privacy + dowaba.com (30 dk)
 
 - [ ] **PRIVACY.md'yi dowaba.com'a yükle**: https://dowaba.com/privacy/opencart-plugin (veya benzer URL)
-- [ ] **Test mail at**: support@dowaba.com — gerçekten gelir mi?
+- [ ] **Test mail at**: https://dowaba.com/destek — gerçekten gelir mi?
 - [ ] **README.md'de bağlantıları test et**: https://docs.dowaba.com/opencart varsa, yoksa README'den çıkar
 
 ### Phase 6: Demo URL (opsiyonel ama önerilir)
@@ -173,7 +173,7 @@ Hepsi check ise hazırsın:
 - [ ] **8 screenshot** çekilmiş ve watermark'lı
 - [ ] **Demo URL** (opsiyonel) ayakta
 - [ ] **dowaba.com/privacy** ulaşılabilir
-- [ ] **support@dowaba.com** çalışır
+- [ ] **https://dowaba.com/destek** çalışır
 - [ ] **GitHub releases** güncel (opencart-v0.2.1 tag)
 
 Sonra: 2 listing form'unu sırayla doldur, submit et, 1-2 hafta bekle.
