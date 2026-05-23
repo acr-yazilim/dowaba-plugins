@@ -5,10 +5,12 @@ namespace Opencart\Catalog\Controller\Extension\DowabaAi;
 require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/Auth.php';
 require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/ScopeGuard.php';
 require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/AuditLogger.php';
+require_once DIR_OPENCART . 'extension/dowaba_ai/system/library/dowaba_ai/OrderPreview.php';
 
 use Dowaba\Ai\Auth;
 use Dowaba\Ai\ScopeGuard;
 use Dowaba\Ai\AuditLogger;
+use Dowaba\Ai\OrderPreview;
 
 /**
  * Dowaba AI — Catalog REST API Controller
@@ -349,22 +351,334 @@ class Api extends \Opencart\System\Engine\Controller {
         ]);
     }
 
-    // ============================================================ WRITE functions (Faz 3'te detaylanacak)
+    // ============================================================ WRITE functions
 
+    /**
+     * Sipariş önizleme (DB'ye yazmaz). Müşteri onayı öncesi AI tarafından çağrılır.
+     * Akış:
+     *   1. items[] doğrula — her product_id var + stokta + en az qty
+     *   2. customer minimum doğrulama (phone veya email zorunlu)
+     *   3. Total hesapla (subtotal + shipping)
+     *   4. preview_id üret, OrderPreview cache'e koy (TTL 300sn)
+     *   5. Yanıt: müşteriye gösterilecek özet
+     */
     public function orderPreview(): void {
         $this->currentSlug = 'opc_order_preview';
         if (!$this->guard('write')) return;
 
-        // TODO Faz 3: OrderPreview.php cache + total recalculation + preview_id üret
-        $this->respond(501, ['error' => 'order_preview implementation Faz 3\'te tamamlanacak']);
+        $body = $this->readJsonBody();
+        $items = is_array($body['items'] ?? null) ? $body['items'] : [];
+        $customer = is_array($body['customer'] ?? null) ? $body['customer'] : [];
+
+        if (empty($items)) {
+            $this->respond(400, ['error' => 'items array is required and cannot be empty']);
+            return;
+        }
+        if (count($items) > 50) {
+            $this->respond(400, ['error' => 'too many items (max 50)']);
+            return;
+        }
+
+        // Customer minimum validation — KVKK: en az phone veya email
+        $phone = trim((string) ($customer['phone'] ?? ''));
+        $email = strtolower(trim((string) ($customer['email'] ?? '')));
+        if ($phone === '' && $email === '') {
+            $this->respond(400, ['error' => 'customer.phone or customer.email is required']);
+            return;
+        }
+
+        // Items expand + stock check + price calculation
+        $this->load->model('catalog/product');
+        $resolvedItems = [];
+        $subtotal = 0.0;
+        $stockIssues = [];
+
+        foreach ($items as $idx => $item) {
+            $productId = (int) ($item['product_id'] ?? 0);
+            $qty = max(1, (int) ($item['quantity'] ?? 1));
+
+            if ($productId <= 0) {
+                $this->respond(400, ['error' => 'items[' . $idx . '].product_id required']);
+                return;
+            }
+
+            $product = $this->model_catalog_product->getProduct($productId);
+            if (!$product) {
+                $this->respond(404, ['error' => 'product not found', 'product_id' => $productId]);
+                return;
+            }
+
+            $stock = (int) ($product['quantity'] ?? 0);
+            if ($stock < $qty) {
+                $stockIssues[] = [
+                    'product_id'      => $productId,
+                    'name'            => $product['name'] ?? '',
+                    'requested_qty'   => $qty,
+                    'available_stock' => $stock,
+                ];
+            }
+
+            $unitPrice = $this->effectivePrice($product);
+            $lineTotal = $unitPrice * $qty;
+            $subtotal += $lineTotal;
+
+            $resolvedItems[] = [
+                'product_id' => $productId,
+                'name'       => $product['name'] ?? '',
+                'sku'        => $product['sku']  ?? '',
+                'quantity'   => $qty,
+                'unit_price' => $unitPrice,
+                'line_total' => $lineTotal,
+                'stock'      => $stock,
+            ];
+        }
+
+        // Stok yetersizliği — preview yine de oluştur ama uyar
+        // (AI müşteriye "üzgünüz 2 adet yerine 1 adet var, devam edelim mi?" diye sorabilir)
+        if (!empty($stockIssues)) {
+            $this->respond(409, [
+                'error'             => 'insufficient stock',
+                'stock_issues'      => $stockIssues,
+                'note'              => 'AI'.chr(39).'ya: müşteriye stok yetersizliğini bildir, mevcut adetlerle yeniden preview oluşturmasını teklif et',
+            ]);
+            return;
+        }
+
+        // Shipping: basit flat rate (v0.1)
+        // v0.2'de OpenCart shipping module'lerini kullanarak gerçek hesaplama yapılacak
+        $shippingCost = $subtotal >= 1000 ? 0.0 : 49.0;
+
+        $total = $subtotal + $shippingCost;
+
+        // Currency
+        $currency = $this->config->get('config_currency') ?: 'TRY';
+
+        // Cache'e koy
+        $previewId = OrderPreview::generateId();
+
+        $payload = [
+            'items'         => $resolvedItems,
+            'customer'      => [
+                'phone'   => $phone,
+                'email'   => $email,
+                'name'    => trim((string) ($customer['name']    ?? '')),
+                'address' => trim((string) ($customer['address'] ?? '')),
+                'city'    => trim((string) ($customer['city']    ?? '')),
+            ],
+            'subtotal'      => round($subtotal, 2),
+            'shipping_cost' => $shippingCost,
+            'total'         => round($total, 2),
+            'currency'      => $currency,
+        ];
+
+        OrderPreview::store($this->registry, $previewId, $payload);
+
+        $this->respond(200, [
+            'preview_id' => $previewId,
+            'expires_at' => date('c', time() + OrderPreview::TTL_SECONDS),
+            'expires_in_seconds' => OrderPreview::TTL_SECONDS,
+            'summary'    => $payload,
+            'note'       => 'AI\'ya: bu özeti müşteriye göster, "Onaylıyor musun?" diye sor. Müşteri "Evet" derse opc_order_confirm({preview_id, confirmed:true}) çağır.',
+        ]);
     }
 
+    /**
+     * Müşteri onayı sonrası gerçek siparişi oluştur.
+     * preview_id one-shot consume edilir (replay korunur).
+     */
     public function orderConfirm(): void {
         $this->currentSlug = 'opc_order_confirm';
         if (!$this->guard('write')) return;
 
-        // TODO Faz 3: preview_id verify + cache consume + actual order create
-        $this->respond(501, ['error' => 'order_confirm implementation Faz 3\'te tamamlanacak']);
+        $body = $this->readJsonBody();
+        $previewId = trim((string) ($body['preview_id'] ?? ''));
+        $confirmed = filter_var($body['confirmed'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        // preview_id format check (saldırgan keyfi key inject edemesin)
+        if (!OrderPreview::isValidId($previewId)) {
+            $this->respond(400, ['error' => 'invalid preview_id format']);
+            return;
+        }
+
+        if (!$confirmed) {
+            $this->respond(400, ['error' => 'confirmed must be true — order_confirm SADECE müşteri açıkça onayladıktan sonra çağrılmalı']);
+            return;
+        }
+
+        // One-shot consume — cache'den oku ve sil
+        $preview = OrderPreview::consume($this->registry, $previewId);
+        if ($preview === null) {
+            $this->respond(410, [
+                'error' => 'preview_id expired or already consumed',
+                'note'  => 'AI\'ya: müşteriye yeniden onay almak için yeni opc_order_preview çağır.',
+            ]);
+            return;
+        }
+
+        // OpenCart order create
+        try {
+            $orderId = $this->createOrderFromPreview($preview);
+        } catch (\Throwable $e) {
+            $this->respond(500, [
+                'error' => 'order creation failed',
+                'detail' => $e->getMessage(),
+                'note'  => 'AI\'ya: müşteriye teknik bir hata oluştu, manuel olarak siparişi tekrar deneyecek',
+            ]);
+            return;
+        }
+
+        $base = rtrim($this->config->get('config_url'), '/');
+        $paymentUrl = $base . '/index.php?route=checkout/success&order_id=' . $orderId;
+
+        $this->respond(200, [
+            'data' => [
+                'order_id'    => $orderId,
+                'status'      => 'pending_payment',
+                'payment_url' => $paymentUrl,
+                'total'       => $preview['total'],
+                'currency'    => $preview['currency'],
+            ],
+            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #' . $orderId . '. Ödeme link\'i: ..." şeklinde bildir.',
+        ]);
+    }
+
+    /**
+     * Preview payload'undan OpenCart order kaydı oluştur.
+     * v0.1: guest order, Cash on Delivery, Flat rate shipping, Pending status.
+     * v0.2'de payment module entegrasyonu (PayTR/Iyzico) eklenecek.
+     */
+    private function createOrderFromPreview(array $preview): int {
+        $this->load->model('checkout/order');
+
+        $customer = $preview['customer'];
+        $items = $preview['items'];
+
+        // Customer name'i parçala (firstname/lastname)
+        $nameParts = preg_split('/\s+/', trim($customer['name']), 2);
+        $firstname = $nameParts[0] ?? 'Misafir';
+        $lastname = $nameParts[1] ?? 'Müşteri';
+
+        // Products payload
+        $orderProducts = array_map(fn($it) => [
+            'product_id' => (int) $it['product_id'],
+            'name'       => $it['name'],
+            'model'      => $it['sku'] ?: 'N/A',
+            'price'      => $it['unit_price'],
+            'total'      => $it['line_total'],
+            'tax'        => 0,
+            'quantity'   => $it['quantity'],
+            'option'     => [],
+            'download'   => [],
+            'reward'     => 0,
+            'subtract'   => 1,  // stoktan düş
+        ], $items);
+
+        // Totals payload (OpenCart format)
+        $orderTotals = [
+            [
+                'extension'  => 'total',
+                'code'       => 'sub_total',
+                'title'      => 'Sub-Total',
+                'value'      => $preview['subtotal'],
+                'sort_order' => 1,
+            ],
+            [
+                'extension'  => 'total',
+                'code'       => 'shipping',
+                'title'      => 'Shipping (Flat rate)',
+                'value'      => $preview['shipping_cost'],
+                'sort_order' => 2,
+            ],
+            [
+                'extension'  => 'total',
+                'code'       => 'total',
+                'title'      => 'Total',
+                'value'      => $preview['total'],
+                'sort_order' => 9,
+            ],
+        ];
+
+        $data = [
+            'invoice_prefix'  => $this->config->get('config_invoice_prefix') ?: 'DWB-',
+            'store_id'        => 0,
+            'store_name'      => $this->config->get('config_name') ?: 'Store',
+            'store_url'       => $this->config->get('config_url'),
+
+            'customer_id'       => 0,  // guest
+            'customer_group_id' => (int) ($this->config->get('config_customer_group_id') ?: 1),
+            'firstname'         => $firstname,
+            'lastname'          => $lastname,
+            'email'             => $customer['email'] ?: 'guest@dowaba.local',
+            'telephone'         => $customer['phone'],
+            'custom_field'      => [],
+
+            // Payment — Cash on Delivery default (v0.1)
+            'payment_firstname'   => $firstname,
+            'payment_lastname'    => $lastname,
+            'payment_company'     => '',
+            'payment_address_1'   => $customer['address'] ?: '—',
+            'payment_address_2'   => '',
+            'payment_city'        => $customer['city'] ?: '—',
+            'payment_postcode'    => '',
+            'payment_country'     => 'Türkiye',
+            'payment_country_id'  => 215,  // TR
+            'payment_zone'        => '',
+            'payment_zone_id'     => 0,
+            'payment_address_format' => '',
+            'payment_custom_field' => [],
+            'payment_method'      => ['code' => 'cod', 'name' => 'Cash on Delivery'],
+
+            // Shipping — aynı adres
+            'shipping_firstname'   => $firstname,
+            'shipping_lastname'    => $lastname,
+            'shipping_company'     => '',
+            'shipping_address_1'   => $customer['address'] ?: '—',
+            'shipping_address_2'   => '',
+            'shipping_city'        => $customer['city'] ?: '—',
+            'shipping_postcode'    => '',
+            'shipping_country'     => 'Türkiye',
+            'shipping_country_id'  => 215,
+            'shipping_zone'        => '',
+            'shipping_zone_id'     => 0,
+            'shipping_address_format' => '',
+            'shipping_custom_field' => [],
+            'shipping_method'      => ['code' => 'flat.flat', 'name' => 'Flat Shipping Rate'],
+
+            'comment' => 'Sipariş Dowaba AI üzerinden oluşturuldu (preview_id: ' . ($preview['_preview_id'] ?? '') . ')',
+            'total'   => $preview['total'],
+            'affiliate_id'   => 0,
+            'commission'     => 0,
+            'marketing_id'   => 0,
+            'tracking'       => '',
+            'language_id'    => (int) ($this->config->get('config_language_id') ?: 1),
+            'currency_id'    => (int) ($this->config->get('config_currency_id') ?: 1),
+            'currency_code'  => $preview['currency'],
+            'currency_value' => 1.0,
+            'ip'             => $this->clientIp,
+            'forwarded_ip'   => '',
+            'user_agent'     => 'Dowaba-AI-Plugin/0.1.0',
+            'accept_language'=> 'tr-TR',
+
+            'products' => $orderProducts,
+            'vouchers' => [],
+            'totals'   => $orderTotals,
+        ];
+
+        $orderId = $this->model_checkout_order->addOrder($data);
+
+        // Order status: Pending (1)
+        $this->model_checkout_order->addHistory($orderId, 1, 'Sipariş Dowaba AI ile oluşturuldu — ödeme bekleniyor');
+
+        return (int) $orderId;
+    }
+
+    /**
+     * Etkili fiyat (special > 0 ve < normal → special; aksi normal).
+     */
+    private function effectivePrice(array $product): float {
+        $price = (float) ($product['price'] ?? 0);
+        $special = (float) ($product['special'] ?? 0);
+        return ($special > 0 && $special < $price) ? $special : $price;
     }
 
     // ============================================================ helpers
