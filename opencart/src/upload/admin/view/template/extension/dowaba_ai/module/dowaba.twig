@@ -1,0 +1,269 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-dowaba" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+          <i class="fa-solid fa-save"></i>
+        </button>
+        <a href="{{ cancel }}" data-bs-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-light">
+          <i class="fa-solid fa-reply"></i>
+        </a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url('common/dashboard', { 'user_token': user_token }) }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url('marketplace/extension', { 'user_token': user_token, 'type': 'module' }) }}">{{ text_extension }}</a></li>
+        <li class="breadcrumb-item active">{{ heading_title }}</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+
+    {% if error_warning %}
+      <div class="alert alert-danger alert-dismissible">
+        <i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endif %}
+
+    {% if success %}
+      <div class="alert alert-success alert-dismissible">
+        <i class="fa-solid fa-circle-check"></i> {{ success }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endif %}
+
+    <div class="card mb-3">
+      <div class="card-header"><i class="fa-solid fa-pencil"></i> {{ text_edit }}</div>
+      <div class="card-body">
+
+        <form action="{{ action }}" method="post" id="form-dowaba" class="form-horizontal">
+
+          {# ============ STEP 1 — API Key ============ #}
+          <fieldset class="mb-4 p-3 border rounded">
+            <legend class="float-none w-auto px-2 fs-5 fw-bold">{{ text_step_1_title }}</legend>
+            <p class="text-muted">{{ text_step_1_desc }}</p>
+
+            <div class="row mb-3">
+              <label class="col-sm-2 col-form-label">{{ entry_api_key_prefix }}</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <input type="text" id="api-key-display" value="{{ module_dowaba_ai_api_key_prefix ? module_dowaba_ai_api_key_prefix ~ '... (hash kayıtlı)' : '— henüz üretilmedi —' }}" class="form-control" readonly>
+                  <button type="button" class="btn btn-warning" id="btn-regenerate-key">
+                    <i class="fa-solid fa-key"></i> {{ button_regenerate }}
+                  </button>
+                </div>
+
+                <div id="api-key-plain-banner" class="alert alert-success mt-2" style="display:none;">
+                  <p class="mb-1"><strong>{{ help_api_key }}</strong></p>
+                  <div class="input-group">
+                    <input type="text" id="api-key-plain" value="" class="form-control" readonly>
+                    <button type="button" class="btn btn-light" id="btn-copy-key">
+                      <i class="fa-solid fa-copy"></i> {{ button_copy }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# ============ STEP 2 — Manifest URL ============ #}
+          <fieldset class="mb-4 p-3 border rounded">
+            <legend class="float-none w-auto px-2 fs-5 fw-bold">{{ text_step_2_title }}</legend>
+            <p class="text-muted">{{ text_step_2_desc }}</p>
+
+            <div class="row mb-3">
+              <label class="col-sm-2 col-form-label">Manifest URL</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <input type="text" id="manifest-url" value="{{ manifest_url }}" class="form-control" readonly>
+                  <button type="button" class="btn btn-light" id="btn-copy-manifest">
+                    <i class="fa-solid fa-copy"></i> {{ button_copy }}
+                  </button>
+                </div>
+                <small class="text-muted">{{ help_manifest_url }}</small>
+              </div>
+            </div>
+          </fieldset>
+
+          {# ============ STEP 3 — IP Whitelist ============ #}
+          <fieldset class="mb-4 p-3 border rounded">
+            <legend class="float-none w-auto px-2 fs-5 fw-bold">{{ text_step_3_title }}</legend>
+            <p class="text-muted">{{ text_step_3_desc }}</p>
+
+            <div class="row mb-3">
+              <label class="col-sm-2 col-form-label" for="input-ip-whitelist">{{ entry_ip_whitelist }}</label>
+              <div class="col-sm-10">
+                <input type="text" name="module_dowaba_ai_ip_whitelist" id="input-ip-whitelist" value="{{ module_dowaba_ai_ip_whitelist }}" placeholder="178.105.68.170, 49.13.120.112" class="form-control">
+              </div>
+            </div>
+          </fieldset>
+
+          {# ============ STEP 4 — Scopes ============ #}
+          <fieldset class="mb-4 p-3 border rounded">
+            <legend class="float-none w-auto px-2 fs-5 fw-bold">{{ text_step_4_title }}</legend>
+            <p class="text-muted">{{ text_step_4_desc }}</p>
+
+            <div class="row mb-3">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-10">
+                <div class="form-check form-switch">
+                  <input type="hidden" name="module_dowaba_ai_scope_read" value="0">
+                  <input type="checkbox" name="module_dowaba_ai_scope_read" value="1" id="scope-read" class="form-check-input" {% if module_dowaba_ai_scope_read %}checked{% endif %}>
+                  <label class="form-check-label" for="scope-read">{{ entry_scope_read }}</label>
+                </div>
+                <div class="form-check form-switch mt-2">
+                  <input type="hidden" name="module_dowaba_ai_scope_write" value="0">
+                  <input type="checkbox" name="module_dowaba_ai_scope_write" value="1" id="scope-write" class="form-check-input" {% if module_dowaba_ai_scope_write %}checked{% endif %}>
+                  <label class="form-check-label" for="scope-write">{{ entry_scope_write }}</label>
+                </div>
+                <div class="alert alert-warning mt-2 small mb-0">
+                  <i class="fa-solid fa-triangle-exclamation"></i> {{ help_scope_write }}
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# ============ STEP 5 — Connection Test ============ #}
+          <fieldset class="mb-4 p-3 border rounded">
+            <legend class="float-none w-auto px-2 fs-5 fw-bold">{{ text_step_5_title }}</legend>
+            <p class="text-muted">{{ text_step_5_desc }}</p>
+
+            <div class="row mb-3">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-10">
+                <button type="button" class="btn btn-info" id="btn-test-connection">
+                  <i class="fa-solid fa-plug"></i> {{ button_test }}
+                </button>
+                <div id="test-result" class="mt-2"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# ============ Module Status ============ #}
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="module_dowaba_ai_status" id="input-status" class="form-select">
+                <option value="1" {% if module_dowaba_ai_status %}selected{% endif %}>Enabled</option>
+                <option value="0" {% if not module_dowaba_ai_status %}selected{% endif %}>Disabled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label class="col-sm-2 col-form-label" for="input-audit-retention">{{ entry_audit_retention }}</label>
+            <div class="col-sm-10">
+              <input type="number" min="1" max="365" name="module_dowaba_ai_audit_retention_days" id="input-audit-retention" value="{{ module_dowaba_ai_audit_retention_days }}" class="form-control" style="max-width:200px;">
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function showToast(msg, type) {
+    const div = document.createElement('div');
+    div.className = 'alert alert-' + (type || 'info') + ' position-fixed';
+    div.style.cssText = 'top:60px;right:20px;z-index:9999;min-width:280px;';
+    div.innerHTML = '<i class="fa-solid fa-circle-info"></i> ' + msg;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 3000);
+  }
+
+  // STEP 1 — Regenerate API key
+  document.getElementById('btn-regenerate-key').addEventListener('click', function() {
+    if (!confirm('Mevcut API anahtarı iptal edilecek ve yenisi üretilecek. Devam edilsin mi?')) return;
+
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
+
+    fetch('{{ regenerate_url }}', { method: 'POST', credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('api-key-display').value = data.prefix + '... (hash kayıtlı)';
+          document.getElementById('api-key-plain').value = data.plain_key;
+          document.getElementById('api-key-plain-banner').style.display = 'block';
+          showToast('Yeni API anahtarı üretildi — kopyalayıp Dowaba paneline yapıştır!', 'success');
+        } else {
+          showToast(data.error || 'Hata', 'danger');
+        }
+      })
+      .catch(err => showToast('Network error: ' + err.message, 'danger'))
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-key"></i> {{ button_regenerate }}';
+      });
+  });
+
+  // STEP 1 — Copy plain API key
+  document.getElementById('btn-copy-key').addEventListener('click', function() {
+    const key = document.getElementById('api-key-plain').value;
+    if (!key) return;
+    copyToClipboard(key).then(() => showToast('API anahtarı kopyalandı', 'success'));
+  });
+
+  // STEP 2 — Copy manifest URL
+  document.getElementById('btn-copy-manifest').addEventListener('click', function() {
+    const url = document.getElementById('manifest-url').value;
+    copyToClipboard(url).then(() => showToast('Manifest URL kopyalandı', 'success'));
+  });
+
+  // STEP 5 — Test connection
+  document.getElementById('btn-test-connection').addEventListener('click', function() {
+    const btn = this;
+    const result = document.getElementById('test-result');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing...';
+    result.innerHTML = '';
+
+    fetch('{{ test_url }}', { method: 'POST', credentials: 'same-origin' })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          result.innerHTML = '<div class="alert alert-success"><i class="fa-solid fa-circle-check"></i> ' +
+            'Bağlantı başarılı! schema_version=' + data.schema_version + ', ' + data.function_count + ' function bulundu.<br>' +
+            '<small>URL: ' + data.url + '</small></div>';
+        } else {
+          result.innerHTML = '<div class="alert alert-danger"><i class="fa-solid fa-circle-xmark"></i> ' +
+            'Başarısız: ' + (data.error || 'unknown') + '<br><small>URL: ' + (data.url || '') + '</small></div>';
+        }
+      })
+      .catch(err => {
+        result.innerHTML = '<div class="alert alert-danger"><i class="fa-solid fa-circle-xmark"></i> Network error: ' + err.message + '</div>';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-plug"></i> {{ button_test }}';
+      });
+  });
+
+})();
+</script>
+
+{{ footer }}
