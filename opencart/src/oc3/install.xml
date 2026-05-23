@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dowaba AI Integration — OpenCart 3.x OCMOD modifier.
+
+  Bu dosya OC3 admin menüsüne "Dowaba AI" item'ı ekler ve plugin'i
+  extension marketplace'ten bağımsız standalone modül olarak gösterir.
+
+  OCMOD 3.x format: vQmod tarzı XML modifier. OC3 extension installer
+  bunu yükleyince admin menüsüne otomatik ekleme yapar.
+-->
+<modification>
+    <name>Dowaba AI Integration</name>
+    <code>dowaba_ai</code>
+    <version>0.2.0</version>
+    <author>Aydın Acar (Dowaba)</author>
+    <link>https://github.com/rdtvaacar/dowaba-plugins</link>
+
+    <!-- Admin column_left.php menüsüne "Dowaba AI" item ekle (modules grubu altında) -->
+    <file path="admin/controller/common/column_left.php">
+        <operation>
+            <search><![CDATA[$data['menus'][] = array(]]></search>
+            <add position="before"><![CDATA[
+            // Dowaba AI — direct admin menu shortcut
+            if ($this->user->hasPermission('access', 'extension/module/dowaba')) {
+                $dowaba_ai_menu = array(
+                    'id'       => 'dwb-menu-dowaba-ai',
+                    'icon'     => 'fa-robot',
+                    'name'     => 'Dowaba AI',
+                    'href'     => $this->url->link('extension/module/dowaba', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => array()
+                );
+                $data['menus'][] = $dowaba_ai_menu;
+            }
+            ]]></add>
+        </operation>
+    </file>
+</modification>

@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Build script — packages OpenCart plugin into .ocmod.zip for Marketplace/GitHub Release
+# Build script — OpenCart plugin'ini OC3 ve OC4 için ayrı .ocmod.zip'lere paketler.
 #
 # Usage:
-#   bash build.sh              # uses version from src/install.json
-#   bash build.sh 0.1.0        # explicit version override
+#   bash build.sh              # version src/oc4/install.json'dan okur
+#   bash build.sh 0.2.0        # explicit version
 #
-# Output: dist/dowaba-opencart-<version>.ocmod.zip
+# Çıktı:
+#   dist/dowaba-opencart-oc3-<version>.ocmod.zip  (OpenCart 3.x)
+#   dist/dowaba-opencart-oc4-<version>.ocmod.zip  (OpenCart 4.x)
 
 set -euo pipefail
 
@@ -15,10 +17,10 @@ cd "$SCRIPT_DIR"
 # Version resolve
 if [[ "${1:-}" ]]; then
   VERSION="$1"
-elif [[ -f src/install.json ]]; then
-  VERSION="$(grep -oE '"version"\s*:\s*"[^"]+"' src/install.json | head -1 | sed -E 's/.*"([^"]+)"$/\1/')"
+elif [[ -f src/oc4/install.json ]]; then
+  VERSION="$(grep -oE '"version"\s*:\s*"[^"]+"' src/oc4/install.json | head -1 | sed -E 's/.*"([^"]+)"$/\1/')"
 else
-  echo "ERROR: Cannot resolve version — neither argv[1] nor src/install.json available" >&2
+  echo "ERROR: version source not found" >&2
   exit 1
 fi
 
@@ -27,41 +29,50 @@ if [[ -z "${VERSION:-}" ]]; then
   exit 1
 fi
 
-echo "📦 Building dowaba-opencart v${VERSION}..."
+echo "📦 Building dowaba-opencart v${VERSION} (OC3 + OC4)..."
 
 # Pre-flight checks
-if [[ ! -d src/upload ]]; then
-  echo "ERROR: src/upload/ not found — nothing to package" >&2
+if [[ ! -d src/oc4/upload ]]; then
+  echo "ERROR: src/oc4/upload/ not found" >&2
+  exit 1
+fi
+if [[ ! -d src/oc3/upload ]]; then
+  echo "ERROR: src/oc3/upload/ not found" >&2
   exit 1
 fi
 
-# Clean + prepare
 mkdir -p dist
-OUT="dist/dowaba-opencart-${VERSION}.ocmod.zip"
-rm -f "$OUT"
+OUT_OC3="dist/dowaba-opencart-oc3-${VERSION}.ocmod.zip"
+OUT_OC4="dist/dowaba-opencart-oc4-${VERSION}.ocmod.zip"
+rm -f "$OUT_OC3" "$OUT_OC4"
 
-# PHP syntax check
+# PHP syntax check — her iki source'u da kontrol et
 echo "🔍 PHP syntax check..."
-find src/upload -name "*.php" -print0 | while IFS= read -r -d '' f; do
+find src -name "*.php" -print0 | while IFS= read -r -d '' f; do
   if ! php -l "$f" > /dev/null 2>&1; then
     echo "❌ Syntax error in $f"
     php -l "$f"
     exit 1
   fi
 done
-echo "✅ PHP syntax OK"
+echo "✅ PHP syntax OK (all files in src/)"
 
-# Build zip — OCMOD 4.x format: zip root contains install.json + upload/
-cd src
-zip -qr "../$OUT" install.json upload/ \
-  -x "*.DS_Store" "*/.git/*" "*/.gitkeep"
-cd ..
+# OC4 build
+echo "📦 OC4: building $OUT_OC4..."
+(cd src/oc4 && zip -qr "../../$OUT_OC4" install.json upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
+SIZE_OC4=$(du -k "$OUT_OC4" | cut -f1)
+echo "  ✅ $OUT_OC4 (${SIZE_OC4} KB)"
 
-# Verify
-SIZE_KB=$(du -k "$OUT" | cut -f1)
-echo "✅ Built: $OUT (${SIZE_KB} KB)"
+# OC3 build
+echo "📦 OC3: building $OUT_OC3..."
+(cd src/oc3 && zip -qr "../../$OUT_OC3" install.xml upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
+SIZE_OC3=$(du -k "$OUT_OC3" | cut -f1)
+echo "  ✅ $OUT_OC3 (${SIZE_OC3} KB)"
+
 echo ""
-echo "Contents:"
-unzip -l "$OUT" | tail -n +4 | head -20
+echo "📋 Build summary:"
+ls -lh dist/dowaba-opencart-*-${VERSION}.ocmod.zip
 echo ""
 echo "Upload to OpenCart admin → Extensions → Installer"
+echo "  • OC 3.x: $OUT_OC3"
+echo "  • OC 4.x: $OUT_OC4"

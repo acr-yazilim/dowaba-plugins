@@ -2,6 +2,29 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.0] - 2026-05-23
+
+### Added — OpenCart 3.x dual support
+- **Yeni `src/oc3/` ağacı** — OC 3.0.3.x için tam plugin port:
+  - `install.xml` (OCMOD 3 modifier — admin column_left'e Dowaba AI menü item ekler)
+  - `admin/controller/extension/module/dowaba.php` (global namespace, `ControllerExtensionModuleDowaba`)
+  - `admin/model/extension/module/dowaba.php` (dowaba_audit table install/uninstall)
+  - `admin/view/template/extension/module/dowaba.twig` (Bootstrap 3, OC3 UI conventions)
+  - `admin/language/{en-gb,tr-tr}/extension/module/dowaba.php` (OC4 ile aynı)
+  - `catalog/controller/extension/dowaba_ai/{manifest,api}.php` (global namespace)
+  - `system/library/dowaba_ai/{auth,scope_guard,audit_logger,order_preview}.php` (`Dowaba*` prefix, global)
+- **`src/oc4/` ağacı** — eski `src/upload/` buraya taşındı (yapısal değişiklik yok)
+- **`build.sh` dual paketleme** — `dowaba-opencart-oc3-X.Y.Z.ocmod.zip` + `dowaba-opencart-oc4-X.Y.Z.ocmod.zip` ayrı çıkarır
+- **`docker-compose.yml` ikinci servis** — `dwb-opencart3` port 8081 (OC 3.0.3.9 source mount)
+- **GH Actions release** — her tag push'ta her iki .ocmod.zip da release artifact olarak yüklenir
+
+### Test edildi (lokal docker)
+- OC 3.0.3.9 + MariaDB 11 + PHP 8.2 ortamında plugin install + manifest endpoint + Bearer auth + product_search + categories → tüm akışlar PASS
+- Routing OC3 Action class davranışına uyarlandı (`extension/dowaba_ai/manifest` + `extension/dowaba_ai/api?action=...`)
+
+### Pazar etkisi
+- Türkiye OpenCart pazarının yaklaşık %60'ına ulaşır (OC3 yaygınlığı). v0.1.x sadece %30-35'lik OC4 kesimine erişiyordu.
+
 ## [Unreleased]
 
 ### Added — v0.1.0 hedefi

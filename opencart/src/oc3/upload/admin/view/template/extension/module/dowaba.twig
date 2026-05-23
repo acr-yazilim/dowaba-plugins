@@ -1,0 +1,316 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-dowaba" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default">
+      <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3></div>
+      <div class="panel-body">
+
+        <form action="{{ action }}" method="post" id="form-dowaba" class="form-horizontal">
+
+          {# STEP 1 — API Key #}
+          <fieldset>
+            <legend>{{ text_step_1_title }}</legend>
+            <p class="text-muted">{{ text_step_1_desc }}</p>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">{{ entry_api_key_prefix }}</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <input type="text" id="api-key-display" value="{{ module_dowaba_ai_api_key_prefix ? module_dowaba_ai_api_key_prefix ~ '... (hash kayıtlı)' : '— henüz üretilmedi —' }}" class="form-control" readonly>
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-warning" id="btn-regenerate-key"><i class="fa fa-key"></i> {{ button_regenerate }}</button>
+                  </span>
+                </div>
+                <div id="api-key-plain-banner" class="alert alert-success" style="display:none;margin-top:8px;">
+                  <p><strong>{{ help_api_key }}</strong></p>
+                  <div class="input-group">
+                    <input type="text" id="api-key-plain" value="" class="form-control" readonly>
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" id="btn-copy-key"><i class="fa fa-copy"></i> {{ button_copy }}</button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# STEP 2 — Manifest URL #}
+          <fieldset>
+            <legend>{{ text_step_2_title }}</legend>
+            <p class="text-muted">{{ text_step_2_desc }}</p>
+            <div class="form-group">
+              <label class="col-sm-2 control-label">Manifest URL</label>
+              <div class="col-sm-10">
+                <div class="input-group">
+                  <input type="text" id="manifest-url" value="{{ manifest_url }}" class="form-control" readonly>
+                  <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" id="btn-copy-manifest"><i class="fa fa-copy"></i> {{ button_copy }}</button>
+                  </span>
+                </div>
+                <small class="text-muted">{{ help_manifest_url }}</small>
+              </div>
+            </div>
+          </fieldset>
+
+          {# STEP 3 — IP Whitelist #}
+          <fieldset>
+            <legend>{{ text_step_3_title }}</legend>
+            <p class="text-muted">{{ text_step_3_desc }}</p>
+            <div class="form-group">
+              <label class="col-sm-2 control-label" for="input-ip-whitelist">{{ entry_ip_whitelist }}</label>
+              <div class="col-sm-10">
+                <input type="text" name="module_dowaba_ai_ip_whitelist" id="input-ip-whitelist" value="{{ module_dowaba_ai_ip_whitelist }}" placeholder="178.105.68.170, 49.13.120.112" class="form-control">
+              </div>
+            </div>
+          </fieldset>
+
+          {# STEP 4 — Scopes #}
+          <fieldset>
+            <legend>{{ text_step_4_title }}</legend>
+            <p class="text-muted">{{ text_step_4_desc }}</p>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <label class="checkbox-inline" style="margin-right:24px;">
+                  <input type="hidden" name="module_dowaba_ai_scope_read" value="0">
+                  <input type="checkbox" name="module_dowaba_ai_scope_read" value="1" {% if module_dowaba_ai_scope_read %}checked{% endif %}> {{ entry_scope_read }}
+                </label>
+                <label class="checkbox-inline">
+                  <input type="hidden" name="module_dowaba_ai_scope_write" value="0">
+                  <input type="checkbox" name="module_dowaba_ai_scope_write" value="1" {% if module_dowaba_ai_scope_write %}checked{% endif %}> {{ entry_scope_write }}
+                </label>
+                <div class="alert alert-warning" style="margin-top:8px;font-size:13px;">
+                  <i class="fa fa-exclamation-triangle"></i> {{ help_scope_write }}
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# STEP 5 — Connection Test #}
+          <fieldset>
+            <legend>{{ text_step_5_title }}</legend>
+            <p class="text-muted">{{ text_step_5_desc }}</p>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="button" class="btn btn-info" id="btn-test-connection"><i class="fa fa-plug"></i> {{ button_test }}</button>
+                <div id="test-result" style="margin-top:8px;"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          {# Status + Audit retention #}
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="module_dowaba_ai_status" id="input-status" class="form-control">
+                <option value="1" {% if module_dowaba_ai_status %}selected{% endif %}>Enabled</option>
+                <option value="0" {% if not module_dowaba_ai_status %}selected{% endif %}>Disabled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-audit-retention">{{ entry_audit_retention }}</label>
+            <div class="col-sm-10">
+              <input type="number" min="1" max="365" name="module_dowaba_ai_audit_retention_days" id="input-audit-retention" value="{{ module_dowaba_ai_audit_retention_days }}" class="form-control" style="max-width:200px;">
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    {# Audit Log #}
+    <div class="panel panel-default">
+      <div class="panel-heading"><h3 class="panel-title"><i class="fa fa-list"></i> {{ text_audit_log_title }}</h3></div>
+      <div class="panel-body">
+        <p class="text-muted">{{ text_audit_log_desc }}</p>
+        <div class="row" style="margin-bottom:8px;">
+          <div class="col-sm-4">
+            <select id="audit-filter-function" class="form-control input-sm">
+              <option value="">(tüm function'lar)</option>
+              <option>opc_product_search</option><option>opc_product_detail</option><option>opc_product_compare</option>
+              <option>opc_stock_check</option><option>opc_category_list</option><option>opc_order_status</option>
+              <option>opc_customer_lookup</option><option>opc_cart_recover</option>
+              <option>opc_order_preview</option><option>opc_order_confirm</option>
+            </select>
+          </div>
+          <div class="col-sm-3">
+            <select id="audit-filter-status" class="form-control input-sm">
+              <option value="">(tüm status'ler)</option>
+              <option value="200">200 OK</option><option value="400">400 Bad Request</option>
+              <option value="401">401 Unauthorized</option><option value="403">403 Forbidden</option>
+              <option value="404">404 Not Found</option><option value="500">500 Server Error</option>
+            </select>
+          </div>
+          <div class="col-sm-2">
+            <button type="button" class="btn btn-default btn-sm" id="btn-audit-refresh" style="width:100%;"><i class="fa fa-refresh"></i> {{ button_refresh }}</button>
+          </div>
+        </div>
+        <table class="table table-condensed table-hover">
+          <thead>
+            <tr><th>{{ column_when }}</th><th>{{ column_function }}</th><th>{{ column_ip }}</th><th class="text-center">{{ column_status }}</th><th class="text-right">{{ column_duration }}</th><th>{{ column_error }}</th></tr>
+          </thead>
+          <tbody id="audit-tbody"><tr><td colspan="6" class="text-center text-muted">{{ text_no_audit_rows }}</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    var ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    return Promise.resolve();
+  }
+
+  function toast(msg, type) {
+    var div = document.createElement('div');
+    div.className = 'alert alert-' + (type || 'info');
+    div.style.cssText = 'position:fixed;top:60px;right:20px;z-index:9999;min-width:280px;';
+    div.innerHTML = '<i class="fa fa-info-circle"></i> ' + msg;
+    document.body.appendChild(div);
+    setTimeout(function() { div.parentNode && div.parentNode.removeChild(div); }, 3000);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(m) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+    });
+  }
+
+  document.getElementById('btn-regenerate-key').addEventListener('click', function() {
+    if (!confirm('Mevcut API anahtarı iptal edilecek ve yenisi üretilecek. Devam edilsin mi?')) return;
+    var btn = this;
+    btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ...';
+    fetch('{{ regenerate_url }}', { method: 'POST', credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          document.getElementById('api-key-display').value = data.prefix + '... (hash kayıtlı)';
+          document.getElementById('api-key-plain').value = data.plain_key;
+          document.getElementById('api-key-plain-banner').style.display = 'block';
+          toast('Yeni API anahtarı üretildi — kopyalayıp Dowaba paneline yapıştır!', 'success');
+        } else { toast(data.error || 'Hata', 'danger'); }
+      })
+      .catch(function(err) { toast('Network error: ' + err.message, 'danger'); })
+      .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-key"></i> {{ button_regenerate }}';
+      });
+  });
+
+  document.getElementById('btn-copy-key').addEventListener('click', function() {
+    var key = document.getElementById('api-key-plain').value;
+    if (!key) return;
+    copyToClipboard(key).then(function() { toast('API anahtarı kopyalandı', 'success'); });
+  });
+
+  document.getElementById('btn-copy-manifest').addEventListener('click', function() {
+    copyToClipboard(document.getElementById('manifest-url').value).then(function() { toast('Manifest URL kopyalandı', 'success'); });
+  });
+
+  function statusBadge(code) {
+    var cls = code === 200 ? 'success' : (code >= 500 ? 'danger' : (code >= 400 ? 'warning' : 'default'));
+    return '<span class="label label-' + cls + '">' + code + '</span>';
+  }
+
+  function loadAuditLog() {
+    var fn = document.getElementById('audit-filter-function').value;
+    var st = document.getElementById('audit-filter-status').value;
+    var params = new URLSearchParams();
+    params.set('limit', '100');
+    if (fn) params.set('function_slug', fn);
+    if (st) params.set('status', st);
+    var url = '{{ audit_log_url }}&' + params.toString();
+    var tbody = document.getElementById('audit-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center"><i class="fa fa-spinner fa-spin"></i></td></tr>';
+    fetch(url, { credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.success) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-danger">' + escapeHtml(data.error) + '</td></tr>';
+          return;
+        }
+        if (!data.rows || data.rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">{{ text_no_audit_rows }}</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.rows.map(function(r) {
+          return '<tr>' +
+            '<td><small>' + escapeHtml(r.created_at) + '</small></td>' +
+            '<td><code>' + escapeHtml(r.function_slug) + '</code></td>' +
+            '<td><small>' + escapeHtml(r.request_ip) + '</small></td>' +
+            '<td class="text-center">' + statusBadge(r.status_code) + '</td>' +
+            '<td class="text-right"><small>' + r.duration_ms + '</small></td>' +
+            '<td><small class="text-muted">' + escapeHtml(r.error_message) + '</small></td>' +
+            '</tr>';
+        }).join('');
+      })
+      .catch(function(err) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-danger">Network error: ' + escapeHtml(err.message) + '</td></tr>';
+      });
+  }
+  document.getElementById('btn-audit-refresh').addEventListener('click', loadAuditLog);
+  document.getElementById('audit-filter-function').addEventListener('change', loadAuditLog);
+  document.getElementById('audit-filter-status').addEventListener('change', loadAuditLog);
+  loadAuditLog();
+
+  document.getElementById('btn-test-connection').addEventListener('click', function() {
+    var btn = this;
+    var result = document.getElementById('test-result');
+    btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Testing...';
+    result.innerHTML = '';
+    fetch('{{ test_url }}', { method: 'POST', credentials: 'same-origin' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          result.innerHTML = '<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' +
+            'Bağlantı başarılı! schema_version=' + data.schema_version + ', ' + data.function_count + ' function bulundu.<br>' +
+            '<small>URL: ' + data.url + '</small></div>';
+        } else {
+          result.innerHTML = '<div class="alert alert-danger"><i class="fa fa-times-circle"></i> ' +
+            'Başarısız: ' + (data.error || 'unknown') + '<br><small>URL: ' + (data.url || '') + '</small></div>';
+        }
+      })
+      .catch(function(err) {
+        result.innerHTML = '<div class="alert alert-danger"><i class="fa fa-times-circle"></i> Network error: ' + err.message + '</div>';
+      })
+      .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa fa-plug"></i> {{ button_test }}';
+      });
+  });
+})();
+</script>
+
+{{ footer }}

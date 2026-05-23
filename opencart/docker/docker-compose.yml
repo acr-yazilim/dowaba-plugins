@@ -33,6 +33,22 @@ services:
       # Plugin kaynağımız (storage area, install sırasında manuel kopyalanır veya OCMOD install ile)
       - ../src:/var/www/html/dwb-plugin-src:ro
 
+  # OpenCart 3.0.3.9 — dual support test ortamı (v0.2 dual release için)
+  opencart3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dwb-opencart3
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+    volumes:
+      - /tmp/dwb-oc3-src/upload:/var/www/html
+      - ../src:/var/www/html/dwb-plugin-src:ro
+
   mariadb:
     image: mariadb:11
     container_name: dwb-mariadb

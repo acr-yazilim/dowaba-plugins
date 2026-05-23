@@ -27,11 +27,11 @@ jobs:
           echo "version=$TAG" >> "$GITHUB_OUTPUT"
           echo "🏷️  Building opencart-v$TAG"
 
-      - name: Build .ocmod.zip
+      - name: Build .ocmod.zip (OC3 + OC4 dual)
         working-directory: opencart
         run: bash build.sh "${{ steps.version.outputs.version }}"
 
-      - name: List artifact
+      - name: List artifacts
         run: ls -lh opencart/dist/
 
       - name: Upload to GitHub Release
@@ -42,11 +42,16 @@ jobs:
           body: |
             # Dowaba AI Integration for OpenCart v${{ steps.version.outputs.version }}
 
-            📦 İndir: `dowaba-opencart-${{ steps.version.outputs.version }}.ocmod.zip`
+            📦 İndir:
+            - **OpenCart 4.x**: `dowaba-opencart-oc4-${{ steps.version.outputs.version }}.ocmod.zip`
+            - **OpenCart 3.x**: `dowaba-opencart-oc3-${{ steps.version.outputs.version }}.ocmod.zip`
+
             📚 Kurulum: [README](./opencart/README.md)
             📝 Değişiklikler: [CHANGELOG](./opencart/CHANGELOG.md)
 
             Auto-built by GitHub Actions from tag `${{ github.ref_name }}`.
-          files: opencart/dist/dowaba-opencart-${{ steps.version.outputs.version }}.ocmod.zip
+          files: |
+            opencart/dist/dowaba-opencart-oc3-${{ steps.version.outputs.version }}.ocmod.zip
+            opencart/dist/dowaba-opencart-oc4-${{ steps.version.outputs.version }}.ocmod.zip
           draft: false
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
