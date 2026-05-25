@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Dowaba\LaravelBridge\Resources;
 
+use Dowaba\LaravelBridge\DowabaClient;
+
 class Sites
 {
+    public function __construct(protected DowabaClient $client) {}
+
     public function all(): array
     {
-        return ['skeleton' => true, 'sites' => []];
+        return $this->client->get('/api/sites');
     }
 
     public function get(int|string $siteId): array
     {
-        return ['skeleton' => true, 'site_id' => $siteId];
+        return $this->client->get("/api/sites/{$siteId}");
     }
 }
