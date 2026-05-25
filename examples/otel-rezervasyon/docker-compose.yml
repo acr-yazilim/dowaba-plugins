@@ -1,0 +1,62 @@
+# Otel Rezervasyon Demo — Laravel 12 + dowaba/laravel-bridge
+#
+# Kullanım:
+#   docker compose up -d              # build + ayağa kalk (port 8091)
+#   docker compose logs -f app        # log akışı
+#   docker compose down -v            # kapat + tmpfs sil
+#
+# Erişim: http://localhost:8091
+
+services:
+  app:
+    image: php:8.3-cli
+    container_name: dowaba-otel-demo
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8091:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: otel
+      DB_USERNAME: otel
+      DB_PASSWORD: otel
+      DOWABA_URL: https://dowaba.com
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        apt-get update -qq && apt-get install -y -qq libzip-dev libonig-dev unzip curl git &&
+        docker-php-ext-install -j$$(nproc) pdo_mysql zip mbstring &&
+        curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --quiet &&
+        cd /app &&
+        composer install --no-interaction --prefer-dist &&
+        ( [ -f .env ] || cp .env.example .env ) &&
+        php artisan key:generate --force &&
+        php artisan migrate --force &&
+        php artisan db:seed --force &&
+        echo '✓ Demo hazır → http://localhost:8091' &&
+        php artisan serve --host=0.0.0.0 --port=8000
+      "
+
+  db:
+    image: mariadb:11
+    container_name: dowaba-otel-db
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: otel
+      MARIADB_USER: otel
+      MARIADB_PASSWORD: otel
+    tmpfs:
+      - /var/lib/mysql:rw,noexec,nosuid,size=256m
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -proot --silent"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
