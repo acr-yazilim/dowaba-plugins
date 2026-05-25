@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+html, body { width: 1600px; height: 900px; overflow: hidden; background: #f5f4ef; }
+body { padding: 60px 80px; color: #1a1a2e; }
+.hero { text-align: center; margin-bottom: 36px; }
+.eyebrow { display: inline-block; background: rgba(67,56,202,0.1); color: #4338CA; padding: 6px 16px; border-radius: 100px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+h1 { font-size: 44px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 8px; }
+.sub { font-size: 18px; color: #525873; }
+.panel-wrap { display: flex; gap: 28px; }
+.panel { flex: 1; background: #fff; border-radius: 16px; padding: 32px; border: 1px solid #e6e4dc; box-shadow: 0 8px 24px rgba(42,43,120,0.06); }
+.panel-title { font-size: 15px; font-weight: 700; margin-bottom: 18px; color: #1a1a2e; display: flex; align-items: center; gap: 10px; }
+.step-num { width: 28px; height: 28px; background: linear-gradient(135deg, #2A2B78, #4338CA); color: #fff; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; }
+.input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.input { flex: 1; padding: 11px 13px; border: 1.5px solid #e6e4dc; border-radius: 8px; font-size: 14px; background: #fafafa; color: #1a1a2e; }
+.btn-primary { background: linear-gradient(135deg, #2A2B78, #4338CA); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 14px; font-weight: 700; border: 0; cursor: pointer; }
+.btn-ghost { background: #fff; color: #1a1a2e; border: 1.5px solid #e6e4dc; padding: 11px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+.checks { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.check { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #047857; font-weight: 600; }
+.check-icon { width: 20px; height: 20px; border-radius: 50%; background: rgba(16,185,129,0.15); color: #047857; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+.conn-card { background: #fafaff; border: 1.5px solid rgba(67,56,202,0.2); border-radius: 12px; padding: 16px; margin-top: 16px; }
+.conn-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.shop-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(149,191,71,0.18); color: #5e8e3e; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.shop-name { font-weight: 700; font-size: 14px; }
+.shop-meta { font-size: 12px; color: #525873; }
+.live-pill { background: rgba(16,185,129,0.15); color: #047857; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 100px; letter-spacing: 0.5px; text-transform: uppercase; margin-left: auto; }
+.url-box { background: #fff; border: 1px dashed #e6e4dc; border-radius: 6px; padding: 8px 10px; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: #525873; margin-top: 10px; word-break: break-all; }
+.copy-pill { display: inline-block; margin-top: 8px; background: #4338CA; color: #fff; padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+.popup-anim { display: flex; gap: 8px; align-items: center; padding: 12px; background: #fafaff; border-radius: 10px; margin-top: 12px; border: 1px solid rgba(67,56,202,0.1); font-size: 12.5px; color: #4338CA; font-weight: 600; }
+.shopify-popup { width: 100%; background: linear-gradient(135deg, #5e8e3e, #95BF47); color: #fff; padding: 18px; border-radius: 10px; margin-top: 14px; text-align: center; box-shadow: 0 4px 12px rgba(94,142,62,0.25); }
+.shopify-popup-title { font-weight: 800; font-size: 14px; margin-bottom: 4px; }
+.shopify-popup-sub { font-size: 12px; opacity: 0.92; }
+</style></head><body>
+<div class="hero">
+  <div class="eyebrow">✦ 5-minute setup</div>
+  <h1>Connect any store to your AI chat assistant</h1>
+  <p class="sub">Install the app, paste the manifest URL, and 10 AI functions activate automatically.</p>
+</div>
+<div class="panel-wrap">
+  <div class="panel">
+    <div class="panel-title"><span class="step-num">1</span> Connect your store from DoWaba panel</div>
+    <div class="input-row">
+      <input class="input" value="mystore" readonly>
+      <button class="btn-primary">Connect →</button>
+    </div>
+    <p style="font-size: 12px; color: #525873; margin-bottom: 10px;">Enter your store subdomain. OAuth runs in a popup, no manual API key needed.</p>
+    <div class="shopify-popup">
+      <div class="shopify-popup-title">🔒 Install app on mystore?</div>
+      <div class="shopify-popup-sub">DoWaba is requesting permission to read products, orders, customers and create draft orders.</div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-title"><span class="step-num">2</span> Copy the manifest URL</div>
+    <div class="conn-card">
+      <div class="conn-row">
+        <div class="shop-icon">🛒</div>
+        <div>
+          <div class="shop-name">mystore.myshopify.com</div>
+          <div class="shop-meta">read_products, read_orders, write_draft_orders</div>
+        </div>
+        <span class="live-pill">● Live</span>
+      </div>
+      <div style="font-size: 12px; color: #525873; margin-top: 8px;">Manifest URL (paste into Bundle Import):</div>
+      <div class="url-box">https://dowaba.com/api/shopify/manifest/3kf9...d7e2</div>
+      <span class="copy-pill">📋 Copy URL</span>
+    </div>
+    <div class="checks">
+      <div class="check"><span class="check-icon">✓</span> HMAC-SHA256 verified</div>
+      <div class="check"><span class="check-icon">✓</span> Access token encrypted at rest</div>
+      <div class="check"><span class="check-icon">✓</span> GDPR webhooks active</div>
+    </div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,40 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+#
+# DoWaba — Sell on WhatsApp, Instagram & TikTok with AI
+# Server-side OAuth proxy app — NOT embedded (no App Bridge, no Polaris UI).
+# Uses Admin GraphQL API + 3 mandatory GDPR webhooks + optional app/uninstalled.
+#
+# Push config: SHOPIFY_CLI_PARTNERS_TOKEN=atkn_... shopify app deploy --force
+
+client_id = "b7683aaeb2837957209e4d9007de1a9f"
+application_url = "https://dowaba.com/admin/"
+embedded = false
+name = "DoWaba"
+
+[access_scopes]
+scopes = "read_customers,write_draft_orders,read_draft_orders,read_inventory,read_orders,read_products"
+optional_scopes = []
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [ "https://dowaba.com/api/shopify/oauth/callback" ]
+
+[webhooks]
+api_version = "2024-10"
+
+  # Mandatory GDPR compliance webhooks (App Store requirement)
+  # HMAC-SHA256 verify done in ShopifyWebhookController::verifyAndLog()
+  [webhooks.privacy_compliance]
+  customer_data_request_url = "https://dowaba.com/api/shopify/webhooks/customers-data-request"
+  customer_deletion_url = "https://dowaba.com/api/shopify/webhooks/customers-redact"
+  shop_deletion_url = "https://dowaba.com/api/shopify/webhooks/shop-redact"
+
+  # Optional but recommended: app/uninstalled → mark connection as uninstalled
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "https://dowaba.com/api/shopify/webhooks/app-uninstalled"
+
+[pos]
+embedded = false
+
+[build]

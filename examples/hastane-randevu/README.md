@@ -6,6 +6,18 @@
 
 ---
 
+> ## ⚠️ GÜVENLİK UYARISI — DEMO KOD
+>
+> Bu demo'da route'lara **authentication middleware EKLENMEMİŞTİR.** Herhangi biri `/acr/appointments` URL'ini çağırıp randevu oluşturabilir, iptal edebilir.
+>
+> **Production'a almadan ÖNCE:**
+> 1. `routes/web.php`'deki `Route::prefix('acr')` group'una `->middleware('auth')` ekle
+> 2. Hassas action'lara `Gate`/`Policy` ekle (`cancel` sadece doktor/admin)
+> 3. `.env`'de `APP_DEBUG=false`
+> 4. Public form için rate limit (`throttle:10,1`)
+
+---
+
 ## Özellikler
 
 - 🏥 **Dashboard** — toplam randevu / yaklaşan / hasta / doktor istatistikleri + bugünün randevuları

@@ -18,8 +18,34 @@ class LogoutController extends Controller
 
         $token->revoke($localUserId);
 
+        $redirectTo = $this->safeRedirectUrl($request->input('redirect_to'));
+
         return redirect()
-            ->to($request->input('redirect_to', '/'))
+            ->to($redirectTo)
             ->with('status', 'Dowaba bağlantısı kapatıldı.');
+    }
+
+    /**
+     * Open Redirect koruması — sadece kendi domain'imizdeki path'lere yönlendir.
+     *
+     * Saldırı: `<img src="/dowaba/auth/logout?redirect_to=https://evil.com">` ile
+     * kurban farkında olmadan logout + phishing sayfasına gider. Whitelist
+     * kuralları CallbackController ile aynı (path-only, protocol-relative blocked).
+     */
+    private function safeRedirectUrl(?string $url): string
+    {
+        if (! is_string($url) || $url === '') {
+            return '/';
+        }
+
+        if (! str_starts_with($url, '/')) {
+            return '/';
+        }
+
+        if (str_starts_with($url, '//')) {
+            return '/';
+        }
+
+        return $url;
     }
 }

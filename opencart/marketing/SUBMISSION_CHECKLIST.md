@@ -46,7 +46,7 @@ Adım adım kontrol listesi. Her checkbox tamamlanınca işaretle. Tahmini topla
 
 Lokal Docker ayakta mı?
 ```bash
-docker compose -f /Users/aydinacar/Documents/dowaba-plugins/opencart/docker/docker-compose.yml ps
+cd opencart/docker && docker compose ps
 ```
 
 - [ ] **Docker hazır**: dwb-opencart (8080) + dwb-opencart3 (8081)

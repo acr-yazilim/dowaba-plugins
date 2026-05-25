@@ -4,16 +4,34 @@ declare(strict_types=1);
 
 /*
 |--------------------------------------------------------------------------
-| Dowaba — WhatsApp mesaj gönder (saf-PHP snippet)
+| Dowaba — WhatsApp mesaj gönder (saf-PHP snippet, SADECE CLI)
 |--------------------------------------------------------------------------
 |
-| Kullanım:
+| Kullanım (yalnızca komut satırı):
 |   CLI:   php send-whatsapp.php "+905551234567" "Merhaba"
-|   HTTP:  POST /send-whatsapp.php?phone=+905551234567&message=Merhaba
 |   Cron:  her 15dk → php /path/send-whatsapp.php "+905..." "Hatırlatma"
+|
+| ⚠️ GÜVENLİK: Bu dosya HTTP üzerinden ÇAĞRILAMAZ. Public web kökünden
+|    çağrılması durumunda 403 döner. Sebebi: bu script Dowaba'ya yetkili
+|    Bearer token ile istek atar; internet üzerinden açık bırakılırsa
+|    herkes spam WhatsApp gönderebilir, kotanız tükenir, Meta hesabınız
+|    banlanır.
+|
+|    Web request'ten WhatsApp tetiklemek için kendi backend'inizde auth +
+|    rate limit + CSRF korumalı bir endpoint yazın; o endpoint bu fonksiyonu
+|    `dowaba_request()` çağrısıyla kullansın (lib/dowaba.php'yi require et).
 |
 | Önce config.example.php → config.php olarak kopyala ve değerleri doldur.
 */
+
+// CLI dışı (web request) reddet — defansif security guard
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo "Bu script yalnızca komut satırından (CLI) çalışır.\n";
+    echo "HTTP üzerinden tetiklemek güvenlik açığıdır; kendi auth'lu endpoint'inizi yazın.\n";
+    exit(1);
+}
 
 require __DIR__.'/lib/dowaba.php';
 
@@ -24,20 +42,11 @@ if (! file_exists(__DIR__.'/config.php')) {
 
 require __DIR__.'/config.php';
 
-// CLI veya HTTP'den parametre al
-[$phone, $message] = (PHP_SAPI === 'cli')
-    ? [($argv[1] ?? null), ($argv[2] ?? null)]
-    : [($_REQUEST['phone'] ?? null), ($_REQUEST['message'] ?? null)];
+$phone = $argv[1] ?? null;
+$message = $argv[2] ?? null;
 
 if (! $phone || ! $message) {
-    $usage = "Kullanım: php send-whatsapp.php <phone> <message>\n";
-    if (PHP_SAPI === 'cli') {
-        fwrite(STDERR, $usage);
-    } else {
-        http_response_code(400);
-        header('Content-Type: text/plain');
-        echo $usage;
-    }
+    fwrite(STDERR, "Kullanım: php send-whatsapp.php <phone> <message>\n");
     exit(1);
 }
 
@@ -55,22 +64,9 @@ try {
         'response' => $response['data'],
     ];
 
-    if (PHP_SAPI === 'cli') {
-        echo json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."\n";
-        exit($output['sent'] ? 0 : 2);
-    }
-
-    header('Content-Type: application/json');
-    echo json_encode($output, JSON_UNESCAPED_UNICODE);
+    echo json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)."\n";
+    exit($output['sent'] ? 0 : 2);
 } catch (Throwable $e) {
-    $err = ['error' => $e->getMessage()];
-
-    if (PHP_SAPI === 'cli') {
-        fwrite(STDERR, json_encode($err)."\n");
-        exit(2);
-    }
-
-    http_response_code(500);
-    header('Content-Type: application/json');
-    echo json_encode($err);
+    fwrite(STDERR, json_encode(['error' => $e->getMessage()])."\n");
+    exit(2);
 }

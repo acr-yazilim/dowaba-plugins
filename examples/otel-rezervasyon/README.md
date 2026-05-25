@@ -6,6 +6,18 @@
 
 ---
 
+> ## ⚠️ GÜVENLİK UYARISI — DEMO KOD
+>
+> Bu demo'da route'lara **authentication middleware EKLENMEMİŞTİR.** Herhangi biri `/acr/bookings` URL'ini çağırıp rezervasyon oluşturabilir, check-in/iptal yapabilir.
+>
+> **Production'a almadan ÖNCE:**
+> 1. `routes/web.php`'deki `Route::prefix('acr')` group'una `->middleware('auth')` ekle
+> 2. `checkin`/`cancel` action'larına policy (sadece resepsiyon/admin)
+> 3. `.env`'de `APP_DEBUG=false`
+> 4. Public form için rate limit (`throttle:10,1`)
+
+---
+
 ## Özellikler
 
 - 🏨 **Dashboard** — toplam oda / aktif rezervasyon / gelir / doluluk oranı + bugün check-in/out edenler

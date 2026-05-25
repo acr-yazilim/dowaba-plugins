@@ -32,9 +32,35 @@ class CallbackController extends Controller
             return $this->errorView($e->errorCode() ?? 'auth_failed', $e->getMessage());
         }
 
-        $intended = session()->pull('url.intended', '/');
+        $intended = $this->safeIntendedUrl(session()->pull('url.intended', '/'));
 
         return redirect()->to($intended)->with('status', 'Dowaba ile başarılı şekilde bağlandın.');
+    }
+
+    /**
+     * Open Redirect koruması — sadece kendi domain'imizdeki path'lere yönlendir.
+     *
+     * Saldırı: `?intended=https://evil.com/phish` ile login → OAuth callback → evil.com.
+     * Whitelist kuralı:
+     *   1. `/` ile başlamalı (relative path)
+     *   2. `//` ile başlamayacak (protocol-relative URL, https://evil.com'a denk)
+     *   3. Boşsa veya geçersizse `/` (root) döner
+     */
+    private function safeIntendedUrl(?string $intended): string
+    {
+        if (! is_string($intended) || $intended === '') {
+            return '/';
+        }
+
+        if (! str_starts_with($intended, '/')) {
+            return '/';
+        }
+
+        if (str_starts_with($intended, '//')) {
+            return '/';
+        }
+
+        return $intended;
     }
 
     private function errorView(string $code, string $message): Renderable

@@ -29,5 +29,7 @@ Route::middleware($middleware)
     ->group(function () {
         Route::get('/login', LoginController::class)->name('login');
         Route::get('/callback', CallbackController::class)->name('callback');
-        Route::match(['get', 'post'], '/logout', LogoutController::class)->name('logout');
+        // Logout SADECE POST + CSRF — GET ile CSRF logout saldırısı engellenmiş
+        // (`<img src="/dowaba/auth/logout">` ile kurbanı sessizce çıkartma saldırısı)
+        Route::post('/logout', LogoutController::class)->name('logout');
     });

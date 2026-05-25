@@ -26,8 +26,12 @@ composer.lock
 *.log
 
 # Local secrets / dev keys (asla commit'lenmemeli)
+**/.env
 **/.env.local
+**/.env.*.local
 **/secrets/
+**/config.php
+**/database/database.sqlite
 
 # OS-specific test artifacts
 **/test/output/

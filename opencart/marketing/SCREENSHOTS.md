@@ -151,7 +151,7 @@ dowaba.com/pricing sayfası — plugin ücretsiz olduğu net görünüyor.
 
 ```bash
 # Lokal Docker'ı başlat (eğer kapattıysan)
-docker compose -f /Users/aydinacar/Documents/dowaba-plugins/opencart/docker/docker-compose.yml up -d
+cd opencart/docker && docker compose up -d
 
 # Tunnel başlat (Dowaba canlı çağrı için)
 cloudflared tunnel --url http://localhost:8080 &

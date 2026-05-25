@@ -6,6 +6,18 @@
 
 ---
 
+> ## ⚠️ GÜVENLİK UYARISI — DEMO KOD
+>
+> Bu demo'da route'lara **authentication middleware EKLENMEMİŞTİR.** Herhangi biri `/acr/orders` URL'ini çağırıp sipariş oluşturabilir, `mark-paid`/`mark-shipped`/`cancel` ile durumu manipüle edebilir → stok düşürür, müşteriye yanlış mesaj gider.
+>
+> **Production'a almadan ÖNCE:**
+> 1. `routes/web.php`'deki `Route::prefix('acr')` group'una `->middleware('auth')` ekle
+> 2. Status change action'larına policy (`markShipped` sadece kargo, `cancel` sipariş sahibi/admin)
+> 3. `.env`'de `APP_DEBUG=false`
+> 4. Public form için rate limit (`throttle:10,1`)
+
+---
+
 ## Sipariş Akışı
 
 ```
