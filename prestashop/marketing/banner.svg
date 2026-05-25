@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Dowaba AI for PrestaShop. Marketplace Banner (600x300). Render notes: see SUBMISSION_CHECKLIST.md Phase 3. PrestaShop palette: pink df0067 plus dark navy gradient. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" width="600" height="300">
+
+  <defs>
+    <!-- Dark navy → deep magenta — PrestaShop brand uyumlu -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e1442"/>
+      <stop offset="55%" stop-color="#2a1240"/>
+      <stop offset="100%" stop-color="#7a0a3c"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff5fa2"/>
+      <stop offset="100%" stop-color="#df0067"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="600" height="300" fill="url(#bg)"/>
+
+  <!-- Decorative dots (üst sol) -->
+  <g opacity="0.15">
+    <circle cx="30" cy="30" r="2" fill="#fff"/>
+    <circle cx="50" cy="30" r="2" fill="#fff"/>
+    <circle cx="70" cy="30" r="2" fill="#fff"/>
+    <circle cx="30" cy="50" r="2" fill="#fff"/>
+    <circle cx="50" cy="50" r="2" fill="#fff"/>
+    <circle cx="30" cy="70" r="2" fill="#fff"/>
+  </g>
+
+  <!-- Robot/AI icon (sol taraf) -->
+  <g transform="translate(40, 100)" filter="url(#glow)">
+    <rect x="0" y="0" width="100" height="80" rx="15" fill="url(#accent)" opacity="0.95"/>
+    <circle cx="30" cy="30" r="8" fill="#fff"/>
+    <circle cx="70" cy="30" r="8" fill="#fff"/>
+    <circle cx="30" cy="30" r="4" fill="#0e1442"/>
+    <circle cx="70" cy="30" r="4" fill="#0e1442"/>
+    <path d="M 30 55 Q 50 70 70 55" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <line x1="50" y1="0" x2="50" y2="-15" stroke="#ff5fa2" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="-18" r="4" fill="#ff5fa2"/>
+  </g>
+
+  <!-- Başlık -->
+  <text x="240" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" font-weight="800" fill="#fff">Dowaba AI</text>
+
+  <!-- Alt başlık -->
+  <text x="240" y="110" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="#ff5fa2" letter-spacing="2">AI CHATBOT FOR PRESTASHOP</text>
+
+  <!-- Channel badges -->
+  <g transform="translate(240, 130)" font-family="-apple-system, sans-serif" font-size="11" fill="#fff">
+    <rect x="0"   y="0" width="80" height="24" rx="12" fill="#25D366" opacity="0.95"/>
+    <text x="40"  y="16" text-anchor="middle" font-weight="600">WhatsApp</text>
+    <rect x="90"  y="0" width="80" height="24" rx="12" fill="#E4405F" opacity="0.95"/>
+    <text x="130" y="16" text-anchor="middle" font-weight="600">Instagram</text>
+    <rect x="180" y="0" width="60" height="24" rx="12" fill="#000" opacity="0.85"/>
+    <text x="210" y="16" text-anchor="middle" font-weight="600">TikTok</text>
+    <rect x="250" y="0" width="60" height="24" rx="12" fill="#0EA5E9" opacity="0.95"/>
+    <text x="280" y="16" text-anchor="middle" font-weight="600">Mail</text>
+  </g>
+
+  <!-- Feature list -->
+  <g transform="translate(240, 180)" font-family="-apple-system, sans-serif" font-size="13" fill="#e0d7e8">
+    <text x="0" y="0">✓ 10 AI Functions — search, compare, order</text>
+    <text x="0" y="20">✓ Multi-language (TR + 30 languages)</text>
+    <text x="0" y="40">✓ PrestaShop 1.7 &amp; 8.x dual support</text>
+  </g>
+
+  <!-- Footer -->
+  <g transform="translate(40, 270)">
+    <text font-family="-apple-system, sans-serif" font-size="11" fill="#a8a3b8">v0.1.0 • MIT License • dowaba.com</text>
+  </g>
+
+  <!-- FREE badge (üst sağ) -->
+  <g transform="translate(520, 30)">
+    <rect x="0" y="0" width="60" height="26" rx="13" fill="#10b981"/>
+    <text x="30" y="18" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#fff">FREE</text>
+  </g>
+
+</svg>

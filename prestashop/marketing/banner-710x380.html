@@ -1,0 +1,135 @@
+<!--
+  Dowaba AI for PrestaShop — 710x380 banner (HTML mockup)
+
+  PNG render (Chrome headless):
+    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+      --headless --screenshot=banner-710x380.png --window-size=710,380 \
+      --hide-scrollbars \
+      file://$PWD/banner-710x380.html
+
+  PrestaShop renk paleti: pembe #df0067 + dark navy gradient.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 710px; height: 380px; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0e1442 0%, #2a1240 55%, #7a0a3c 100%);
+    color: #fff;
+    position: relative;
+  }
+  .dots {
+    position: absolute; top: 20px; left: 20px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    opacity: 0.15;
+  }
+  .dots span { width: 3px; height: 3px; background: #fff; border-radius: 50%; display: block; }
+  .free-badge {
+    position: absolute; top: 24px; right: 30px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff; font-weight: 700; font-size: 14px;
+    padding: 6px 16px; border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+    letter-spacing: 1px;
+  }
+  .inner { display: flex; align-items: center; gap: 36px; padding: 0 50px; height: 100%; }
+  .bot {
+    width: 130px; height: 105px;
+    background: linear-gradient(135deg, #ff5fa2, #df0067);
+    border-radius: 22px;
+    position: relative;
+    box-shadow: 0 12px 36px rgba(223, 0, 103, 0.45);
+    flex-shrink: 0;
+  }
+  .bot::before {
+    content: ''; position: absolute; top: -16px; left: 50%;
+    width: 3px; height: 16px; background: #ff5fa2; transform: translateX(-50%);
+    border-radius: 2px;
+  }
+  .bot::after {
+    content: ''; position: absolute; top: -22px; left: 50%;
+    width: 9px; height: 9px; background: #ff5fa2; border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 12px rgba(255, 95, 162, 0.7);
+  }
+  .eyes { position: absolute; top: 28px; left: 0; right: 0; display: flex; justify-content: center; gap: 30px; }
+  .eye { width: 18px; height: 18px; background: #fff; border-radius: 50%; position: relative; }
+  .eye::after { content: ''; position: absolute; top: 5px; left: 5px; width: 8px; height: 8px; background: #0e1442; border-radius: 50%; }
+  .smile {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    width: 50px; height: 22px;
+    border: 3px solid #fff; border-top: 0; border-radius: 0 0 30px 30px;
+  }
+  .text-block { flex: 1; }
+  .title { font-size: 42px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .subtitle {
+    color: #ff5fa2; font-size: 13px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .channels { display: flex; gap: 8px; margin-bottom: 22px; }
+  .ch {
+    color: #fff; font-size: 11.5px; font-weight: 700;
+    padding: 5px 13px; border-radius: 14px;
+    letter-spacing: 0.4px;
+  }
+  .ch-wa { background: #25D366; }
+  .ch-ig { background: linear-gradient(135deg, #f09433, #dc2743, #bc1888); }
+  .ch-tk { background: linear-gradient(135deg, #25f4ee, #000 55%, #fe2c55); }
+  .ch-mail { background: #0EA5E9; }
+  .features { list-style: none; }
+  .features li {
+    font-size: 14px; color: #e0d7e8; line-height: 1.7;
+    padding-left: 22px; position: relative;
+  }
+  .features li::before {
+    content: '✓'; position: absolute; left: 0; top: 0;
+    color: #10b981; font-weight: 900;
+  }
+  .footer {
+    position: absolute; bottom: 18px; left: 50px;
+    font-size: 11px; color: #a8a3b8; letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+  <div class="dots">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class="free-badge">FREE</div>
+
+  <div class="inner">
+    <div class="bot">
+      <div class="eyes">
+        <div class="eye"></div>
+        <div class="eye"></div>
+      </div>
+      <div class="smile"></div>
+    </div>
+
+    <div class="text-block">
+      <div class="title">Dowaba AI</div>
+      <div class="subtitle">AI Chatbot for PrestaShop</div>
+      <div class="channels">
+        <span class="ch ch-wa">WhatsApp</span>
+        <span class="ch ch-ig">Instagram</span>
+        <span class="ch ch-tk">TikTok</span>
+        <span class="ch ch-mail">Mail</span>
+      </div>
+      <ul class="features">
+        <li>10 AI functions — search, compare, order</li>
+        <li>Multi-language (TR + 30 languages)</li>
+        <li>PrestaShop 1.7 &amp; 8.x dual support</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer">v0.1.0 · MIT License · dowaba.com</div>
+</body>
+</html>
