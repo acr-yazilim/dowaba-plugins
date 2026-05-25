@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Dowaba\LaravelBridge\Http\Controllers\CallbackController;
+use Dowaba\LaravelBridge\Http\Controllers\LoginController;
+use Dowaba\LaravelBridge\Http\Controllers\LogoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -9,11 +12,11 @@ use Illuminate\Support\Facades\Route;
 | Dowaba Laravel Bridge — Routes
 |--------------------------------------------------------------------------
 |
-| /dowaba/auth/login    — Dowaba authorize endpoint'ine yönlendir (PKCE state set)
-| /dowaba/auth/callback — Authorization code → access_token exchange
-| /dowaba/auth/logout   — Token revoke + session purge
+| Hepsi 'web' middleware grubunda (CSRF + session). Prefix config'ten gelir
+| (default 'dowaba'). Yazılımcı kendi domain'inde bu URL'leri Dowaba admin
+| panelindeki OAuth client kaydında redirect_uri olarak vermeli:
 |
-| Şu an iskelet — Controller sınıfları sonraki seansta yazılacak.
+|   https://app.example.com/dowaba/auth/callback
 |
 */
 
@@ -24,16 +27,7 @@ Route::middleware($middleware)
     ->prefix("{$prefix}/auth")
     ->name('dowaba.auth.')
     ->group(function () {
-        // Route::get('/login', [LoginController::class, '__invoke'])->name('login');
-        // Route::get('/callback', [CallbackController::class, '__invoke'])->name('callback');
-        // Route::post('/logout', [LogoutController::class, '__invoke'])->name('logout');
-
-        Route::get('/_skeleton', fn () => response()->json([
-            'message' => 'Dowaba Laravel Bridge iskelet — OAuth route\'ları sonraki seansta eklenecek',
-            'planned_routes' => [
-                'GET  /dowaba/auth/login',
-                'GET  /dowaba/auth/callback',
-                'POST /dowaba/auth/logout',
-            ],
-        ]));
+        Route::get('/login', LoginController::class)->name('login');
+        Route::get('/callback', CallbackController::class)->name('callback');
+        Route::match(['get', 'post'], '/logout', LogoutController::class)->name('logout');
     });

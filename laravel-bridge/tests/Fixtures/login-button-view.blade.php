@@ -1,0 +1,1 @@
+<x-dowaba::login-button />

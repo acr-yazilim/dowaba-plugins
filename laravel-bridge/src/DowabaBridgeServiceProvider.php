@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Dowaba\LaravelBridge;
 
+use Dowaba\LaravelBridge\Blade\ChatWindowComponent;
+use Dowaba\LaravelBridge\Blade\ContactCreateFormComponent;
+use Dowaba\LaravelBridge\Blade\ConversationListComponent;
+use Dowaba\LaravelBridge\Blade\LoginButtonComponent;
+use Dowaba\LaravelBridge\Blade\WidgetScriptComponent;
 use Dowaba\LaravelBridge\Console\InstallCommand;
 use Dowaba\LaravelBridge\Console\RotateClientSecretCommand;
 use Dowaba\LaravelBridge\Console\TestConnectionCommand;
-use Illuminate\Contracts\Support\DeferrableProvider;
+use Dowaba\LaravelBridge\Http\Middleware\EnsureDowabaConnected;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +34,7 @@ class DowabaBridgeServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->registerBladeComponents();
+        $this->registerMiddlewareAliases();
         $this->registerPublishables();
         $this->registerConsoleCommands();
     }
@@ -35,6 +42,18 @@ class DowabaBridgeServiceProvider extends ServiceProvider
     private function registerBladeComponents(): void
     {
         Blade::componentNamespace('Dowaba\\LaravelBridge\\Blade', 'dowaba');
+
+        Blade::component('dowaba::login-button', LoginButtonComponent::class);
+        Blade::component('dowaba::widget-script', WidgetScriptComponent::class);
+        Blade::component('dowaba::chat-window', ChatWindowComponent::class);
+        Blade::component('dowaba::conversation-list', ConversationListComponent::class);
+        Blade::component('dowaba::contact-create-form', ContactCreateFormComponent::class);
+    }
+
+    private function registerMiddlewareAliases(): void
+    {
+        $router = $this->app->make(Router::class);
+        $router->aliasMiddleware('dowaba.connected', EnsureDowabaConnected::class);
     }
 
     private function registerPublishables(): void
