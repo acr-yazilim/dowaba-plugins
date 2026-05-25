@@ -55,7 +55,8 @@ class Booking extends Model
 
     public function nights(): int
     {
-        return $this->check_in->diffInDays($this->check_out);
+        // Carbon ^3 + PHP 8.3'te diffInDays float döner; absolute=true ile int cast
+        return (int) $this->check_in->diffInDays($this->check_out, absolute: true);
     }
 
     public static function generateReservationCode(): string
