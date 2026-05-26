@@ -216,7 +216,7 @@ class DowabaAiManifestModuleFrontController extends ModuleFrontController
         exit;
     }
 
-    private function fn(string $slug, string $name, string $desc, string $scope, array $parameters, string $method, string $action, ?array $query_extra, ?array $body_template, int $timeout, ?array $response = null): array
+    private function fn(string $slug, string $name, string $desc, string $scope, array $parameters, string $method, string $action, ?array $query_extra, ?array $body_template, int $timeout, array $response = null): array
     {
         $query = ['fc' => 'module', 'module' => 'dowaba_ai', 'controller' => 'api', 'action' => $action];
         if ($query_extra) {

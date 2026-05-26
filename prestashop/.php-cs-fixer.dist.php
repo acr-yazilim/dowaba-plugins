@@ -4,7 +4,9 @@
  *
  * Rules of interest (per validator Standards tab):
  * - concat_space: spacing 'one'  → 'foo'.'bar' must become 'foo' . 'bar'
- * - nullable_type_declaration_for_default_null_value → string $x = null → ?string $x = null
+ * - nullable_type_declaration_for_default_null_value → use_nullable_type_declaration: false
+ *   PrestaShop core BC convention (PHP 7.4 implicit nullable preferred):
+ *   ?string $x = null  →  string $x = null
  */
 
 $finder = (new PhpCsFixer\Finder())
@@ -17,7 +19,7 @@ return (new PhpCsFixer\Config())
         '@PSR12' => true,
         '@Symfony' => true,
         'concat_space' => ['spacing' => 'one'],
-        'nullable_type_declaration_for_default_null_value' => true,
+        'nullable_type_declaration_for_default_null_value' => ['use_nullable_type_declaration' => false],
         'single_quote' => true,
         'no_blank_lines_after_phpdoc' => true,
         'binary_operator_spaces' => true,

@@ -15,7 +15,7 @@ if (!defined('_PS_VERSION_')) {
 
 class DowabaAuditLogger
 {
-    public static function write(string $function_slug, string $request_ip, int $status_code, int $duration_ms, ?string $error_message = null): void
+    public static function write(string $function_slug, string $request_ip, int $status_code, int $duration_ms, string $error_message = null): void
     {
         try {
             $db = Db::getInstance();
@@ -44,7 +44,7 @@ class DowabaAuditLogger
         }
     }
 
-    public static function getLogs(int $limit = 100, ?string $function_slug = null, ?int $status_code = null): array
+    public static function getLogs(int $limit = 100, string $function_slug = null, int $status_code = null): array
     {
         $where = ['1=1'];
         if (null !== $function_slug && '' !== $function_slug) {

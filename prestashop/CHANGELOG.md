@@ -2,6 +2,22 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.3] - 2026-05-26
+
+### Fixed (validator.prestashop.com v0.2.2 raporu kapanışı)
+
+- **`nullable_type_declaration_for_default_null_value` — PrestaShop BC convention** — Rule modu yanlış konfigüre edilmişti (`use_nullable_type_declaration: true` → `?T` zorlardı). PrestaShop core PHP 7.4 implicit-nullable formatı tercih ediyor:
+  - **Eski:** `?string $error_message = null` (PHP 8.0+ explicit nullable)
+  - **Yeni:** `string $error_message = null` (PHP 7.4 implicit nullable, default null param için)
+  - Etkilenen 2 dosya / 3 imza: `AuditLogger::write` + `AuditLogger::getLogs` + `Manifest::fn`.
+  - Default `null` değeri OLMAYAN nullable param (`?array $query_extra`, `?array $body_template`) dokunulmadı — onlar zaten doğru format.
+
+### Notes
+
+- `.php-cs-fixer.dist.php` config'inde `nullable_type_declaration_for_default_null_value => ['use_nullable_type_declaration' => false]` set edildi. Sonraki release'lerde otomatik enforce.
+- PHP 7.4-8.3 desteklenen tier'ı kapsar. PHP 8.4'te implicit-nullable deprecated olacak ama plugin `ps_versions_compliancy.min = 1.7.0` ile PHP 7.4 zorunlu çalıştığı için bu format BC-safe.
+- BC-safe upgrade — 10 fonksiyon + `psm_*` slug + Bundle Import flow v0.2.2 ile aynı.
+
 ## [0.2.2] - 2026-05-26
 
 ### Fixed (validator.prestashop.com v0.2.1 raporu kapanışı)

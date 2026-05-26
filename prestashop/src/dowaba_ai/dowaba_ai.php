@@ -24,7 +24,7 @@ class DowabaAi extends Module
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.2.2';
+        $this->version = '0.2.3';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.0', 'max' => _PS_VERSION_];
