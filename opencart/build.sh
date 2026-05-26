@@ -48,11 +48,10 @@ fi
 
 mkdir -p dist
 OUT_OC3="dist/dowaba-opencart-oc3-${VERSION}.ocmod.zip"
-# OC4: zip adı install.json'daki `code` ile birebir aynı olmalı (installer satır 98 bug).
-# Versiyonlu kopyayı da bırakıyoruz (release asset olarak yedek), ama primary install zip versiyonsuz.
+# OC4: zip adı install.json'daki `code` ile birebir aynı OLMALI (installer satır 98 zip ADINI code olarak kullanır).
+# SADECE versiyonsuz zip — versiyonlu kopya kullanıcıları yanıltıyor (yanlış adı seçip "Extension does not exist" alıyorlar).
 OUT_OC4="dist/dowaba_ai.ocmod.zip"
-OUT_OC4_VERSIONED="dist/dowaba_ai-oc4-${VERSION}.ocmod.zip"
-rm -f "$OUT_OC3" "$OUT_OC4" "$OUT_OC4_VERSIONED"
+rm -f "$OUT_OC3" "$OUT_OC4"
 
 # PHP syntax check — her iki source'u da kontrol et
 echo "🔍 PHP syntax check..."
@@ -70,9 +69,6 @@ echo "📦 OC4: building $OUT_OC4..."
 (cd src/oc4 && zip -qr "../../$OUT_OC4" install.json install.xml upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
 SIZE_OC4=$(du -k "$OUT_OC4" | cut -f1)
 echo "  ✅ $OUT_OC4 (${SIZE_OC4} KB)"
-# Versiyonlu kopya — release asset listesinde versiyon görünsün diye
-cp "$OUT_OC4" "$OUT_OC4_VERSIONED"
-echo "  ✅ $OUT_OC4_VERSIONED (versiyon kopyası, içerik aynı)"
 
 # OC3 build
 echo "📦 OC3: building $OUT_OC3..."
@@ -82,9 +78,8 @@ echo "  ✅ $OUT_OC3 (${SIZE_OC3} KB)"
 
 echo ""
 echo "📋 Build summary:"
-ls -lh "$OUT_OC3" "$OUT_OC4" "$OUT_OC4_VERSIONED" 2>/dev/null
+ls -lh "$OUT_OC3" "$OUT_OC4" 2>/dev/null
 echo ""
 echo "Upload to OpenCart admin → Extensions → Installer"
 echo "  • OC 3.x: $OUT_OC3"
-echo "  • OC 4.x: $OUT_OC4 (primary — adı install.json code ile aynı)"
-echo "           $OUT_OC4_VERSIONED (versiyon kopyası, içerik identik)"
+echo "  • OC 4.x: $OUT_OC4 (adı install.json code ile aynı — DEĞİŞTİRME)"
