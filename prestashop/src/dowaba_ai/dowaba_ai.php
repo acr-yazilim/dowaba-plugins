@@ -25,11 +25,16 @@ class Dowaba_Ai extends Module
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.2.5';
+        $this->version = '0.2.7';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
-        $this->ps_versions_compliancy = ['min' => '1.7.0', 'max' => _PS_VERSION_];
+        // Explicit min/max — addons.prestashop.com static analyzer requires literal strings,
+        // not _PS_VERSION_ (which is evaluated at runtime and breaks static compatibility detection).
+        $this->ps_versions_compliancy = ['min' => '1.7.0', 'max' => '9.1.99'];
         $this->bootstrap = true;
+        // PrestaShop Addons marketplace product key — required for marketplace update notifications.
+        // https://devdocs.prestashop-project.org/1.7/modules/sell/technical-tools/
+        $this->module_key = '499fd42d03a2e28e29d5bf5067c38f71';
 
         parent::__construct();
 

@@ -212,7 +212,9 @@
     if (!confirm('Mevcut API anahtarı iptal edilecek ve yenisi üretilecek. Devam edilsin mi?')) return;
     var btn = this;
     btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ...';
-    fetch('{{ regenerate_url }}', { method: 'POST', credentials: 'same-origin' })
+    // |raw zorunlu — Twig autoescape açıksa URL'deki & karakterleri &amp;'ye dönüşür
+    // ve OpenCart user_token query param'ını parse edemez (HTML login sayfasına redirect → JSON parse fail).
+    fetch({{ regenerate_url|json_encode|raw }}, { method: 'POST', credentials: 'same-origin' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.success) {
@@ -251,7 +253,7 @@
     params.set('limit', '100');
     if (fn) params.set('function_slug', fn);
     if (st) params.set('status', st);
-    var url = '{{ audit_log_url }}&' + params.toString();
+    var url = {{ audit_log_url|json_encode|raw }} + '&' + params.toString();
     var tbody = document.getElementById('audit-tbody');
     tbody.innerHTML = '<tr><td colspan="6" class="text-center"><i class="fa fa-spinner fa-spin"></i></td></tr>';
     fetch(url, { credentials: 'same-origin' })
@@ -290,7 +292,7 @@
     var result = document.getElementById('test-result');
     btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Testing...';
     result.innerHTML = '';
-    fetch('{{ test_url }}', { method: 'POST', credentials: 'same-origin' })
+    fetch({{ test_url|json_encode|raw }}, { method: 'POST', credentials: 'same-origin' })
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.success) {

@@ -44,6 +44,10 @@ class Dowaba extends \Opencart\System\Engine\Model {
      * Faz 2'de doldurulacak. Şimdilik placeholder.
      */
     public function getAuditLog(int $limit = 100, ?string $functionSlug = null, ?int $statusCode = null): array {
+        // Defansif: install() hook çalışmadıysa (FTP upload / ocmod fail) tabloyu burada da oluştur.
+        // CREATE TABLE IF NOT EXISTS idempotent; her çağrıda ekstra yük yok.
+        $this->install();
+
         $sql = "SELECT * FROM `" . DB_PREFIX . "dowaba_audit` WHERE 1=1";
         $params = [];
 

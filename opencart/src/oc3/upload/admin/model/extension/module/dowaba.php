@@ -28,6 +28,10 @@ class ModelExtensionModuleDowaba extends Model {
     }
 
     public function getAuditLog($limit = 100, $functionSlug = null, $statusCode = null) {
+        // Defansif: install() hook çalışmadıysa (FTP upload / ocmod fail) tabloyu burada da oluştur.
+        // CREATE TABLE IF NOT EXISTS idempotent; her çağrıda ekstra yük yok (MySQL skip eder).
+        $this->install();
+
         $sql = "SELECT * FROM `" . DB_PREFIX . "dowaba_audit` WHERE 1=1";
 
         if ($functionSlug !== null && $functionSlug !== '') {

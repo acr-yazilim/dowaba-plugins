@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e1442"/>
+      <stop offset="55%" stop-color="#2a1240"/>
+      <stop offset="100%" stop-color="#7a0a3c"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff5fa2"/>
+      <stop offset="100%" stop-color="#df0067"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="240" height="240" rx="40" fill="url(#bg)"/>
+
+  <!-- Robot/AI head -->
+  <g transform="translate(60, 70)" filter="url(#glow)">
+    <rect x="0" y="0" width="120" height="96" rx="20" fill="url(#accent)" opacity="0.95"/>
+    <circle cx="36" cy="36" r="10" fill="#fff"/>
+    <circle cx="84" cy="36" r="10" fill="#fff"/>
+    <circle cx="36" cy="36" r="5" fill="#0e1442"/>
+    <circle cx="84" cy="36" r="5" fill="#0e1442"/>
+    <path d="M 36 66 Q 60 84 84 66" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <line x1="60" y1="0" x2="60" y2="-18" stroke="#ff5fa2" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="60" cy="-22" r="5" fill="#ff5fa2"/>
+  </g>
+
+  <!-- Label -->
+  <text x="120" y="200" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="28" font-weight="800" fill="#fff">DoWaba AI</text>
+</svg>

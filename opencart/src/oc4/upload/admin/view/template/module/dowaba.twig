@@ -263,7 +263,9 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ...';
 
-    fetch('{{ regenerate_url }}', { method: 'POST', credentials: 'same-origin' })
+    // |raw zorunlu — Twig autoescape açıksa URL'deki & karakterleri &amp;'ye dönüşür
+    // ve OpenCart user_token query param'ını parse edemez (HTML login sayfasına redirect → JSON parse fail).
+    fetch({{ regenerate_url|json_encode|raw }}, { method: 'POST', credentials: 'same-origin' })
       .then(r => r.json())
       .then(data => {
         if (data.success) {
@@ -315,7 +317,7 @@
     if (fn) params.set('function_slug', fn);
     if (st) params.set('status', st);
 
-    const url = '{{ audit_log_url }}&' + params.toString();
+    const url = {{ audit_log_url|json_encode|raw }} + '&' + params.toString();
     const tbody = document.getElementById('audit-tbody');
     tbody.innerHTML = '<tr><td colspan="6" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i></td></tr>';
 
@@ -361,7 +363,7 @@
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Testing...';
     result.innerHTML = '';
 
-    fetch('{{ test_url }}', { method: 'POST', credentials: 'same-origin' })
+    fetch({{ test_url|json_encode|raw }}, { method: 'POST', credentials: 'same-origin' })
       .then(r => r.json())
       .then(data => {
         if (data.success) {
