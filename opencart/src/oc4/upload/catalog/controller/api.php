@@ -161,7 +161,8 @@ class Api extends \Opencart\System\Engine\Controller {
             'data' => array_merge(
                 $this->shapeProduct($p),
                 [
-                    'description' => strip_tags((string) ($p['description'] ?? '')),
+                    // HTML entity decode + tag strip — AI'a düz metin gitsin
+                    'description' => trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode((string) ($p['description'] ?? ''), ENT_QUOTES, 'UTF-8')))),
                     'weight'      => $p['weight']    ?? null,
                     'attributes'  => $this->shapeAttributes($attributes),
                     'gallery'     => $gallery,  // ek görseller (her biri thumb+image full URL)
@@ -887,7 +888,8 @@ class Api extends \Opencart\System\Engine\Controller {
 
         return [
             'product_id' => (int) ($p['product_id'] ?? 0),
-            'name'       => $p['name']         ?? '',
+            // HTML entity decode (&quot;, &amp; vs.) — AI clean string okusun
+            'name'       => html_entity_decode((string) ($p['name'] ?? ''), ENT_QUOTES, 'UTF-8'),
             'model'      => $p['model']        ?? null,   // OpenCart "Model" — ürün kodu
             'sku'        => $p['sku']          ?? null,   // OpenCart "SKU" — barkod / harici kod
             'price'      => $finalPrice,
