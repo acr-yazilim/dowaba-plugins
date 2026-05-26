@@ -15,16 +15,17 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class DowabaAi extends Module
+class Dowaba_Ai extends Module
 {
     public const TABLE_AUDIT = 'dowaba_audit';
+    public const TABLE_PREVIEW = 'dowaba_preview';
     public const PREVIEW_TTL = 300; // 5 dakika
 
     public function __construct()
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.2.3';
+        $this->version = '0.2.5';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.0', 'max' => _PS_VERSION_];
@@ -56,8 +57,10 @@ class DowabaAi extends Module
         Configuration::updateValue('DOWABA_AI_API_KEY_HASH', '');
         Configuration::updateValue('DOWABA_AI_API_KEY_PREFIX', '');
 
+        $db = Db::getInstance();
+
         // Audit table
-        $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '` (
+        $auditSql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '` (
             audit_id      BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             function_slug VARCHAR(64) NOT NULL,
             request_ip    VARCHAR(45) NOT NULL,
@@ -71,7 +74,18 @@ class DowabaAi extends Module
             INDEX idx_status_code  (status_code)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
 
-        return Db::getInstance()->execute($sql);
+        // Preview table (DB-backed cache for order_preview → order_confirm flow)
+        // v0.2.5: PrestaShop Cache::store kullanılıyordu, default install'da
+        // ps_cache_enable=false olduğu için preview hep "expired" dönüyordu. DB-tabanlı.
+        $previewSql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . self::TABLE_PREVIEW . '` (
+            preview_id VARCHAR(40) NOT NULL,
+            payload    LONGTEXT NOT NULL,
+            expires_at DATETIME NOT NULL,
+            PRIMARY KEY (preview_id),
+            INDEX idx_expires (expires_at)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
+
+        return $db->execute($auditSql) && $db->execute($previewSql);
     }
 
     public function uninstall()
@@ -86,7 +100,9 @@ class DowabaAi extends Module
             Configuration::deleteByName($k);
         }
 
-        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '`');
+        $db = Db::getInstance();
+        $db->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '`');
+        $db->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . self::TABLE_PREVIEW . '`');
 
         return parent::uninstall();
     }

@@ -5,7 +5,7 @@
  * Serves Bundle Import manifest JSON (10 AI function definitions).
  * URL: /index.php?fc=module&module=dowaba_ai&controller=manifest
  * Class name follows PrestaShop convention:
- *   filename "manifest" -> class "DowabaAiManifestModuleFrontController"
+ *   filename "manifest" -> class "Dowaba_AiManifestModuleFrontController"
  *
  * @author    Aydın Acar <support@dowaba.com>
  * @copyright 2024 Aydın Acar (DoWaba)
@@ -17,7 +17,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/dowaba_ai.php';
 
-class DowabaAiManifestModuleFrontController extends ModuleFrontController
+class Dowaba_AiManifestModuleFrontController extends ModuleFrontController
 {
     public $auth = false;
     public $ssl = false;

@@ -27,7 +27,7 @@ services:
       ADMIN_MAIL: admin@dowaba.local
       ADMIN_PASSWD: admin123
     volumes:
-      - ../src/dowaba_ai:/var/www/html/modules/dowaba_ai:ro
+      - ../src/dowaba_ai:/var/www/html/modules/dowaba_ai
 
   mariadb:
     image: mariadb:11

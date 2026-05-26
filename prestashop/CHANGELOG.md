@@ -2,6 +2,59 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.5] - 2026-05-26
+
+### Fixed (canlı test regresyonu — KRİTİK)
+
+- **`OrderPreview` artık DB-backed (`ps_dowaba_preview` tablo)** — v0.2.4'e kadar
+  `PrestaShop Cache::store` kullanılıyordu, ama default install'da
+  `ps_cache_enable=false` (PrestaShop'un kendi ayarı). Bu durumda
+  `Cache::store()` NO-OP çalışıyor, hiçbir şey kaydetmiyor → `consume()`
+  her zaman `null` döner → "preview_id expired or already consumed" hatası.
+  Sonuç: `psm_order_confirm` HER ZAMAN 410 dönüyordu (canlı sipariş hiç
+  oluşmuyordu). Fix: yeni `ps_dowaba_preview` tablosu (PRIMARY KEY +
+  expires_at index) + REPLACE INTO/DELETE atomik. Install hook tablo yaratır,
+  uninstall hook düşürür. `peek()` defansif `ensureTable()` çağırır
+  (upgrade path için).
+- **3× SQL `LIMIT 1 LIMIT 1` duplicate** — `Db::getRow()` zaten LIMIT 1
+  ekliyor, manuel `LIMIT 1` SQL syntax error veriyordu. `api.php`'de 2
+  yer (customer email + phone lookup), `OrderPreview.php`'de 1 yer.
+  Canlı test'te ortaya çıktı: `psm_order_confirm` her seferinde
+  `SQLSTATE[42000]: Syntax error ... near 'LIMIT 1' at line 1` döndü.
+- **TR ülke aktivasyonu** (lokal docker test notu) — PrestaShop default
+  install'da `ps_country` SET active=0 (US hariç). TR müşteri adresinde
+  "The delivery address country is not active" hatası. Modülün
+  çağrıldığı mağaza vanilla install ise gözlenir. Çözüm bizim plugin'de
+  değil — modül kullanıcısı PrestaShop BO'dan TR aktive eder
+  (Localization → Countries → Türkiye → Enable). README'ye not eklendi.
+
+### Added
+
+- `TABLE_PREVIEW` sabiti + install/uninstall hook'larda yaratma/silme.
+- Defansif `OrderPreview::ensureTable()` static checked flag ile bir kez
+  çalışır (upgrade'lerde install hook tetiklenmediği senaryolar için).
+
+### Live verified (Cloudflare tunnel + DoWaba prod entegrasyonu)
+
+- 7/7 AI fonksiyonu PASS (psm_product_search/detail/compare/stock/category +
+  order_preview + **order_confirm gerçek PrestaShop order #6 yarattı $2,297**).
+- DoWaba prod connection 19 ↔ PrestaShop v0.2.5 manifest endpoint canlı.
+
+## [0.2.4] - 2026-05-26
+
+### Fixed (runtime install regresyonu — KRİTİK)
+
+- **`DowabaAi` → `Dowaba_Ai` class name (underscore restore)** — v0.2.0'da validator.prestashop.com'un "Module class name mismatch" hatası için class adı `Dowaba_Ai` → `DowabaAi` yapılmıştı. Ama bu PrestaShop runtime'da modülü **install ettiremedi**: `Module::getInstanceByName('dowaba_ai')` `false` döndü → `ModuleRepository::getModuleAttributes` içinde `get_parent_class(false)` → fatal "TypeError: get_parent_class(): Argument #1 must be an object" → tüm "Module Manager" sayfası çöktü (HTTP 500).
+  - **Kök sebep**: PrestaShop `Module::coreLoadModule()` içinde `class_exists($module_name, false)` (kelime kelime `dowaba_ai` arar). PHP class adları case-INSENSITIVE ama underscore'u **literal** sayar — `DowabaAi !== dowaba_ai`. Validator'ın "name mismatch" hatası muhtemelen tamamen farklı sebepten kaynaklanıyordu (sınıfın eksik autoload + cache stale).
+  - **Doğru ad**: `Dowaba_Ai` (PascalCase + underscore korumalı). Bu hem PHP class_exists case-insensitive match ile `dowaba_ai`'yi yakalar (PrestaShop runtime OK) hem de file basename ile naming convention uyumu sağlar.
+  - Etkilenen 3 dosya / 3 sınıf adı: `Dowaba_Ai` (main module) + `Dowaba_AiManifestModuleFrontController` + `Dowaba_AiApiModuleFrontController`.
+  - **Lokal test PASS**: docker compose recreate + cache clear + Module::getInstanceByName('dowaba_ai') artık `Dowaba_Ai v0.2.4` döndürüyor.
+
+### Notes
+
+- BC-safe upgrade — install/uninstall hooks + DB schema + 10 fn + `psm_*` slug v0.2.3 ile aynı.
+- Mevcut v0.2.3 yüklü kurulumlar yoksa (PrestaShop'ta install olmadığı için), v0.2.4 ilk gerçek install sürümü olur.
+
 ## [0.2.3] - 2026-05-26
 
 ### Fixed (validator.prestashop.com v0.2.2 raporu kapanışı)

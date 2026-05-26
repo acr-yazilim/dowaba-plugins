@@ -4,7 +4,7 @@
  *
  * Front controller that handles all AI function calls dispatched by Dowaba SaaS.
  * URL: /index.php?fc=module&module=dowaba_ai&controller=api&action={products|product|...}
- * Class: DowabaAiApiModuleFrontController
+ * Class: Dowaba_AiApiModuleFrontController
  *
  * Dispatches 10 actions (products, product, compare, stock, categories, order,
  * customer_lookup, cart_recover, order_preview, order_confirm).
@@ -22,7 +22,7 @@ require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/ScopeGuard.php';
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/AuditLogger.php';
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/OrderPreview.php';
 
-class DowabaAiApiModuleFrontController extends ModuleFrontController
+class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 {
     public $auth = false;
     public $ssl = false;
@@ -313,7 +313,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         $customer = null;
         if ('' !== $email) {
-            $row = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL($email) . "' LIMIT 1");
+            $row = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL($email) . "'");
             if ($row) {
                 $customer = new Customer((int) $row['id_customer']);
             }
@@ -323,8 +323,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             $row = Db::getInstance()->getRow(
                 'SELECT c.id_customer FROM `' . _DB_PREFIX_ . 'customer` c
                  INNER JOIN `' . _DB_PREFIX_ . "address` a ON a.id_customer = c.id_customer
-                 WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '" . pSQL($norm) . "'
-                 LIMIT 1"
+                 WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '" . pSQL($norm) . "'"
             );
             if ($row) {
                 $customer = new Customer((int) $row['id_customer']);
@@ -541,7 +540,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         // Customer (var mı? yoksa guest oluştur)
         $customer_id = 0;
         if ($customer['email']) {
-            $row = Db::getInstance()->getRow('SELECT id_customer FROM `' . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL(strtolower($customer['email'])) . "' LIMIT 1");
+            $row = Db::getInstance()->getRow('SELECT id_customer FROM `' . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL(strtolower($customer['email'])) . "'");
             if ($row) {
                 $customer_id = (int) $row['id_customer'];
             }
