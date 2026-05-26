@@ -11,7 +11,7 @@ $_['text_edit']                = 'Edit Dowaba AI Integration';
 $_['text_step_1_title']        = 'Step 1 — API Key';
 $_['text_step_1_desc']         = 'Generate a random API key. Dowaba will send this token in the Authorization header on every function call.';
 $_['text_step_2_title']        = 'Step 2 — Manifest URL';
-$_['text_step_2_desc']         = 'Paste this URL into your Dowaba admin → Bundle Import. Dowaba will fetch it once and auto-create all 9 AI functions.';
+$_['text_step_2_desc']         = 'Paste this URL into your Dowaba admin → Bundle Import. Dowaba will fetch it once and auto-create all 10 AI functions.';
 $_['text_step_3_title']        = 'Step 3 — IP Whitelist (optional)';
 $_['text_step_3_desc']         = 'Comma-separated list of allowed source IPs. Empty = no restriction. Dowaba production IPs: 178.105.68.170, 49.13.120.112';
 $_['text_step_4_title']        = 'Step 4 — Scopes';

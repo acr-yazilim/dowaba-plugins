@@ -203,7 +203,18 @@ class ControllerExtensionDowabaAiManifest extends Controller {
     }
 
     private function getPluginVersion() {
-        // OC3'te install.xml'den okunmaz, sabit version
-        return '0.2.0';
+        // Version tek otorite: install.xml. 2026-05-26: önceden 3 farklı yerde
+        // farklı değer vardı (install.xml 0.2.2, manifest 0.2.0, user_agent 0.1.0).
+        // Şimdi install.xml'i runtime parse ediyoruz → SemVer disiplini garanti.
+        $xmlPath = DIR_SYSTEM . '../install.xml';
+        if (is_file($xmlPath)) {
+            try {
+                $xml = @simplexml_load_file($xmlPath);
+                if ($xml && isset($xml->version)) {
+                    return (string) $xml->version;
+                }
+            } catch (\Throwable $e) {}
+        }
+        return '0.2.3'; // fallback
     }
 }

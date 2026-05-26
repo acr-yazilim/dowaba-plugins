@@ -709,7 +709,7 @@ class ControllerExtensionDowabaAiApi extends Controller {
             'currency_value' => 1.0,
             'ip'             => $this->clientIp,
             'forwarded_ip'   => '',
-            'user_agent'     => 'Dowaba-AI-Plugin/0.1.0',
+            'user_agent'     => 'Dowaba-AI-Plugin/0.2.3',
             'accept_language'=> 'tr-TR',
 
             'products' => $orderProducts,

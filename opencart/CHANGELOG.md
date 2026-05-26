@@ -2,6 +2,20 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.3] - 2026-05-26
+
+### Fixed
+
+- **OC3 `opc_order_preview` Gemini JSON Schema strict fix** — `items: {type: array}` ve `customer: {type: object}` boş tanımlıydı → Gemini "function declaration invalid" 400 reject → AI tüm tool listesini reddediyor → kullanıcıya silent "Şu an yanıt veremiyoruz" fallback. Fix: `items.items.{product_id, quantity}` + `customer.properties.{phone, email, name, address, city}` (OC4 zaten doğruydu — sadece OC3 etkilendi). Canlı e2e doğrulama: site_id=75, 10 fn aktif, opc_product_search 5ms.
+- **Audit log lazy retention cleanup (OC3 + OC4)** — `purgeOld()` metodu vardı ama hiç çağrılmıyordu → audit tablosu sınırsız büyüme bug'ı. Şimdi `write()` her çağrıda 1/500 ihtimalle `audit_retention_days` (default 30) eski log'ları siler. Production disk-fill önlenir.
+- **OC3 version tek-otorite** — install.xml 0.2.2 / manifest.php 0.2.0 / api.php user_agent 0.1.0 uyumsuzluğu → `getPluginVersion()` artık install.xml'i runtime parse ediyor. Tek değişen yer: `install.xml` `<version>`. SemVer disiplini garanti.
+- **TR/EN dil dosyaları "9 → 10 function"** — `text_step_2_desc` yanlış sayı veriyordu (OC3 + OC4 her ikisi de). OC4 install.json comment'inde de düzeltildi.
+
+### Notes
+
+- Backend (Dowaba ana repo) `BundleImportController::validateManifest` recursive Gemini JSON Schema check eklendi (2026-05-26). Yeni invalid manifest gönderildiğinde 422 ile import-time reject edilir — runtime silent fallback yerine.
+- `UnifiedAIService::callGeminiWithRetry` 400 body parse → `lastGeminiError = 'schema_invalid'` + `gemini.plugin_schema_invalid` UserErrorRecorder banner. Site sahibine "Plugin X parameter schema invalid: items missing" görünür.
+
 ## [0.2.2] - 2026-05-23
 
 ### Added — OpenCart Cloud Marketplace compatibility

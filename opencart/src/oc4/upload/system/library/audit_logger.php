@@ -88,6 +88,15 @@ final class AuditLogger {
                     )";
 
             $db->query($sql);
+
+            // Lazy retention cleanup — 1/500 ihtimalle eski log'ları sil.
+            // OC4 cron task altyapısı sınırlı, lazy pattern daha pratik.
+            // Disk-fill bug'ı (audit tablosu sınırsız büyüme) önlenir.
+            if (random_int(1, 500) === 1) {
+                $config = $registry->get('config');
+                $retentionDays = (int) ($config->get('module_dowaba_ai_audit_retention_days') ?: 30);
+                self::purgeOld($registry, $retentionDays);
+            }
         } catch (\Throwable $e) {
             // Silent — audit log fail-safe, request'i bozma
             // Faz 2.1: optional error_log() if WARN level

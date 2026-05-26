@@ -46,6 +46,15 @@ final class DowabaAuditLogger {
                         NOW()
                     )";
             $db->query($sql);
+
+            // Lazy cleanup — 1/500 ihtimalle eski log'ları sil (cron yok, OCMOD altyapısı sınırlı).
+            // Retention = config'den 30 gün default. Production'da audit tablosu sınırsız büyümesin.
+            if (random_int(1, 500) === 1) {
+                $config = $registry->get('config');
+                $retentionDays = (int) ($config->get('module_dowaba_ai_audit_retention_days') ?: 30);
+                $retentionDays = max(1, min(365, $retentionDays));
+                $db->query("DELETE FROM `" . DB_PREFIX . "dowaba_audit` WHERE `created_at` < DATE_SUB(NOW(), INTERVAL " . $retentionDays . " DAY)");
+            }
         } catch (\Throwable $e) {}
     }
 }

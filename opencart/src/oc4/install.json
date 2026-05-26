@@ -1,8 +1,8 @@
 {
   "name": "Dowaba AI Integration",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Aydın Acar (Dowaba)",
   "link": "https://github.com/rdtvaacar/dowaba-plugins",
   "code": "dowaba_ai",
-  "comment": "OpenCart 4.x mağazasını Dowaba AI'ya bağlar. Müşteri WhatsApp/IG/Mail kanallarından ürün arayabilir, karşılaştırabilir, sipariş verebilir. Setup wizard'ı tamamladıktan sonra manifest URL'i Dowaba paneline yapıştır → 9 function otomatik aktif gelir."
+  "comment": "OpenCart 4.x mağazasını Dowaba AI'ya bağlar. Müşteri WhatsApp/IG/Mail kanallarından ürün arayabilir, karşılaştırabilir, sipariş verebilir. Setup wizard'ı tamamladıktan sonra manifest URL'i Dowaba paneline yapıştır → 10 function otomatik aktif gelir."
 }
