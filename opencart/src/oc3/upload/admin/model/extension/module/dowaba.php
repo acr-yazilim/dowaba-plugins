@@ -21,6 +21,25 @@ class ModelExtensionModuleDowaba extends Model {
                 INDEX `idx_status_code`  (`status_code`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
+
+        // OC3 admin user_group (id=1, Administrator) permission'ına modül route'unu ekle.
+        // OC3 marketplace installer modülü extract eder ama user_group permission'ını
+        // OTOMATİK eklemiyor. Sonuç:
+        // - admin Edit'e tıklayınca permission yok → access denied → login redirect
+        // - AJAX'lar (regenerateKey vs.) HTML login sayfası dönüyor → "not valid JSON"
+        // Direkt DB query (model context'inde $this->user erişilemez).
+        $route = 'extension/module/dowaba';
+        $rows = $this->db->query("SELECT user_group_id, permission FROM `" . DB_PREFIX . "user_group` WHERE user_group_id = 1")->rows;
+        foreach ($rows as $row) {
+            // OC3'te permission PHP serialize() ile saklanır (JSON DEĞİL — OC4'le fark!).
+            $perm = @unserialize($row['permission']);
+            if (!is_array($perm)) $perm = array('access' => array(), 'modify' => array());
+            foreach (array('access', 'modify') as $key) {
+                if (!isset($perm[$key]) || !is_array($perm[$key])) $perm[$key] = array();
+                if (!in_array($route, $perm[$key], true)) $perm[$key][] = $route;
+            }
+            $this->db->query("UPDATE `" . DB_PREFIX . "user_group` SET permission = '" . $this->db->escape(serialize($perm)) . "' WHERE user_group_id = " . (int)$row['user_group_id']);
+        }
     }
 
     public function uninstall() {
