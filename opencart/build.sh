@@ -7,7 +7,12 @@
 #
 # Çıktı:
 #   dist/dowaba-opencart-oc3-<version>.ocmod.zip  (OpenCart 3.x)
-#   dist/dowaba-opencart-oc4-<version>.ocmod.zip  (OpenCart 4.x)
+#   dist/dowaba_ai.ocmod.zip                       (OpenCart 4.x — adı install.json code ile aynı OLMALI)
+#
+# ÖNEMLI: OC4 marketplace/installer.php satır 98 (`$code = basename($file, '.ocmod.zip')`)
+# zip ADINI olduğu gibi `code` olarak kullanır, install.json'daki code field'ını YOK SAYAR.
+# Bu yüzden OC4 için zip adı tam olarak 'dowaba_ai.ocmod.zip' olmalı (install.json code ile birebir).
+# Versiyon takibi için GitHub release tag'i ve install.json'daki version field'ı yeterli.
 
 set -euo pipefail
 
@@ -43,8 +48,11 @@ fi
 
 mkdir -p dist
 OUT_OC3="dist/dowaba-opencart-oc3-${VERSION}.ocmod.zip"
-OUT_OC4="dist/dowaba-opencart-oc4-${VERSION}.ocmod.zip"
-rm -f "$OUT_OC3" "$OUT_OC4"
+# OC4: zip adı install.json'daki `code` ile birebir aynı olmalı (installer satır 98 bug).
+# Versiyonlu kopyayı da bırakıyoruz (release asset olarak yedek), ama primary install zip versiyonsuz.
+OUT_OC4="dist/dowaba_ai.ocmod.zip"
+OUT_OC4_VERSIONED="dist/dowaba_ai-oc4-${VERSION}.ocmod.zip"
+rm -f "$OUT_OC3" "$OUT_OC4" "$OUT_OC4_VERSIONED"
 
 # PHP syntax check — her iki source'u da kontrol et
 echo "🔍 PHP syntax check..."
@@ -62,6 +70,9 @@ echo "📦 OC4: building $OUT_OC4..."
 (cd src/oc4 && zip -qr "../../$OUT_OC4" install.json install.xml upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
 SIZE_OC4=$(du -k "$OUT_OC4" | cut -f1)
 echo "  ✅ $OUT_OC4 (${SIZE_OC4} KB)"
+# Versiyonlu kopya — release asset listesinde versiyon görünsün diye
+cp "$OUT_OC4" "$OUT_OC4_VERSIONED"
+echo "  ✅ $OUT_OC4_VERSIONED (versiyon kopyası, içerik aynı)"
 
 # OC3 build
 echo "📦 OC3: building $OUT_OC3..."
@@ -71,8 +82,9 @@ echo "  ✅ $OUT_OC3 (${SIZE_OC3} KB)"
 
 echo ""
 echo "📋 Build summary:"
-ls -lh dist/dowaba-opencart-*-${VERSION}.ocmod.zip
+ls -lh "$OUT_OC3" "$OUT_OC4" "$OUT_OC4_VERSIONED" 2>/dev/null
 echo ""
 echo "Upload to OpenCart admin → Extensions → Installer"
 echo "  • OC 3.x: $OUT_OC3"
-echo "  • OC 4.x: $OUT_OC4"
+echo "  • OC 4.x: $OUT_OC4 (primary — adı install.json code ile aynı)"
+echo "           $OUT_OC4_VERSIONED (versiyon kopyası, içerik identik)"
