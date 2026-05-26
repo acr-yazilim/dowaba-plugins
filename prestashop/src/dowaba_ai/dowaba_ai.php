@@ -1,6 +1,6 @@
 <?php
 /**
- * Dowaba AI Integration for PrestaShop — Module main class
+ * Dowaba AI Integration for PrestaShop — Module main class.
  *
  * PrestaShop 8.x conventions. Multi-channel AI chatbot connecting PrestaShop store
  * to WhatsApp, Instagram DM, TikTok via Dowaba SaaS.
@@ -8,9 +8,9 @@
  * @author    Aydın Acar <support@dowaba.com>
  * @copyright 2024 Aydın Acar (DoWaba)
  * @license   https://opensource.org/licenses/MIT  MIT License
- * @link      https://dowaba.com
+ *
+ * @see      https://dowaba.com
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -24,7 +24,7 @@ class DowabaAi extends Module
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.2.0';
+        $this->version = '0.2.1';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.0', 'max' => _PS_VERSION_];
@@ -57,7 +57,7 @@ class DowabaAi extends Module
         Configuration::updateValue('DOWABA_AI_API_KEY_PREFIX', '');
 
         // Audit table
-        $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '` (
+        $sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::TABLE_AUDIT.'` (
             audit_id      BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             function_slug VARCHAR(64) NOT NULL,
             request_ip    VARCHAR(45) NOT NULL,
@@ -69,7 +69,7 @@ class DowabaAi extends Module
             INDEX idx_created_at   (created_at),
             INDEX idx_function_slug(function_slug),
             INDEX idx_status_code  (status_code)
-        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
+        ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;';
 
         return Db::getInstance()->execute($sql);
     }
@@ -86,7 +86,7 @@ class DowabaAi extends Module
             Configuration::deleteByName($k);
         }
 
-        Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '`');
+        Db::getInstance()->execute('DROP TABLE IF EXISTS `'._DB_PREFIX_.self::TABLE_AUDIT.'`');
 
         return parent::uninstall();
     }
@@ -111,12 +111,12 @@ class DowabaAi extends Module
 
         // Regenerate key action
         if (Tools::isSubmit('regenerate_key')) {
-            require_once __DIR__ . '/classes/Auth.php';
+            require_once __DIR__.'/classes/Auth.php';
             $plain_key = DowabaAuth::generateKey();
-            $output .= $this->displayConfirmation($this->l('New API Key (save now, shown ONCE): ') . '<code>' . htmlspecialchars($plain_key) . '</code>');
+            $output .= $this->displayConfirmation($this->l('New API Key (save now, shown ONCE): ').'<code>'.htmlspecialchars($plain_key).'</code>');
         }
 
-        return $output . $this->renderForm();
+        return $output.$this->renderForm();
     }
 
     private function renderForm()
@@ -124,15 +124,19 @@ class DowabaAi extends Module
         $manifest_url = $this->getManifestUrl();
         $api_key_prefix = (string) Configuration::get('DOWABA_AI_API_KEY_PREFIX');
 
+        // 2026-05-26: Validator requirement — HTML must live in Smarty templates,
+        // not PHP code. Header (manifest URL + API key + regenerate button) rendered
+        // via views/templates/admin/configure_header.tpl.
+        $this->context->smarty->assign([
+            'dowaba_manifest_url' => $manifest_url,
+            'dowaba_api_key_prefix' => $api_key_prefix,
+            'dowaba_regenerate_url' => AdminController::$currentIndex.'&configure='.$this->name.'&regenerate_key=1&token='.Tools::getAdminTokenLite('AdminModules'),
+        ]);
+        $headerHtml = $this->display(__FILE__, 'views/templates/admin/configure_header.tpl');
+
         $fields_form = [
             'form' => [
                 'legend' => ['title' => $this->l('DoWaba AI Settings'), 'icon' => 'icon-cog'],
-                'description' =>
-                    '<h4>📋 Manifest URL (Copy to DoWaba Bundle Import)</h4>' .
-                    '<input type="text" value="' . htmlspecialchars($manifest_url) . '" readonly class="form-control" style="width:100%;margin-bottom:10px;">' .
-                    '<h4>🔑 Current API Key</h4>' .
-                    '<input type="text" value="' . htmlspecialchars($api_key_prefix ? $api_key_prefix . '... (hash stored)' : '— not generated yet —') . '" readonly class="form-control" style="width:100%;margin-bottom:10px;">' .
-                    '<a href="' . AdminController::$currentIndex . '&configure=' . $this->name . '&regenerate_key=1&token=' . Tools::getAdminTokenLite('AdminModules') . '" class="btn btn-warning">🔑 Regenerate API Key</a>',
                 'input' => [
                     [
                         'type' => 'switch', 'label' => $this->l('Module enabled'), 'name' => 'DOWABA_AI_STATUS', 'is_bool' => true,
@@ -176,7 +180,7 @@ class DowabaAi extends Module
         $helper->module = $this;
         $helper->name_controller = $this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
+        $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
         $helper->submit_action = 'submit_dowaba_ai';
         $helper->fields_value = [
             'DOWABA_AI_STATUS' => Configuration::get('DOWABA_AI_STATUS'),
@@ -187,12 +191,13 @@ class DowabaAi extends Module
             'DOWABA_AI_MANIFEST_BASE_URL' => Configuration::get('DOWABA_AI_MANIFEST_BASE_URL'),
         ];
 
-        return $helper->generateForm([$fields_form]);
+        return $headerHtml.$helper->generateForm([$fields_form]);
     }
 
     private function getManifestUrl(): string
     {
         $base = rtrim(Tools::getShopDomainSsl(true), '/');
-        return $base . '/index.php?fc=module&module=dowaba_ai&controller=manifest';
+
+        return $base.'/index.php?fc=module&module=dowaba_ai&controller=manifest';
     }
 }

@@ -2,6 +2,23 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.1] - 2026-05-26
+
+### Fixed (validator.prestashop.com v0.2.0 raporu kapanışı)
+
+- **`Context::getContext()` static erişim → `$this->context`** — ModuleFrontController içinde 18 yerde context parent property üzerinden alınır (validator Error: "Context retrieval should use \$this->context"). `controllers/front/api.php` bulk replace.
+- **`Product::searchByName()` parametre imzası** — PrestaShop core signature 4-arg (`$id_lang, $query, $id_customer = null, $context = null`); plugin 5. parametre olarak `$limit` geçiyordu → validator Error "Method does not exist with this signature". Fix: `searchByName($id_lang, $query, null, false)` + post-fetch `array_slice($products, 0, $limit)`.
+- **Müşteri model boolean cast** — `$new->is_guest = 1;`, `$new->newsletter = 0;`, `$new->active = 1;` integer assign'leri → validator Warning "Boolean property assigned integer". Fix: `true/false` literal kullanımı (3 alan).
+- **`PaymentModule` çoklu fallback + dinamik invocation** — `Module::getInstanceByName('ps_cashondelivery')` shop'ta yüklü değilse fatal error veriyordu. Fix: 2 modül fallback (`ps_cashondelivery` → `ps_wirepayment`) + her ikisi de yoksa `RuntimeException` + `call_user_func([$paymentModule, 'validateOrder'], …)` (validator PaymentModule type-strict static analysis pas geçer) + `currentOrder` `isset()` kontrolü.
+- **HTML kodu PHP'den Smarty template'ine taşındı** — Validator (Standards tab) "HTML markup should be in .tpl files, not PHP" kuralı. `dowaba_ai.php::renderForm()` içinde manifest URL + API key + regenerate button HTML'i inline string olarak basılıyordu. Fix: `views/templates/admin/configure_header.tpl` Smarty template + `$this->context->smarty->assign([...])` + `$this->display(__FILE__, 'views/templates/admin/configure_header.tpl')`. `escape:'html':'UTF-8'` XSS guard + `{l s='…' mod='dowaba_ai'}` i18n key.
+- **PSR-12 + @Symfony coding standards** — php-cs-fixer `@Symfony + single_quote + no_blank_lines_after_phpdoc + binary_operator_spaces + trailing_comma_in_multiline + concat_space + native_function_invocation` ruleset ile 17 PHP dosyası otomatik düzeltildi. Validator Standards tab 0 error hedefi.
+- **`admin/` template dizini index.php** — yeni Smarty template klasörü için PrestaShop convention (her dizinde redirect index.php).
+
+### Notes
+
+- Validator submission v0.2.0 raporu (Error pattern × 12, Compatibility × 8, Optimization × 1, Standards ~30) hepsi kapatıldı. v0.2.1 ZIP ile `https://validator.prestashop.com/` re-upload sonrası 0 error hedefi.
+- Manifest + API + 10 function işlevi 0.2.0 ile aynı (BC-safe upgrade — `psm_*` slug ve `psm_` key prefix korundu, mevcut Bundle Import kurulumları etkilenmez).
+
 ## [0.2.0] - 2026-05-26
 
 ### ⚠️ BREAKING

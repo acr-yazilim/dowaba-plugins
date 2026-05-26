@@ -1,6 +1,6 @@
 <?php
 /**
- * Dowaba AI Integration for PrestaShop — Manifest Endpoint
+ * Dowaba AI Integration for PrestaShop — Manifest Endpoint.
  *
  * Serves Bundle Import manifest JSON (10 AI function definitions).
  * URL: /index.php?fc=module&module=dowaba_ai&controller=manifest
@@ -11,12 +11,11 @@
  * @copyright 2024 Aydın Acar (DoWaba)
  * @license   https://opensource.org/licenses/MIT  MIT License
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . 'dowaba_ai/dowaba_ai.php';
+require_once _PS_MODULE_DIR_.'dowaba_ai/dowaba_ai.php';
 
 class DowabaAiManifestModuleFrontController extends ModuleFrontController
 {
@@ -32,13 +31,13 @@ class DowabaAiManifestModuleFrontController extends ModuleFrontController
 
         $manifest = [
             'schema_version' => '1.0',
-            'name'           => 'PrestaShop — ' . $store_name,
+            'name' => 'PrestaShop — '.$store_name,
             'plugin_version' => '0.1.0',
-            'platform'       => 'prestashop',
+            'platform' => 'prestashop',
             'connection' => [
-                'type'          => 'http_api',
-                'base_url'      => $base . '/index.php',
-                'auth_type'     => 'bearer',
+                'type' => 'http_api',
+                'base_url' => $base.'/index.php',
+                'auth_type' => 'bearer',
                 'allowed_hosts' => [parse_url($base, PHP_URL_HOST) ?: ''],
             ],
             'functions' => [
@@ -232,10 +231,10 @@ class DowabaAiManifestModuleFrontController extends ModuleFrontController
             'query_template' => $query,
             'timeout_ms' => $timeout,
         ];
-        if ($body_template !== null) {
+        if (null !== $body_template) {
             $config['body_template'] = $body_template;
         }
-        if ($response !== null) {
+        if (null !== $response) {
             $config['response'] = $response;
         }
 
@@ -253,20 +252,22 @@ class DowabaAiManifestModuleFrontController extends ModuleFrontController
     private function resolveBaseUrl(): string
     {
         $override = trim((string) Configuration::get('DOWABA_AI_MANIFEST_BASE_URL'));
-        if ($override !== '') {
+        if ('' !== $override) {
             return rtrim($override, '/');
         }
 
         $fwd_host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? '';
         $fwd_proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
-        if ($fwd_host !== '') {
-            return ($fwd_proto ?: 'https') . '://' . $fwd_host;
+        if ('' !== $fwd_host) {
+            return ($fwd_proto ?: 'https').'://'.$fwd_host;
         }
         $host = $_SERVER['HTTP_HOST'] ?? '';
-        if ($host !== '') {
-            $is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || ($_SERVER['SERVER_PORT'] ?? '') == 443;
-            return ($is_https ? 'https' : 'http') . '://' . $host;
+        if ('' !== $host) {
+            $is_https = (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS']) || ($_SERVER['SERVER_PORT'] ?? '') == 443;
+
+            return ($is_https ? 'https' : 'http').'://'.$host;
         }
+
         return rtrim(Tools::getShopDomainSsl(true), '/');
     }
 }

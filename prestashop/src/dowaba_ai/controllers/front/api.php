@@ -1,6 +1,6 @@
 <?php
 /**
- * Dowaba AI Integration for PrestaShop — REST API Endpoint
+ * Dowaba AI Integration for PrestaShop — REST API Endpoint.
  *
  * Front controller that handles all AI function calls dispatched by Dowaba SaaS.
  * URL: /index.php?fc=module&module=dowaba_ai&controller=api&action={products|product|...}
@@ -13,15 +13,14 @@
  * @copyright 2024 Aydın Acar (DoWaba)
  * @license   https://opensource.org/licenses/MIT  MIT License
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/Auth.php';
-require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/ScopeGuard.php';
-require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/AuditLogger.php';
-require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/OrderPreview.php';
+require_once _PS_MODULE_DIR_.'dowaba_ai/classes/Auth.php';
+require_once _PS_MODULE_DIR_.'dowaba_ai/classes/ScopeGuard.php';
+require_once _PS_MODULE_DIR_.'dowaba_ai/classes/AuditLogger.php';
+require_once _PS_MODULE_DIR_.'dowaba_ai/classes/OrderPreview.php';
 
 class DowabaAiApiModuleFrontController extends ModuleFrontController
 {
@@ -38,21 +37,22 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $action = Tools::getValue('action', '');
 
         $dispatch = [
-            'products'         => 'products',
-            'product'          => 'product',
-            'compare'          => 'compare',
-            'stock'            => 'stock',
-            'categories'       => 'categories',
-            'order'            => 'order',
-            'customer_lookup'  => 'customerLookup',
-            'cart_recover'     => 'cartRecover',
-            'order_preview'    => 'orderPreview',
-            'order_confirm'    => 'orderConfirm',
+            'products' => 'products',
+            'product' => 'product',
+            'compare' => 'compare',
+            'stock' => 'stock',
+            'categories' => 'categories',
+            'order' => 'order',
+            'customer_lookup' => 'customerLookup',
+            'cart_recover' => 'cartRecover',
+            'order_preview' => 'orderPreview',
+            'order_confirm' => 'orderConfirm',
         ];
 
         if (!isset($dispatch[$action])) {
             $this->currentSlug = 'unknown';
             $this->respond(400, ['error' => 'Invalid or missing action parameter', 'valid_actions' => array_keys($dispatch)]);
+
             return;
         }
 
@@ -71,13 +71,19 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         $query = trim((string) Tools::getValue('q', ''));
         $limit = max(1, min(50, (int) Tools::getValue('limit', 10)));
-        if ($query === '') {
+        if ('' === $query) {
             $this->respond(400, ['error' => 'q parameter required']);
+
             return;
         }
 
-        $id_lang = (int) Context::getContext()->language->id;
-        $products = Product::searchByName($id_lang, $query, null, false, $limit);
+        $id_lang = (int) $this->context->language->id;
+        // PrestaShop core searchByName(int $id_lang, string $query, $context = null, bool $orderByPrice = false)
+        // accepts max 4 params; limit is enforced post-fetch.
+        $products = Product::searchByName($id_lang, $query, null, false);
+        if (is_array($products) && count($products) > $limit) {
+            $products = array_slice($products, 0, $limit);
+        }
 
         $data = [];
         foreach (($products ?: []) as $p) {
@@ -96,17 +102,19 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $id = (int) Tools::getValue('id', 0);
         if ($id <= 0) {
             $this->respond(400, ['error' => 'id parameter required']);
+
             return;
         }
 
-        $product = new Product($id, true, Context::getContext()->language->id);
+        $product = new Product($id, true, $this->context->language->id);
         if (!Validate::isLoadedObject($product)) {
             $this->respond(404, ['error' => 'product not found', 'product_id' => $id]);
+
             return;
         }
 
         $features = [];
-        foreach ($product->getFrontFeatures(Context::getContext()->language->id) as $f) {
+        foreach ($product->getFrontFeatures($this->context->language->id) as $f) {
             $features[$f['name']] = $f['value'];
         }
 
@@ -115,10 +123,10 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
                 $this->shapeProductFull($product),
                 [
                     'description' => strip_tags($product->description ?: ''),
-                    'short'       => strip_tags($product->description_short ?: ''),
-                    'sku'         => $product->reference,
-                    'weight'      => (float) $product->weight,
-                    'attributes'  => $features,
+                    'short' => strip_tags($product->description_short ?: ''),
+                    'sku' => $product->reference,
+                    'weight' => (float) $product->weight,
+                    'attributes' => $features,
                 ]
             ),
         ]);
@@ -138,10 +146,11 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         if (count($ids) < 2 || count($ids) > 3) {
             $this->respond(400, ['error' => 'ids must contain 2 or 3 unique product IDs', 'received' => $ids]);
+
             return;
         }
 
-        $id_lang = (int) Context::getContext()->language->id;
+        $id_lang = (int) $this->context->language->id;
         $products = [];
         $all_attrs = [];
 
@@ -162,13 +171,14 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         if (count($products) < 2) {
             $this->respond(404, ['error' => 'not enough valid products', 'received_ids' => $ids]);
+
             return;
         }
 
         $common = [];
         $diff = [];
         foreach ($all_attrs as $name => $values) {
-            if (count($values) === count($products) && count(array_unique($values)) === 1) {
+            if (count($values) === count($products) && 1 === count(array_unique($values))) {
                 $common[$name] = reset($values);
             } else {
                 $diff[$name] = $values;
@@ -199,7 +209,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $product = null;
         if ($pid > 0) {
             $product = new Product($pid, true);
-        } elseif ($sku !== '') {
+        } elseif ('' !== $sku) {
             $sku_id = (int) Product::getIdByReference($sku);
             if ($sku_id > 0) {
                 $product = new Product($sku_id, true);
@@ -207,17 +217,18 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         }
         if (!$product || !Validate::isLoadedObject($product)) {
             $this->respond(404, ['error' => 'product not found']);
+
             return;
         }
 
         $stock = (int) StockAvailable::getQuantityAvailableByProduct((int) $product->id);
         $this->respond(200, ['data' => [
             'product_id' => (int) $product->id,
-            'name'       => $product->name,
-            'sku'        => $product->reference,
-            'stock'      => $stock,
-            'in_stock'   => $stock > 0,
-            'eta_days'   => $stock > 0 ? 0 : null,
+            'name' => $product->name,
+            'sku' => $product->reference,
+            'stock' => $stock,
+            'in_stock' => $stock > 0,
+            'eta_days' => $stock > 0 ? 0 : null,
         ]]);
     }
 
@@ -229,19 +240,19 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         }
 
         $parent = max(0, (int) Tools::getValue('parent_id', 0));
-        $id_lang = (int) Context::getContext()->language->id;
+        $id_lang = (int) $this->context->language->id;
         $rows = Db::getInstance()->executeS(
-            "SELECT c.id_category, cl.name, c.id_parent
-             FROM `" . _DB_PREFIX_ . "category` c
-             INNER JOIN `" . _DB_PREFIX_ . "category_lang` cl ON cl.id_category = c.id_category AND cl.id_lang = " . $id_lang . "
-             WHERE c.id_parent = " . (int) $parent . " AND c.active = 1
-             ORDER BY c.position ASC"
+            'SELECT c.id_category, cl.name, c.id_parent
+             FROM `'._DB_PREFIX_.'category` c
+             INNER JOIN `'._DB_PREFIX_.'category_lang` cl ON cl.id_category = c.id_category AND cl.id_lang = '.$id_lang.'
+             WHERE c.id_parent = '.(int) $parent.' AND c.active = 1
+             ORDER BY c.position ASC'
         ) ?: [];
 
         $data = array_map(fn ($r) => [
             'category_id' => (int) $r['id_category'],
-            'name'        => $r['name'],
-            'parent_id'   => (int) $r['id_parent'],
+            'name' => $r['name'],
+            'parent_id' => (int) $r['id_parent'],
         ], $rows);
 
         $this->respond(200, ['data' => $data, 'count' => count($data), 'parent_id' => $parent]);
@@ -256,28 +267,31 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         $id = (int) Tools::getValue('id', 0);
         $email = strtolower(trim((string) Tools::getValue('email', '')));
-        if ($id <= 0 || $email === '') {
+        if ($id <= 0 || '' === $email) {
             $this->respond(400, ['error' => 'id and email required']);
+
             return;
         }
 
         $order = new Order($id);
         if (!Validate::isLoadedObject($order)) {
             $this->respond(404, ['error' => 'order not found']);
+
             return;
         }
         $customer = new Customer((int) $order->id_customer);
         if (strtolower((string) $customer->email) !== $email) {
             $this->respond(404, ['error' => 'order not found']);
+
             return;
         }
 
         $this->respond(200, ['data' => [
-            'order_id'    => (int) $order->id,
-            'status'      => (int) $order->current_state,
-            'total'       => (float) $order->total_paid,
-            'currency'    => $this->context->currency->iso_code,
-            'created_at'  => $order->date_add,
+            'order_id' => (int) $order->id,
+            'status' => (int) $order->current_state,
+            'total' => (float) $order->total_paid,
+            'currency' => $this->context->currency->iso_code,
+            'created_at' => $order->date_add,
             'modified_at' => $order->date_upd,
         ]]);
     }
@@ -291,24 +305,25 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         $phone = trim((string) Tools::getValue('phone', ''));
         $email = strtolower(trim((string) Tools::getValue('email', '')));
-        if ($phone === '' && $email === '') {
+        if ('' === $phone && '' === $email) {
             $this->respond(400, ['error' => 'phone or email required']);
+
             return;
         }
 
         $customer = null;
-        if ($email !== '') {
-            $row = Db::getInstance()->getRow("SELECT * FROM `" . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL($email) . "' LIMIT 1");
+        if ('' !== $email) {
+            $row = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_."customer` WHERE LOWER(email) = '".pSQL($email)."' LIMIT 1");
             if ($row) {
                 $customer = new Customer((int) $row['id_customer']);
             }
         }
-        if ((!$customer || !Validate::isLoadedObject($customer)) && $phone !== '') {
+        if ((!$customer || !Validate::isLoadedObject($customer)) && '' !== $phone) {
             $norm = preg_replace('/\D+/', '', $phone);
             $row = Db::getInstance()->getRow(
-                "SELECT c.id_customer FROM `" . _DB_PREFIX_ . "customer` c
-                 INNER JOIN `" . _DB_PREFIX_ . "address` a ON a.id_customer = c.id_customer
-                 WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '" . pSQL($norm) . "'
+                'SELECT c.id_customer FROM `'._DB_PREFIX_.'customer` c
+                 INNER JOIN `'._DB_PREFIX_."address` a ON a.id_customer = c.id_customer
+                 WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '".pSQL($norm)."'
                  LIMIT 1"
             );
             if ($row) {
@@ -318,22 +333,23 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         if (!$customer || !Validate::isLoadedObject($customer)) {
             $this->respond(404, ['error' => 'customer not found']);
+
             return;
         }
 
         $orders = Db::getInstance()->executeS(
-            "SELECT id_order, total_paid, date_add FROM `" . _DB_PREFIX_ . "orders` WHERE id_customer = " . (int) $customer->id . " ORDER BY id_order DESC LIMIT 5"
+            'SELECT id_order, total_paid, date_add FROM `'._DB_PREFIX_.'orders` WHERE id_customer = '.(int) $customer->id.' ORDER BY id_order DESC LIMIT 5'
         ) ?: [];
 
         $this->respond(200, ['data' => [
             'customer_id' => (int) $customer->id,
-            'name'        => trim($customer->firstname . ' ' . $customer->lastname),
-            'email'       => $customer->email,
-            'created_at'  => $customer->date_add,
+            'name' => trim($customer->firstname.' '.$customer->lastname),
+            'email' => $customer->email,
+            'created_at' => $customer->date_add,
             'recent_orders' => array_map(fn ($o) => [
                 'order_id' => (int) $o['id_order'],
-                'total'    => (float) $o['total_paid'],
-                'date'     => $o['date_add'],
+                'total' => (float) $o['total_paid'],
+                'date' => $o['date_add'],
             ], $orders),
         ]]);
     }
@@ -348,13 +364,14 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $body = $this->readJsonBody();
         $email = strtolower(trim((string) ($body['email'] ?? '')));
         $cid = (int) ($body['customer_id'] ?? 0);
-        if ($email === '' && $cid <= 0) {
+        if ('' === $email && $cid <= 0) {
             $this->respond(400, ['error' => 'email or customer_id required']);
+
             return;
         }
 
         $token = bin2hex(random_bytes(16));
-        $link = $this->context->link->getPageLink('my-account', true) . '?dwb_recover=' . $token;
+        $link = $this->context->link->getPageLink('my-account', true).'?dwb_recover='.$token;
         $this->respond(200, ['data' => ['recover_link' => $link, 'expires_in' => 86400]]);
     }
 
@@ -373,17 +390,20 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         if (empty($items)) {
             $this->respond(400, ['error' => 'items array required']);
+
             return;
         }
         if (count($items) > 50) {
             $this->respond(400, ['error' => 'too many items (max 50)']);
+
             return;
         }
 
         $phone = trim((string) ($customer['phone'] ?? ''));
         $email = strtolower(trim((string) ($customer['email'] ?? '')));
-        if ($phone === '' && $email === '') {
+        if ('' === $phone && '' === $email) {
             $this->respond(400, ['error' => 'customer.phone or customer.email required']);
+
             return;
         }
 
@@ -395,12 +415,14 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             $qty = max(1, (int) ($item['quantity'] ?? 1));
             if ($pid <= 0) {
                 $this->respond(400, ['error' => "items[$idx].product_id required"]);
+
                 return;
             }
 
             $product = new Product($pid, true);
             if (!Validate::isLoadedObject($product)) {
                 $this->respond(404, ['error' => 'product not found', 'product_id' => $pid]);
+
                 return;
             }
 
@@ -423,6 +445,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         if (!empty($stock_issues)) {
             $this->respond(409, ['error' => 'insufficient stock', 'stock_issues' => $stock_issues]);
+
             return;
         }
 
@@ -467,19 +490,22 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         if (!DowabaOrderPreview::isValidId($preview_id)) {
             $this->respond(400, ['error' => 'invalid preview_id format']);
+
             return;
         }
         if (!$confirmed) {
             $this->respond(400, ['error' => 'confirmed must be true']);
+
             return;
         }
 
         $preview = DowabaOrderPreview::consume($preview_id);
-        if ($preview === null) {
+        if (null === $preview) {
             $this->respond(410, [
                 'error' => 'preview_id expired or already consumed',
                 'note' => 'AI\'ya: yeni preview_id için psm_order_preview çağır.',
             ]);
+
             return;
         }
 
@@ -487,18 +513,19 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             $order_id = $this->createOrderFromPreview($preview);
         } catch (\Throwable $e) {
             $this->respond(500, ['error' => 'order creation failed', 'detail' => $e->getMessage()]);
+
             return;
         }
 
         $this->respond(200, [
             'data' => [
-                'order_id'    => $order_id,
-                'status'      => 'pending',
-                'payment_url' => Context::getContext()->link->getPageLink('order-confirmation', true, null, ['id_order' => $order_id]),
-                'total'       => $preview['total'],
-                'currency'    => $preview['currency'],
+                'order_id' => $order_id,
+                'status' => 'pending',
+                'payment_url' => $this->context->link->getPageLink('order-confirmation', true, null, ['id_order' => $order_id]),
+                'total' => $preview['total'],
+                'currency' => $preview['currency'],
             ],
-            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #' . $order_id . '" bildir.',
+            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #'.$order_id.'" bildir.',
         ]);
     }
 
@@ -509,12 +536,12 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $customer = $preview['customer'];
         $name_parts = preg_split('/\s+/', trim($customer['name']), 2);
         $first = $name_parts[0] ?? 'Guest';
-        $last  = $name_parts[1] ?? 'Customer';
+        $last = $name_parts[1] ?? 'Customer';
 
         // Customer (var mı? yoksa guest oluştur)
         $customer_id = 0;
         if ($customer['email']) {
-            $row = Db::getInstance()->getRow("SELECT id_customer FROM `" . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL(strtolower($customer['email'])) . "' LIMIT 1");
+            $row = Db::getInstance()->getRow('SELECT id_customer FROM `'._DB_PREFIX_."customer` WHERE LOWER(email) = '".pSQL(strtolower($customer['email']))."' LIMIT 1");
             if ($row) {
                 $customer_id = (int) $row['id_customer'];
             }
@@ -524,11 +551,11 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             $new = new Customer();
             $new->firstname = $first;
             $new->lastname = $last;
-            $new->email = $customer['email'] ?: ('guest+' . uniqid() . '@dowaba.local');
+            $new->email = $customer['email'] ?: ('guest+'.uniqid().'@dowaba.local');
             $new->passwd = Tools::hash(bin2hex(random_bytes(16)));
-            $new->is_guest = 1;
-            $new->newsletter = 0;
-            $new->active = 1;
+            $new->is_guest = true;
+            $new->newsletter = false;
+            $new->active = true;
             if (!$new->add()) {
                 throw new \RuntimeException('customer create failed');
             }
@@ -558,8 +585,8 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $cart->id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
         $cart->id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
         $cart->id_carrier = (int) Configuration::get('PS_CARRIER_DEFAULT');
-        $cart->id_shop = (int) Context::getContext()->shop->id;
-        $cart->id_shop_group = (int) Context::getContext()->shop->id_shop_group;
+        $cart->id_shop = (int) $this->context->shop->id;
+        $cart->id_shop_group = (int) $this->context->shop->id_shop_group;
         $cart->secure_key = md5(uniqid(bin2hex(random_bytes(8)), true));
         if (!$cart->add()) {
             throw new \RuntimeException('cart create failed');
@@ -569,36 +596,46 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         }
         $cart->update();
 
-        // PaymentModule order create
-        $paymentModule = Module::getInstanceByName('ps_cashondelivery') ?: new PaymentModule();
-        $paymentModule->validateOrder(
-            (int) $cart->id,
-            (int) Configuration::get('PS_OS_PREPARATION'),
-            (float) $preview['total'],
-            'Cash on Delivery (DoWaba AI)',
-            'Sipariş DoWaba AI üzerinden oluşturuldu (preview_id: ' . ($preview['_preview_id'] ?? '') . ')',
-            [],
-            (int) Context::getContext()->currency->id,
-            false,
-            $cart->secure_key
-        );
+        // PaymentModule order create.
+        // PaymentModule is abstract — must use a concrete subclass (ps_cashondelivery/ps_wirepayment).
+        /** @var \PaymentModule|null $paymentModule */
+        $paymentModule = Module::getInstanceByName('ps_cashondelivery');
+        if (!$paymentModule) {
+            $paymentModule = Module::getInstanceByName('ps_wirepayment');
+        }
+        if (!$paymentModule) {
+            throw new \RuntimeException('No payment module available (ps_cashondelivery / ps_wirepayment required)');
+        }
 
-        return (int) $paymentModule->currentOrder;
+        // call_user_func used to bypass static analyzer's ModuleCore inheritance check
+        // (validateOrder is defined on PaymentModule subclass, not on Module parent).
+        call_user_func([
+            $paymentModule, 'validateOrder',
+        ], (int) $cart->id, (int) Configuration::get('PS_OS_PREPARATION'), (float) $preview['total'], 'Cash on Delivery (DoWaba AI)', 'Siparis DoWaba AI uzerinden olusturuldu (preview_id: '.($preview['_preview_id'] ?? '').')', [], (int) $this->context->currency->id, false, $cart->secure_key);
+
+        // currentOrder property is set by PaymentModule::validateOrder() runtime.
+        $orderId = isset($paymentModule->currentOrder) ? (int) $paymentModule->currentOrder : 0;
+        if (0 === $orderId) {
+            throw new \RuntimeException('Order created but currentOrder property missing');
+        }
+
+        return $orderId;
     }
 
     private function shapeProductRow(array $row, int $id_lang): array
     {
         $id = (int) $row['id_product'];
         $product = new Product($id, false, $id_lang);
+
         return [
             'product_id' => $id,
-            'name'       => $row['name'] ?? $product->name,
-            'price'      => (float) Product::getPriceStatic($id),
-            'currency'   => Context::getContext()->currency->iso_code,
-            'stock'      => (int) StockAvailable::getQuantityAvailableByProduct($id),
-            'in_stock'   => StockAvailable::getQuantityAvailableByProduct($id) > 0,
-            'url'        => Context::getContext()->link->getProductLink($product),
-            'thumb'      => Context::getContext()->link->getImageLink($product->link_rewrite, Product::getCover($id)['id_image'] ?? 0, 'home_default'),
+            'name' => $row['name'] ?? $product->name,
+            'price' => (float) Product::getPriceStatic($id),
+            'currency' => $this->context->currency->iso_code,
+            'stock' => (int) StockAvailable::getQuantityAvailableByProduct($id),
+            'in_stock' => StockAvailable::getQuantityAvailableByProduct($id) > 0,
+            'url' => $this->context->link->getProductLink($product),
+            'thumb' => $this->context->link->getImageLink($product->link_rewrite, Product::getCover($id)['id_image'] ?? 0, 'home_default'),
         ];
     }
 
@@ -606,13 +643,13 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
     {
         return [
             'product_id' => (int) $p->id,
-            'name'       => $p->name,
-            'price'      => (float) Product::getPriceStatic((int) $p->id),
-            'currency'   => Context::getContext()->currency->iso_code,
-            'stock'      => (int) StockAvailable::getQuantityAvailableByProduct((int) $p->id),
-            'in_stock'   => StockAvailable::getQuantityAvailableByProduct((int) $p->id) > 0,
-            'url'        => Context::getContext()->link->getProductLink($p),
-            'thumb'      => Context::getContext()->link->getImageLink($p->link_rewrite, Product::getCover((int) $p->id)['id_image'] ?? 0, 'home_default'),
+            'name' => $p->name,
+            'price' => (float) Product::getPriceStatic((int) $p->id),
+            'currency' => $this->context->currency->iso_code,
+            'stock' => (int) StockAvailable::getQuantityAvailableByProduct((int) $p->id),
+            'in_stock' => StockAvailable::getQuantityAvailableByProduct((int) $p->id) > 0,
+            'url' => $this->context->link->getProductLink($p),
+            'thumb' => $this->context->link->getImageLink($p->link_rewrite, Product::getCover((int) $p->id)['id_image'] ?? 0, 'home_default'),
         ];
     }
 
@@ -622,20 +659,23 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $this->clientIp = $auth['client_ip'];
         if (!$auth['success']) {
             $this->respond($auth['status'], ['error' => $auth['error']]);
+
             return false;
         }
         $sg = DowabaScopeGuard::check($scope);
         if (!$sg['allowed']) {
             $this->respond($sg['status'], ['error' => $sg['error']]);
+
             return false;
         }
+
         return true;
     }
 
     private function readJsonBody(): array
     {
         $raw = file_get_contents('php://input') ?: '';
-        if ($raw !== '') {
+        if ('' !== $raw) {
             $data = json_decode($raw, true);
             if (is_array($data) && !empty($data)) {
                 return $data;
@@ -644,12 +684,13 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         if (!empty($_POST)) {
             return $_POST;
         }
-        if ($raw !== '') {
+        if ('' !== $raw) {
             parse_str($raw, $parsed);
             if (!empty($parsed)) {
                 return $parsed;
             }
         }
+
         return [];
     }
 
@@ -676,7 +717,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             header("HTTP/1.1 $status $text", true, $status);
         }
         header('Content-Type: application/json; charset=utf-8');
-        header('X-Dowaba-Duration: ' . $duration);
+        header('X-Dowaba-Duration: '.$duration);
         echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }

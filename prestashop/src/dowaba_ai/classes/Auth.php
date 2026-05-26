@@ -1,6 +1,6 @@
 <?php
 /**
- * Dowaba AI Integration for PrestaShop — Bearer Auth + IP whitelist
+ * Dowaba AI Integration for PrestaShop — Bearer Auth + IP whitelist.
  *
  * Validates incoming requests:
  *   - Authorization: Bearer <api_key> header (sha256 hash comparison)
@@ -10,7 +10,6 @@
  * @copyright 2024 Aydın Acar (DoWaba)
  * @license   https://opensource.org/licenses/MIT  MIT License
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -36,7 +35,7 @@ class DowabaAuth
         }
 
         $stored_hash = (string) Configuration::get('DOWABA_AI_API_KEY_HASH');
-        if ($stored_hash === '') {
+        if ('' === $stored_hash) {
             return self::fail(503, 'API key not yet generated', $client_ip);
         }
         if (!hash_equals($stored_hash, hash('sha256', $provided_key))) {
@@ -44,7 +43,7 @@ class DowabaAuth
         }
 
         $ip_whitelist = trim((string) Configuration::get('DOWABA_AI_IP_WHITELIST'));
-        if ($ip_whitelist !== '') {
+        if ('' !== $ip_whitelist) {
             $allowed = array_filter(array_map('trim', explode(',', $ip_whitelist)));
             if (!in_array($client_ip, $allowed, true)) {
                 return self::fail(403, 'IP not whitelisted', $client_ip);
@@ -58,10 +57,11 @@ class DowabaAuth
 
     public static function generateKey(): string
     {
-        $plain_key = 'psm_' . bin2hex(random_bytes(32));
+        $plain_key = 'psm_'.bin2hex(random_bytes(32));
         Configuration::updateValue('DOWABA_AI_API_KEY_HASH', hash('sha256', $plain_key));
         Configuration::updateValue('DOWABA_AI_API_KEY_PREFIX', substr($plain_key, 0, 12));
         Configuration::deleteByName('DOWABA_AI_API_KEY_LAST_USED');
+
         return $plain_key;
     }
 
@@ -75,10 +75,11 @@ class DowabaAuth
         $hdr = $_SERVER['HTTP_AUTHORIZATION']
             ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
             ?? '';
-        if ($hdr === '' && function_exists('getallheaders')) {
+        if ('' === $hdr && function_exists('getallheaders')) {
             $headers = getallheaders();
             $hdr = $headers['Authorization'] ?? ($headers['authorization'] ?? '');
         }
+
         return (string) $hdr;
     }
 

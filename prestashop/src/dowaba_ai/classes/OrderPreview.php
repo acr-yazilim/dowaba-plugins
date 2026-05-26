@@ -1,6 +1,6 @@
 <?php
 /**
- * Dowaba AI Integration for PrestaShop — Order Preview Cache
+ * Dowaba AI Integration for PrestaShop — Order Preview Cache.
  *
  * 2-step order confirmation: preview generated → customer "yes" → confirm.
  * Backend: PrestaShop Cache (file / memcached / redis). TTL: 5 minutes.
@@ -10,7 +10,6 @@
  * @copyright 2024 Aydın Acar (DoWaba)
  * @license   https://opensource.org/licenses/MIT  MIT License
  */
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -22,7 +21,7 @@ class DowabaOrderPreview
 
     public static function generateId(): string
     {
-        return 'prv_' . bin2hex(random_bytes(12));
+        return 'prv_'.bin2hex(random_bytes(12));
     }
 
     public static function store(string $preview_id, array $payload): void
@@ -30,12 +29,12 @@ class DowabaOrderPreview
         $payload['_preview_id'] = $preview_id;
         $payload['_stored_at'] = time();
         $payload['_expires_at'] = time() + self::TTL_SECONDS;
-        Cache::store(self::CACHE_PREFIX . $preview_id, $payload);
+        Cache::store(self::CACHE_PREFIX.$preview_id, $payload);
     }
 
     public static function peek(string $preview_id): ?array
     {
-        $key = self::CACHE_PREFIX . $preview_id;
+        $key = self::CACHE_PREFIX.$preview_id;
         if (!Cache::isStored($key)) {
             return null;
         }
@@ -47,6 +46,7 @@ class DowabaOrderPreview
 
         if (isset($value['_expires_at']) && time() > (int) $value['_expires_at']) {
             Cache::clean($key);
+
             return null;
         }
 
@@ -56,10 +56,11 @@ class DowabaOrderPreview
     public static function consume(string $preview_id): ?array
     {
         $payload = self::peek($preview_id);
-        if ($payload === null) {
+        if (null === $payload) {
             return null;
         }
-        Cache::clean(self::CACHE_PREFIX . $preview_id);
+        Cache::clean(self::CACHE_PREFIX.$preview_id);
+
         return $payload;
     }
 
