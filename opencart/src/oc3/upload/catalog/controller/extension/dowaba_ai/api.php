@@ -134,15 +134,42 @@ class ControllerExtensionDowabaAiApi extends Controller {
             ? $this->model_catalog_product->getAttributes($productId)
             : [];
 
+        // Galeri (ek ürün görselleri) — oc_product_image tablosu
+        $gallery = [];
+        $baseUrl = rtrim((string)($this->config->get('config_url') ?: ''), '/');
+        if (method_exists($this->model_catalog_product, 'getProductImages')) {
+            try {
+                $this->load->model('tool/image');
+                $rawImages = $this->model_catalog_product->getProductImages($productId);
+                foreach ($rawImages as $img) {
+                    $path = $img['image'] ?? null;
+                    if (!$path) continue;
+                    try {
+                        $gallery[] = [
+                            'thumb' => $this->model_tool_image->resize($path, 200, 200),
+                            'image' => $this->model_tool_image->resize($path, 600, 600),
+                        ];
+                    } catch (\Throwable $e) {
+                        $gallery[] = [
+                            'thumb' => $baseUrl . '/image/' . ltrim($path, '/'),
+                            'image' => $baseUrl . '/image/' . ltrim($path, '/'),
+                        ];
+                    }
+                }
+            } catch (\Throwable $e) {
+                // Galeri yüklenemese de detail response devam etsin
+            }
+        }
+
         $this->respond(200, [
             'data' => array_merge(
                 $this->shapeProduct($p),
                 [
                     'description' => strip_tags((string) ($p['description'] ?? '')),
-                    'model'       => $p['model']     ?? '',
-                    'sku'         => $p['sku']       ?? '',
                     'weight'      => $p['weight']    ?? null,
                     'attributes'  => $this->shapeAttributes($attributes),
+                    'gallery'     => $gallery,  // ek görseller (her biri thumb+image full URL)
+                    'gallery_count' => count($gallery),
                 ]
             ),
         ]);
