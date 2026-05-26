@@ -68,16 +68,31 @@ No manual chat handling. No copy-pasting product info. No abandoned conversation
 4. Connect WhatsApp Business / Instagram Business (Meta OAuth) — also from DoWaba panel
 5. Customers can now chat with your store
 
-## Free trial included
+## Pricing — billed by Shopify
 
-- 50 AI messages + 20 phone calls **free** for each connected site
-- After trial: DoWaba Starter plan from $20/year, Pro $50/year, Lifetime $200 one-time
-- Shopify app itself is **always free** — you only pay for AI usage if you exceed the trial
+- **DoWaba AI for Shopify Pro** — **$19.99/month** (Shopify Billing API)
+- **7-day free trial** — full features, no credit card prompts until day 8
+- Plan charge appears as "Dowaba AI for Shopify Pro" on your Shopify invoice
+- Cancel anytime from Shopify Admin → Settings → Plan and permissions
+- Plan covers DoWaba platform (10 AI functions, multi-channel inbox,
+  function gateway, audit log, support)
+
+## BYOK — Bring Your Own Gemini Key
+
+The plan above covers DoWaba platform access. The AI itself runs on
+**Google Gemini** with **your own API key** — Gemini usage is billed
+**directly by Google** (transparent, no markup, often pennies/day).
+
+- Get a free Gemini key: https://aistudio.google.com/apikey
+- Paste it into DoWaba dashboard → Site → AI Settings
+- Google handles billing for AI token usage separately
+
+This keeps DoWaba pricing predictable and your AI costs transparent.
 
 ## Requirements
 
-- Gemini API key (free from Google AI Studio — DoWaba uses your own key, transparent cost)
 - Shopify store on any plan (Basic / Shopify / Advanced)
+- Google Gemini API key (free to obtain, see BYOK section)
 - WhatsApp Business / Instagram Business account (for chat channels)
 
 ## Support
@@ -116,16 +131,31 @@ Manuel sohbet yok. Ürün bilgisi copy-paste yok. Yarım kalan sohbet yok.
 
 🇹🇷 **Türkiye için, küresel ölçekte** — Türkçe arayüz, İngilizce destekli, Trendyol entegrasyonu dahil
 
-## Ücretsiz deneme
+## Fiyat — Shopify üzerinden ödeme
 
-- 50 AI mesaj + 20 telefon çağrı her bağlı site için **ücretsiz**
-- Sonrası: Starter 1.990 TL/yıl, Pro 4.990 TL/yıl, Lifetime 19.990 TL tek sefer
-- Shopify app'i her zaman **ücretsiz** — deneme bitince sadece AI kullanımı için ödersin
+- **DoWaba AI for Shopify Pro** — **$19.99/ay** (Shopify Billing API)
+- **7 gün ücretsiz deneme** — tam özellikler, 8. güne kadar tahsilat yok
+- Plan ücreti Shopify faturanda "Dowaba AI for Shopify Pro" olarak görünür
+- İstediğin zaman iptal: Shopify Admin → Settings → Plan and permissions
+- Plan: DoWaba platformu (10 AI fonksiyon, çok kanallı inbox, function gateway,
+  audit log, destek)
+
+## BYOK — Kendi Gemini Anahtarın
+
+Plan, DoWaba platformunu kapsar. AI çalışması **Google Gemini** üzerinden,
+**kendi API anahtarınla** olur — Gemini kullanım ücretini doğrudan **Google
+sana faturalar** (şeffaf, markup yok, çoğu zaman günde birkaç kuruş).
+
+- Ücretsiz Gemini anahtarı: https://aistudio.google.com/apikey
+- DoWaba panelinde → Site → AI Settings'e yapıştır
+- AI token kullanımı için ayrı Google faturalandırması
+
+Bu yapı DoWaba fiyatını sabit, AI maliyetini şeffaf tutar.
 
 ## Gereksinimler
 
-- Gemini API key (Google AI Studio'dan ücretsiz)
 - Herhangi Shopify planı (Basic / Shopify / Advanced)
+- Google Gemini API anahtarı (ücretsiz, BYOK bölümüne bak)
 - WhatsApp Business / Instagram Business hesabı
 
 ## Destek
@@ -139,18 +169,26 @@ destek@dowaba.com · https://dowaba.com/destek
 2. **2 adımlı AI sipariş:** Müşteri onayı sonrası draft order otomatik gerçek order olur
 3. **7/24 AI yanıt:** Ürün soru/karşılaştırma/stok kontrol — manuel cevap yok
 4. **KVKK + GDPR uyumlu:** Mandatory webhooks, encrypted tokens, audit log
-5. **Ücretsiz deneme:** 50 AI mesaj + 20 çağrı, kredi kartı yok
+5. **7 gün ücretsiz deneme:** Shopify Billing API ile, tam özellikler
 
-## 8. Pricing
+## 8. Pricing (Shopify Billing API — §1.2.1 uyumlu)
 
-**Plan:** Free with limits (DoWaba'nın paketleri panel kotası için, Shopify app free)
+**Plan:** Paid via Shopify Billing API (`appSubscriptionCreate`)
 
-- **Free trial:** 50 AI messages + 20 calls per connected site (no time limit)
-- Then DoWaba panel subscription (separate from Shopify app):
-  - Starter: $20/year (1 site, 1k msgs/mo)
-  - Pro: $50/year (3 sites, 5k msgs/mo)
-  - Business: $40/site/year (dynamic, dealer plan)
-  - Lifetime: $200 one-time (1 site, forever)
+| Plan | Price | Trial | Limit |
+|---|---|---|---|
+| **Dowaba AI for Shopify Pro** | **$19.99/month** | 7 days free | 1 Shopify store, unlimited AI messages (BYOK Gemini) |
+
+**Billing model:**
+- Charged through **Shopify Billing API** (compliant with App Store §1.2.1)
+- Appears as line item on merchant's Shopify invoice
+- Cancellable from Shopify Admin → Settings → Plan and permissions
+- Shopify takes their standard revenue share (15% after $1M USD lifetime)
+
+**BYOK (Gemini AI):**
+- AI itself runs on Google Gemini with merchant's own API key
+- Gemini token usage billed directly by Google (separate from Shopify charge)
+- Transparent pricing — no AI markup from DoWaba
 
 ## 9. Screenshots (1600x900, min 4 max 8)
 

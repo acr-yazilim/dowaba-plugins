@@ -34,6 +34,13 @@ api_version = "2024-10"
   topics = [ "app/uninstalled" ]
   uri = "https://dowaba.com/api/shopify/webhooks/app-uninstalled"
 
+  # Shopify Billing API (§1.2.1 compliance) — recurring charge status changes
+  # ACTIVE → no-op (return URL callback already activated)
+  # CANCELLED / EXPIRED / DECLINED / FROZEN → UserSubscription status='cancelled'
+  [[webhooks.subscriptions]]
+  topics = [ "app_subscriptions/update" ]
+  uri = "https://dowaba.com/api/shopify/webhooks/app-subscriptions-update"
+
 [pos]
 embedded = false
 
