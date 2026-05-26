@@ -851,16 +851,36 @@ class ControllerExtensionDowabaAiApi extends Controller {
         $special = (float) ($p['special'] ?? 0);
         $finalPrice = ($special > 0 && $special < $price) ? $special : $price;
 
+        // Görsel URL'i resize servisi ile (yoksa fallback olarak storefront catalog path)
+        $baseUrl = rtrim((string)($this->config->get('config_url') ?: ''), '/');
+        $imagePath = $p['image'] ?? null;
+        $thumbUrl = null;
+        $imageUrl = null;
+        if (!empty($imagePath)) {
+            try {
+                $this->load->model('tool/image');
+                $thumbUrl = $this->model_tool_image->resize($imagePath, 200, 200);
+                $imageUrl = $this->model_tool_image->resize($imagePath, 600, 600);
+            } catch (\Throwable $e) {
+                // Fallback — raw catalog path
+                $thumbUrl = $baseUrl . '/image/' . ltrim($imagePath, '/');
+                $imageUrl = $thumbUrl;
+            }
+        }
+
         return [
             'product_id' => (int) ($p['product_id'] ?? 0),
             'name'       => $p['name']         ?? '',
+            'model'      => $p['model']        ?? null,   // OpenCart "Model" alanı — ürün kodu
+            'sku'        => $p['sku']          ?? null,   // OpenCart "SKU" alanı — barkod / harici kod
             'price'      => $finalPrice,
             'original_price' => $special > 0 ? $price : null,
             'currency'   => $this->config->get('config_currency') ?: 'TRY',
             'stock'      => (int) ($p['quantity'] ?? 0),
             'in_stock'   => ((int) ($p['quantity'] ?? 0)) > 0,
-            'url'        => rtrim($this->config->get('config_url'), '/') . '/index.php?route=product/product&product_id=' . (int) ($p['product_id'] ?? 0),
-            'thumb'      => $p['image'] ?? null,
+            'url'        => $baseUrl . '/index.php?route=product/product&product_id=' . (int) ($p['product_id'] ?? 0),
+            'thumb'      => $thumbUrl,   // 200x200 önizleme
+            'image'      => $imageUrl,   // 600x600 büyük görsel
         ];
     }
 
