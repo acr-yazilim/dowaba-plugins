@@ -236,6 +236,9 @@ class Dowaba extends \Opencart\System\Engine\Controller {
         $data['user_token']       = $this->session->data['user_token'];
         $data['action']           = $this->url->link('extension/dowaba_ai/module/dowaba', 'user_token=' . $data['user_token'], true);
         $data['cancel']           = $this->url->link('marketplace/extension', 'user_token=' . $data['user_token'] . '&type=module', true);
+        // Breadcrumb URL'leri — OC4 Twig'de url() function tanımlı DEĞİL, controller'dan string olarak veriyoruz
+        $data['dashboard_url']    = $this->url->link('common/dashboard', 'user_token=' . $data['user_token'], true);
+        $data['extension_url']    = $this->url->link('marketplace/extension', 'user_token=' . $data['user_token'] . '&type=module', true);
         // OpenCart'ın url->link() metodu URL'i `&amp;` HTML-encoded döndürür (href attribute için).
         // JS fetch'te bu string literal `&amp;` olur → user_token parse edilemez → admin login redirect → JSON parse fail.
         // html_entity_decode ile `&amp;` → `&` geri döndürüyoruz (JS context için).

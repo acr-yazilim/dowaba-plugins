@@ -12,8 +12,8 @@
       </div>
       <h1>{{ heading_title }}</h1>
       <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ url('common/dashboard', { 'user_token': user_token }) }}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ url('marketplace/extension', { 'user_token': user_token, 'type': 'module' }) }}">{{ text_extension }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ dashboard_url }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ extension_url }}">{{ text_extension }}</a></li>
         <li class="breadcrumb-item active">{{ heading_title }}</li>
       </ol>
     </div>
