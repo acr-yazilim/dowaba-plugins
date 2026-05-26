@@ -26,9 +26,9 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 
 | Platform | En Son Versiyon | ZIP Download | Marketplace |
 |---|---|---|---|
-| **PrestaShop 1.7+ / 8.x** | **v0.2.5** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.5/dowaba-ai-prestashop-0.2.5.zip) | ⏳ addons.prestashop.com submission |
-| **OpenCart 4.x** | **v0.2.3** | [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc4-0.2.3.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
-| **OpenCart 3.x** | **v0.2.3** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc3-0.2.3.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
+| **PrestaShop 1.7+ / 8.x / 9.x** | **v0.2.7** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.7/dowaba-ai-prestashop-0.2.7.zip) | ⏳ addons.prestashop.com submission |
+| **OpenCart 4.x** | **v0.2.10** | [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.10/dowaba_ai.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
+| **OpenCart 3.x** | **v0.2.10** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.10/dowaba-opencart-oc3-0.2.10.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
 | **WooCommerce** | **v0.2.0** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip) | ⏳ wordpress.org submission |
 | **Shopify** | — | OAuth-based (download yok) | ⏳ App Store Billing API resubmit |
 | **İkas** | — | OAuth-based (download yok) | ⏳ Partner App onayı |
@@ -38,16 +38,17 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 ## 🚀 Hızlı kurulum
 
 ### PrestaShop
-1. [⬇️ PrestaShop ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.5/dowaba-ai-prestashop-0.2.5.zip) indir
+1. [⬇️ PrestaShop ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.7/dowaba-ai-prestashop-0.2.7.zip) indir
 2. PrestaShop BO → Modules → Module Manager → Upload a module → ZIP'i sürükle
 3. **Configure** → API key + Manifest URL üret → DoWaba paneline Bundle Import yap
 
 ### OpenCart
 1. Mağazanın versiyonuna göre ZIP indir:
-   - [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc4-0.2.3.ocmod.zip)
-   - [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc3-0.2.3.ocmod.zip)
-2. Admin → Extensions → Installer → Upload → ZIP'i yükle → Refresh Modifications
-3. 5-step wizard → DoWaba Bundle Import
+   - [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.10/dowaba_ai.ocmod.zip) — **adı `dowaba_ai.ocmod.zip` kalmalı, değiştirme** (OC4 zip adından `code` okuyor)
+   - [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.10/dowaba-opencart-oc3-0.2.10.ocmod.zip)
+2. Admin → Extensions → Installer → Upload → ZIP'i yükle → Install
+3. Extensions → Extensions → Modules → DoWaba AI → Install (yeşil +) → Edit
+4. **"Yeni API Key Üret"** → `opc_xxxxx...` + Manifest URL kopyala → DoWaba Bundle Import
 
 ### WooCommerce
 1. [⬇️ WooCommerce ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip) indir
