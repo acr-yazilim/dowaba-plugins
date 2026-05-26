@@ -110,10 +110,12 @@ class Dowaba extends \Opencart\System\Engine\Controller {
         $prefix = substr($plainKey, 0, 12); // 'opc_xxxxxxxx' for UI display
 
         $this->load->model('setting/setting');
+        // OC4 + PHP 8 strict types — DB::escape() null kabul etmiyor.
+        // api_key_last_used'i reset için boş string ver ('' = "henüz kullanılmadı").
         $this->model_setting_setting->editSetting('module_dowaba_ai', [
             $this->settingPrefix . 'api_key_hash'      => $hash,
             $this->settingPrefix . 'api_key_prefix'    => $prefix,
-            $this->settingPrefix . 'api_key_last_used' => null,
+            $this->settingPrefix . 'api_key_last_used' => '',
         ]);
 
         $this->response->setOutput(json_encode([
@@ -266,8 +268,10 @@ class Dowaba extends \Opencart\System\Engine\Controller {
      * Storefront base + ?route=extension/dowaba_ai/manifest
      */
     private function buildManifestUrl(): string {
-        $base = rtrim($this->config->get('config_url'), '/');
-        return $base . '/index.php?route=extension/dowaba_ai/manifest';
+        // 3 katman fallback — config_url admin'de set edilmemiş olabilir, HTTP_CATALOG constant'ı admin context'te tanımlı.
+        $configUrl = (string)$this->config->get('config_url');
+        $base = $configUrl !== '' ? $configUrl : (defined('HTTP_CATALOG') ? HTTP_CATALOG : '');
+        return rtrim($base, '/') . '/index.php?route=extension/dowaba_ai/manifest';
     }
 
     /**
