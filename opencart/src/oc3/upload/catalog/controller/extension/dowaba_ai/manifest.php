@@ -107,9 +107,31 @@ class ControllerExtensionDowabaAiManifest extends Controller {
                 $this->fn('opc_order_preview', 'Sipariş önizle (onay öncesi)',
                     'KRİTİK: Sipariş oluşturmadan ÖNCE bu çağrılır. Müşteri özet onaylayınca opc_order_confirm.',
                     'write',
+                    // FIX 2026-05-26: Gemini JSON Schema strict — `array` ve `object` tipler için
+                    // `items`/`properties` zorunlu, yoksa "function declaration invalid" ile reddediliyor
+                    // ve AI tüm function listesini kaybedip fallback'e düşüyor.
                     array('type' => 'object', 'properties' => array(
-                        'items' => array('type' => 'array'),
-                        'customer' => array('type' => 'object'),
+                        'items' => array(
+                            'type' => 'array',
+                            'items' => array(
+                                'type' => 'object',
+                                'properties' => array(
+                                    'product_id' => array('type' => 'integer', 'description' => 'OpenCart ürün ID'),
+                                    'quantity' => array('type' => 'integer', 'default' => 1),
+                                ),
+                                'required' => array('product_id'),
+                            ),
+                        ),
+                        'customer' => array(
+                            'type' => 'object',
+                            'properties' => array(
+                                'phone' => array('type' => 'string'),
+                                'email' => array('type' => 'string'),
+                                'name' => array('type' => 'string'),
+                                'address' => array('type' => 'string'),
+                                'city' => array('type' => 'string'),
+                            ),
+                        ),
                     ), 'required' => array('items', 'customer')),
                     'POST', 'order_preview',
                     null, array('items' => '{{arg.items}}', 'customer' => '{{arg.customer}}'), 8000
