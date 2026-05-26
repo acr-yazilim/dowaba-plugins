@@ -1,17 +1,33 @@
 <?php
+/**
+ * Dowaba AI Integration for PrestaShop — Scope Guard
+ *
+ * Per-function read/write scope enforcement. AI write operations (order create)
+ * disabled by default — admin must explicitly enable via module config.
+ * Protects against prompt-injection driven order creation.
+ *
+ * @author    Aydın Acar <support@dowaba.com>
+ * @copyright 2024 Aydın Acar (DoWaba)
+ * @license   https://opensource.org/licenses/MIT  MIT License
+ */
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class DowabaScopeGuard
 {
     public static $FUNCTION_SCOPES = [
-        'opc_product_search'  => 'read',
-        'opc_product_detail'  => 'read',
-        'opc_product_compare' => 'read',
-        'opc_stock_check'     => 'read',
-        'opc_category_list'   => 'read',
-        'opc_order_status'    => 'read',
-        'opc_customer_lookup' => 'read',
-        'opc_cart_recover'    => 'read',
-        'opc_order_preview'   => 'write',
-        'opc_order_confirm'   => 'write',
+        'psm_product_search'  => 'read',
+        'psm_product_detail'  => 'read',
+        'psm_product_compare' => 'read',
+        'psm_stock_check'     => 'read',
+        'psm_category_list'   => 'read',
+        'psm_order_status'    => 'read',
+        'psm_customer_lookup' => 'read',
+        'psm_cart_recover'    => 'read',
+        'psm_order_preview'   => 'write',
+        'psm_order_confirm'   => 'write',
     ];
 
     public static function check(string $scope): array

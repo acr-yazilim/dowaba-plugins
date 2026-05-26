@@ -1,11 +1,24 @@
 <?php
 /**
- * Order preview cache — PrestaShop Cache backend (file/memcached/redis).
+ * Dowaba AI Integration for PrestaShop — Order Preview Cache
+ *
+ * 2-step order confirmation: preview generated → customer "yes" → confirm.
+ * Backend: PrestaShop Cache (file / memcached / redis). TTL: 5 minutes.
+ * One-shot consume — replay protection for order creation.
+ *
+ * @author    Aydın Acar <support@dowaba.com>
+ * @copyright 2024 Aydın Acar (DoWaba)
+ * @license   https://opensource.org/licenses/MIT  MIT License
  */
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class DowabaOrderPreview
 {
-    const CACHE_PREFIX = 'dwb_preview_';
-    const TTL_SECONDS = 300;
+    public const CACHE_PREFIX = 'dwb_preview_';
+    public const TTL_SECONDS = 300;
 
     public static function generateId(): string
     {
@@ -23,7 +36,9 @@ class DowabaOrderPreview
     public static function peek(string $preview_id): ?array
     {
         $key = self::CACHE_PREFIX . $preview_id;
-        if (!Cache::isStored($key)) return null;
+        if (!Cache::isStored($key)) {
+            return null;
+        }
 
         $value = Cache::retrieve($key);
         if (!is_array($value) || empty($value) || !isset($value['_preview_id'])) {
@@ -41,7 +56,9 @@ class DowabaOrderPreview
     public static function consume(string $preview_id): ?array
     {
         $payload = self::peek($preview_id);
-        if ($payload === null) return null;
+        if ($payload === null) {
+            return null;
+        }
         Cache::clean(self::CACHE_PREFIX . $preview_id);
         return $payload;
     }

@@ -1,0 +1,15 @@
+# Dowaba AI for PrestaShop — security guard
+# Prevent directory listing
+Options -Indexes
+
+# Block direct access to all PHP files except those routed through PrestaShop front controller
+<FilesMatch "\.(php|inc|tpl|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Allow only PrestaShop dispatcher (index.php at root is the entry point)
+<Files "index.php">
+    Order allow,deny
+    Allow from all
+</Files>

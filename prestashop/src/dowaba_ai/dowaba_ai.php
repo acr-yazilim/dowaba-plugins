@@ -1,24 +1,30 @@
 <?php
 /**
- * DoWaba AI Integration for PrestaShop
+ * Dowaba AI Integration for PrestaShop — Module main class
  *
- * Module main class. PrestaShop 8.x conventions.
+ * PrestaShop 8.x conventions. Multi-channel AI chatbot connecting PrestaShop store
+ * to WhatsApp, Instagram DM, TikTok via Dowaba SaaS.
+ *
+ * @author    Aydın Acar <support@dowaba.com>
+ * @copyright 2024 Aydın Acar (DoWaba)
+ * @license   https://opensource.org/licenses/MIT  MIT License
+ * @link      https://dowaba.com
  */
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class Dowaba_Ai extends Module
+class DowabaAi extends Module
 {
-    const TABLE_AUDIT = 'dowaba_audit';
-    const PREVIEW_TTL = 300; // 5 dakika
+    public const TABLE_AUDIT = 'dowaba_audit';
+    public const PREVIEW_TTL = 300; // 5 dakika
 
     public function __construct()
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.1.0';
+        $this->version = '0.2.0';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.0', 'max' => _PS_VERSION_];
@@ -37,7 +43,9 @@ class Dowaba_Ai extends Module
 
     public function install()
     {
-        if (!parent::install()) return false;
+        if (!parent::install()) {
+            return false;
+        }
 
         // Settings defaults
         Configuration::updateValue('DOWABA_AI_STATUS', 0);
@@ -74,7 +82,9 @@ class Dowaba_Ai extends Module
             'DOWABA_AI_API_KEY_HASH', 'DOWABA_AI_API_KEY_PREFIX',
             'DOWABA_AI_API_KEY_LAST_USED', 'DOWABA_AI_MANIFEST_BASE_URL',
         ];
-        foreach ($keys as $k) Configuration::deleteByName($k);
+        foreach ($keys as $k) {
+            Configuration::deleteByName($k);
+        }
 
         Db::getInstance()->execute('DROP TABLE IF EXISTS `' . _DB_PREFIX_ . self::TABLE_AUDIT . '`');
 
@@ -90,11 +100,11 @@ class Dowaba_Ai extends Module
 
         // POST save
         if (Tools::isSubmit('submit_dowaba_ai')) {
-            Configuration::updateValue('DOWABA_AI_STATUS',          (int) Tools::getValue('DOWABA_AI_STATUS'));
-            Configuration::updateValue('DOWABA_AI_SCOPE_READ',      (int) Tools::getValue('DOWABA_AI_SCOPE_READ'));
-            Configuration::updateValue('DOWABA_AI_SCOPE_WRITE',     (int) Tools::getValue('DOWABA_AI_SCOPE_WRITE'));
+            Configuration::updateValue('DOWABA_AI_STATUS', (int) Tools::getValue('DOWABA_AI_STATUS'));
+            Configuration::updateValue('DOWABA_AI_SCOPE_READ', (int) Tools::getValue('DOWABA_AI_SCOPE_READ'));
+            Configuration::updateValue('DOWABA_AI_SCOPE_WRITE', (int) Tools::getValue('DOWABA_AI_SCOPE_WRITE'));
             Configuration::updateValue('DOWABA_AI_AUDIT_RETENTION_DAYS', max(1, (int) Tools::getValue('DOWABA_AI_AUDIT_RETENTION_DAYS')));
-            Configuration::updateValue('DOWABA_AI_IP_WHITELIST',    pSQL(Tools::getValue('DOWABA_AI_IP_WHITELIST')));
+            Configuration::updateValue('DOWABA_AI_IP_WHITELIST', pSQL(Tools::getValue('DOWABA_AI_IP_WHITELIST')));
             Configuration::updateValue('DOWABA_AI_MANIFEST_BASE_URL', pSQL(Tools::getValue('DOWABA_AI_MANIFEST_BASE_URL')));
             $output .= $this->displayConfirmation($this->l('Settings saved.'));
         }

@@ -1,16 +1,29 @@
 <?php
 /**
- * DoWaba AI REST API endpoint — PrestaShop front controller.
+ * Dowaba AI Integration for PrestaShop — REST API Endpoint
+ *
+ * Front controller that handles all AI function calls dispatched by Dowaba SaaS.
  * URL: /index.php?fc=module&module=dowaba_ai&controller=api&action={products|product|...}
- * Class: Dowaba_AiApiModuleFrontController
+ * Class: DowabaAiApiModuleFrontController
+ *
+ * Dispatches 10 actions (products, product, compare, stock, categories, order,
+ * customer_lookup, cart_recover, order_preview, order_confirm).
+ *
+ * @author    Aydın Acar <support@dowaba.com>
+ * @copyright 2024 Aydın Acar (DoWaba)
+ * @license   https://opensource.org/licenses/MIT  MIT License
  */
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/Auth.php';
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/ScopeGuard.php';
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/AuditLogger.php';
 require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/OrderPreview.php';
 
-class Dowaba_AiApiModuleFrontController extends ModuleFrontController
+class DowabaAiApiModuleFrontController extends ModuleFrontController
 {
     public $auth = false;
     public $ssl = false;
@@ -51,12 +64,17 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function products()
     {
-        $this->currentSlug = 'opc_product_search';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_product_search';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $query = trim((string) Tools::getValue('q', ''));
         $limit = max(1, min(50, (int) Tools::getValue('limit', 10)));
-        if ($query === '') { $this->respond(400, ['error' => 'q parameter required']); return; }
+        if ($query === '') {
+            $this->respond(400, ['error' => 'q parameter required']);
+            return;
+        }
 
         $id_lang = (int) Context::getContext()->language->id;
         $products = Product::searchByName($id_lang, $query, null, false, $limit);
@@ -70,11 +88,16 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function product()
     {
-        $this->currentSlug = 'opc_product_detail';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_product_detail';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $id = (int) Tools::getValue('id', 0);
-        if ($id <= 0) { $this->respond(400, ['error' => 'id parameter required']); return; }
+        if ($id <= 0) {
+            $this->respond(400, ['error' => 'id parameter required']);
+            return;
+        }
 
         $product = new Product($id, true, Context::getContext()->language->id);
         if (!Validate::isLoadedObject($product)) {
@@ -103,12 +126,14 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function compare()
     {
-        $this->currentSlug = 'opc_product_compare';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_product_compare';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $ids_raw = Tools::getValue('ids', '');
         $ids = is_array($ids_raw) ? $ids_raw : explode(',', (string) $ids_raw);
-        $ids = array_filter(array_map('intval', $ids), fn($id) => $id > 0);
+        $ids = array_filter(array_map('intval', $ids), fn ($id) => $id > 0);
         $ids = array_values(array_unique($ids));
 
         if (count($ids) < 2 || count($ids) > 3) {
@@ -117,11 +142,14 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
         }
 
         $id_lang = (int) Context::getContext()->language->id;
-        $products = []; $all_attrs = [];
+        $products = [];
+        $all_attrs = [];
 
         foreach ($ids as $pid) {
             $p = new Product($pid, true, $id_lang);
-            if (!Validate::isLoadedObject($p)) continue;
+            if (!Validate::isLoadedObject($p)) {
+                continue;
+            }
 
             $features = [];
             foreach ($p->getFrontFeatures($id_lang) as $f) {
@@ -137,7 +165,8 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             return;
         }
 
-        $common = []; $diff = [];
+        $common = [];
+        $diff = [];
         foreach ($all_attrs as $name => $values) {
             if (count($values) === count($products) && count(array_unique($values)) === 1) {
                 $common[$name] = reset($values);
@@ -159,8 +188,10 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function stock()
     {
-        $this->currentSlug = 'opc_stock_check';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_stock_check';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $pid = (int) Tools::getValue('product_id', 0);
         $sku = trim((string) Tools::getValue('sku', ''));
@@ -170,10 +201,13 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             $product = new Product($pid, true);
         } elseif ($sku !== '') {
             $sku_id = (int) Product::getIdByReference($sku);
-            if ($sku_id > 0) $product = new Product($sku_id, true);
+            if ($sku_id > 0) {
+                $product = new Product($sku_id, true);
+            }
         }
         if (!$product || !Validate::isLoadedObject($product)) {
-            $this->respond(404, ['error' => 'product not found']); return;
+            $this->respond(404, ['error' => 'product not found']);
+            return;
         }
 
         $stock = (int) StockAvailable::getQuantityAvailableByProduct((int) $product->id);
@@ -189,8 +223,10 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function categories()
     {
-        $this->currentSlug = 'opc_category_list';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_category_list';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $parent = max(0, (int) Tools::getValue('parent_id', 0));
         $id_lang = (int) Context::getContext()->language->id;
@@ -202,7 +238,7 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
              ORDER BY c.position ASC"
         ) ?: [];
 
-        $data = array_map(fn($r) => [
+        $data = array_map(fn ($r) => [
             'category_id' => (int) $r['id_category'],
             'name'        => $r['name'],
             'parent_id'   => (int) $r['id_parent'],
@@ -213,20 +249,27 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function order()
     {
-        $this->currentSlug = 'opc_order_status';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_order_status';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $id = (int) Tools::getValue('id', 0);
         $email = strtolower(trim((string) Tools::getValue('email', '')));
-        if ($id <= 0 || $email === '') { $this->respond(400, ['error' => 'id and email required']); return; }
+        if ($id <= 0 || $email === '') {
+            $this->respond(400, ['error' => 'id and email required']);
+            return;
+        }
 
         $order = new Order($id);
         if (!Validate::isLoadedObject($order)) {
-            $this->respond(404, ['error' => 'order not found']); return;
+            $this->respond(404, ['error' => 'order not found']);
+            return;
         }
         $customer = new Customer((int) $order->id_customer);
         if (strtolower((string) $customer->email) !== $email) {
-            $this->respond(404, ['error' => 'order not found']); return;
+            $this->respond(404, ['error' => 'order not found']);
+            return;
         }
 
         $this->respond(200, ['data' => [
@@ -241,17 +284,24 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function customerLookup()
     {
-        $this->currentSlug = 'opc_customer_lookup';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_customer_lookup';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $phone = trim((string) Tools::getValue('phone', ''));
         $email = strtolower(trim((string) Tools::getValue('email', '')));
-        if ($phone === '' && $email === '') { $this->respond(400, ['error' => 'phone or email required']); return; }
+        if ($phone === '' && $email === '') {
+            $this->respond(400, ['error' => 'phone or email required']);
+            return;
+        }
 
         $customer = null;
         if ($email !== '') {
             $row = Db::getInstance()->getRow("SELECT * FROM `" . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL($email) . "' LIMIT 1");
-            if ($row) $customer = new Customer((int) $row['id_customer']);
+            if ($row) {
+                $customer = new Customer((int) $row['id_customer']);
+            }
         }
         if ((!$customer || !Validate::isLoadedObject($customer)) && $phone !== '') {
             $norm = preg_replace('/\D+/', '', $phone);
@@ -261,11 +311,14 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
                  WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '" . pSQL($norm) . "'
                  LIMIT 1"
             );
-            if ($row) $customer = new Customer((int) $row['id_customer']);
+            if ($row) {
+                $customer = new Customer((int) $row['id_customer']);
+            }
         }
 
         if (!$customer || !Validate::isLoadedObject($customer)) {
-            $this->respond(404, ['error' => 'customer not found']); return;
+            $this->respond(404, ['error' => 'customer not found']);
+            return;
         }
 
         $orders = Db::getInstance()->executeS(
@@ -277,7 +330,7 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             'name'        => trim($customer->firstname . ' ' . $customer->lastname),
             'email'       => $customer->email,
             'created_at'  => $customer->date_add,
-            'recent_orders' => array_map(fn($o) => [
+            'recent_orders' => array_map(fn ($o) => [
                 'order_id' => (int) $o['id_order'],
                 'total'    => (float) $o['total_paid'],
                 'date'     => $o['date_add'],
@@ -287,13 +340,18 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function cartRecover()
     {
-        $this->currentSlug = 'opc_cart_recover';
-        if (!$this->guard('read')) return;
+        $this->currentSlug = 'psm_cart_recover';
+        if (!$this->guard('read')) {
+            return;
+        }
 
         $body = $this->readJsonBody();
         $email = strtolower(trim((string) ($body['email'] ?? '')));
         $cid = (int) ($body['customer_id'] ?? 0);
-        if ($email === '' && $cid <= 0) { $this->respond(400, ['error' => 'email or customer_id required']); return; }
+        if ($email === '' && $cid <= 0) {
+            $this->respond(400, ['error' => 'email or customer_id required']);
+            return;
+        }
 
         $token = bin2hex(random_bytes(16));
         $link = $this->context->link->getPageLink('my-account', true) . '?dwb_recover=' . $token;
@@ -304,29 +362,46 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
 
     public function orderPreview()
     {
-        $this->currentSlug = 'opc_order_preview';
-        if (!$this->guard('write')) return;
+        $this->currentSlug = 'psm_order_preview';
+        if (!$this->guard('write')) {
+            return;
+        }
 
         $body = $this->readJsonBody();
         $items = is_array($body['items'] ?? null) ? $body['items'] : [];
         $customer = is_array($body['customer'] ?? null) ? $body['customer'] : [];
 
-        if (empty($items)) { $this->respond(400, ['error' => 'items array required']); return; }
-        if (count($items) > 50) { $this->respond(400, ['error' => 'too many items (max 50)']); return; }
+        if (empty($items)) {
+            $this->respond(400, ['error' => 'items array required']);
+            return;
+        }
+        if (count($items) > 50) {
+            $this->respond(400, ['error' => 'too many items (max 50)']);
+            return;
+        }
 
         $phone = trim((string) ($customer['phone'] ?? ''));
         $email = strtolower(trim((string) ($customer['email'] ?? '')));
-        if ($phone === '' && $email === '') { $this->respond(400, ['error' => 'customer.phone or customer.email required']); return; }
+        if ($phone === '' && $email === '') {
+            $this->respond(400, ['error' => 'customer.phone or customer.email required']);
+            return;
+        }
 
-        $resolved = []; $subtotal = 0.0; $stock_issues = [];
+        $resolved = [];
+        $subtotal = 0.0;
+        $stock_issues = [];
         foreach ($items as $idx => $item) {
             $pid = (int) ($item['product_id'] ?? 0);
             $qty = max(1, (int) ($item['quantity'] ?? 1));
-            if ($pid <= 0) { $this->respond(400, ['error' => "items[$idx].product_id required"]); return; }
+            if ($pid <= 0) {
+                $this->respond(400, ['error' => "items[$idx].product_id required"]);
+                return;
+            }
 
             $product = new Product($pid, true);
             if (!Validate::isLoadedObject($product)) {
-                $this->respond(404, ['error' => 'product not found', 'product_id' => $pid]); return;
+                $this->respond(404, ['error' => 'product not found', 'product_id' => $pid]);
+                return;
             }
 
             $stock = (int) StockAvailable::getQuantityAvailableByProduct((int) $product->id);
@@ -375,31 +450,35 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             'expires_at' => date('c', time() + DowabaOrderPreview::TTL_SECONDS),
             'expires_in_seconds' => DowabaOrderPreview::TTL_SECONDS,
             'summary' => $payload,
-            'note' => 'AI\'ya: müşteriye özet göster, onay sonrası opc_order_confirm.',
+            'note' => 'AI\'ya: müşteriye özet göster, onay sonrası psm_order_confirm.',
         ]);
     }
 
     public function orderConfirm()
     {
-        $this->currentSlug = 'opc_order_confirm';
-        if (!$this->guard('write')) return;
+        $this->currentSlug = 'psm_order_confirm';
+        if (!$this->guard('write')) {
+            return;
+        }
 
         $body = $this->readJsonBody();
         $preview_id = trim((string) ($body['preview_id'] ?? ''));
         $confirmed = filter_var($body['confirmed'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
         if (!DowabaOrderPreview::isValidId($preview_id)) {
-            $this->respond(400, ['error' => 'invalid preview_id format']); return;
+            $this->respond(400, ['error' => 'invalid preview_id format']);
+            return;
         }
         if (!$confirmed) {
-            $this->respond(400, ['error' => 'confirmed must be true']); return;
+            $this->respond(400, ['error' => 'confirmed must be true']);
+            return;
         }
 
         $preview = DowabaOrderPreview::consume($preview_id);
         if ($preview === null) {
             $this->respond(410, [
                 'error' => 'preview_id expired or already consumed',
-                'note' => 'AI\'ya: yeni preview_id için opc_order_preview çağır.',
+                'note' => 'AI\'ya: yeni preview_id için psm_order_preview çağır.',
             ]);
             return;
         }
@@ -436,7 +515,9 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
         $customer_id = 0;
         if ($customer['email']) {
             $row = Db::getInstance()->getRow("SELECT id_customer FROM `" . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL(strtolower($customer['email'])) . "' LIMIT 1");
-            if ($row) $customer_id = (int) $row['id_customer'];
+            if ($row) {
+                $customer_id = (int) $row['id_customer'];
+            }
         }
 
         if (!$customer_id) {
@@ -556,12 +637,18 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
         $raw = file_get_contents('php://input') ?: '';
         if ($raw !== '') {
             $data = json_decode($raw, true);
-            if (is_array($data) && !empty($data)) return $data;
+            if (is_array($data) && !empty($data)) {
+                return $data;
+            }
         }
-        if (!empty($_POST)) return $_POST;
+        if (!empty($_POST)) {
+            return $_POST;
+        }
         if ($raw !== '') {
             parse_str($raw, $parsed);
-            if (!empty($parsed)) return $parsed;
+            if (!empty($parsed)) {
+                return $parsed;
+            }
         }
         return [];
     }

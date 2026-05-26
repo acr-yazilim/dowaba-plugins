@@ -1,7 +1,20 @@
 <?php
 /**
- * DoWaba AI — Bearer Auth + IP whitelist (PrestaShop).
+ * Dowaba AI Integration for PrestaShop — Bearer Auth + IP whitelist
+ *
+ * Validates incoming requests:
+ *   - Authorization: Bearer <api_key> header (sha256 hash comparison)
+ *   - Optional IP whitelist (Dowaba production IPs)
+ *
+ * @author    Aydın Acar <support@dowaba.com>
+ * @copyright 2024 Aydın Acar (DoWaba)
+ * @license   https://opensource.org/licenses/MIT  MIT License
  */
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
 class DowabaAuth
 {
     public static function verify(): array
@@ -18,7 +31,7 @@ class DowabaAuth
         }
         $provided_key = $m[1];
 
-        if (!preg_match('/^opc_[a-f0-9]{32,128}$/i', $provided_key)) {
+        if (!preg_match('/^psm_[a-f0-9]{32,128}$/i', $provided_key)) {
             return self::fail(401, 'Invalid bearer token', $client_ip);
         }
 
@@ -45,7 +58,7 @@ class DowabaAuth
 
     public static function generateKey(): string
     {
-        $plain_key = 'opc_' . bin2hex(random_bytes(32));
+        $plain_key = 'psm_' . bin2hex(random_bytes(32));
         Configuration::updateValue('DOWABA_AI_API_KEY_HASH', hash('sha256', $plain_key));
         Configuration::updateValue('DOWABA_AI_API_KEY_PREFIX', substr($plain_key, 0, 12));
         Configuration::deleteByName('DOWABA_AI_API_KEY_LAST_USED');
