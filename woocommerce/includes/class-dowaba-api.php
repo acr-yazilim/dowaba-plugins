@@ -34,7 +34,7 @@ final class Api {
     // ========================================================== READ
 
     public static function products(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_product_search';
+        self::$current_slug = 'wcm_product_search';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $query = trim((string) $request->get_param('q'));
@@ -54,7 +54,7 @@ final class Api {
     }
 
     public static function product(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_product_detail';
+        self::$current_slug = 'wcm_product_detail';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $id = (int) $request->get_param('id');
@@ -83,7 +83,7 @@ final class Api {
     }
 
     public static function compare(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_product_compare';
+        self::$current_slug = 'wcm_product_compare';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $ids_raw = $request->get_param('ids');
@@ -139,7 +139,7 @@ final class Api {
     }
 
     public static function stock(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_stock_check';
+        self::$current_slug = 'wcm_stock_check';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $pid = (int) $request->get_param('product_id');
@@ -162,7 +162,7 @@ final class Api {
     }
 
     public static function categories(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_category_list';
+        self::$current_slug = 'wcm_category_list';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $parent = max(0, (int) $request->get_param('parent_id'));
@@ -185,7 +185,7 @@ final class Api {
     }
 
     public static function order_status(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_order_status';
+        self::$current_slug = 'wcm_order_status';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $id = (int) $request->get_param('id');
@@ -210,7 +210,7 @@ final class Api {
     }
 
     public static function customer_lookup(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_customer_lookup';
+        self::$current_slug = 'wcm_customer_lookup';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $phone = trim((string) $request->get_param('phone'));
@@ -255,7 +255,7 @@ final class Api {
     }
 
     public static function cart_recover(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_cart_recover';
+        self::$current_slug = 'wcm_cart_recover';
         if (($g = self::guard($request, 'read'))) return $g;
 
         $body = $request->get_json_params() ?: [];
@@ -275,7 +275,7 @@ final class Api {
     // ========================================================== WRITE
 
     public static function order_preview(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_order_preview';
+        self::$current_slug = 'wcm_order_preview';
         if (($g = self::guard($request, 'write'))) return $g;
 
         $body = $request->get_json_params() ?: $request->get_body_params() ?: [];
@@ -360,12 +360,12 @@ final class Api {
             'expires_at' => date('c', time() + DOWABA_AI_PREVIEW_TTL),
             'expires_in_seconds' => DOWABA_AI_PREVIEW_TTL,
             'summary'    => $payload,
-            'note'       => 'AI\'ya: bu özeti müşteriye göster, "Onaylıyor musun?" sor. Onay → opc_order_confirm.',
+            'note'       => 'AI\'ya: bu özeti müşteriye göster, "Onaylıyor musun?" sor. Onay → wcm_order_confirm.',
         ]);
     }
 
     public static function order_confirm(\WP_REST_Request $request): \WP_REST_Response {
-        self::$current_slug = 'opc_order_confirm';
+        self::$current_slug = 'wcm_order_confirm';
         if (($g = self::guard($request, 'write'))) return $g;
 
         $body = $request->get_json_params() ?: $request->get_body_params() ?: [];
@@ -383,7 +383,7 @@ final class Api {
         if ($preview === null) {
             return self::respond(410, [
                 'error' => 'preview_id expired or already consumed',
-                'note'  => 'AI\'ya: müşteriden yeniden onay al + yeni opc_order_preview çağır.',
+                'note'  => 'AI\'ya: müşteriden yeniden onay al + yeni wcm_order_preview çağır.',
             ]);
         }
 

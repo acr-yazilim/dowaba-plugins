@@ -106,7 +106,7 @@ $nonce = wp_create_nonce('dowaba_ai_ajax');
     <p>
       <select id="audit-filter-function">
         <option value="">(all functions)</option>
-        <?php foreach (['opc_product_search','opc_product_detail','opc_product_compare','opc_stock_check','opc_category_list','opc_order_status','opc_customer_lookup','opc_cart_recover','opc_order_preview','opc_order_confirm'] as $slug): ?>
+        <?php foreach (['wcm_product_search','wcm_product_detail','wcm_product_compare','wcm_stock_check','wcm_category_list','wcm_order_status','wcm_customer_lookup','wcm_cart_recover','wcm_order_preview','wcm_order_confirm'] as $slug): ?>
           <option><?php echo esc_html($slug); ?></option>
         <?php endforeach; ?>
       </select>

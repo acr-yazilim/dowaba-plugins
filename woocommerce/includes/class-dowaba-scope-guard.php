@@ -6,16 +6,16 @@ if (!defined('ABSPATH')) exit;
 final class ScopeGuard {
 
     public const FUNCTION_SCOPES = [
-        'opc_product_search'  => 'read',
-        'opc_product_detail'  => 'read',
-        'opc_product_compare' => 'read',
-        'opc_stock_check'     => 'read',
-        'opc_category_list'   => 'read',
-        'opc_order_status'    => 'read',
-        'opc_customer_lookup' => 'read',
-        'opc_cart_recover'    => 'read',
-        'opc_order_preview'   => 'write',
-        'opc_order_confirm'   => 'write',
+        'wcm_product_search'  => 'read',
+        'wcm_product_detail'  => 'read',
+        'wcm_product_compare' => 'read',
+        'wcm_stock_check'     => 'read',
+        'wcm_category_list'   => 'read',
+        'wcm_order_status'    => 'read',
+        'wcm_customer_lookup' => 'read',
+        'wcm_cart_recover'    => 'read',
+        'wcm_order_preview'   => 'write',
+        'wcm_order_confirm'   => 'write',
     ];
 
     /**

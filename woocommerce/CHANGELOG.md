@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0] - 2026-05-26
+
+### ⚠️ BREAKING
+
+- **Tüm function slug ve API key prefix `opc_*` → `wcm_*`** — WooCommerce plugin'i yanlışlıkla OpenCart prefix kullanıyordu (35 yerde). Bayi aynı site'a hem OpenCart hem Woo plugin bağlarsa `opc_product_search` çakışıyordu. Şimdi `wcm_product_search`, `wcm_order_preview` … (10 fn) + Bearer key generator `wcm_` + Auth regex `/^wcm_[a-f0-9]{32,128}$/i`.
+  - **Migration:** Mevcut kurulumlar için Dowaba paneli → Bundle Import yeniden çağrılmalı (eski `opc_*` function tanımları silinir, yeni `wcm_*` ile değiştirilir).
+
+### Fixed
+
+- **`wcm_order_preview` Gemini JSON Schema strict regression** — `items: {type: array}` ve `customer: {type: object}` boş tanımlıydı → Gemini "function declaration invalid" 400 reject → AI tüm tool listesini reddediyor → kullanıcıya silent "Şu an yanıt veremiyoruz" fallback. Birebir OpenCart 3'te yaşanan vakanın eşi (PLUGIN_DEV_GUIDE.md §3). Fix: nested `items.items.{product_id, quantity}` + `customer.properties.{phone, email, name, address, city}`.
+- **Audit log lazy retention cleanup** — `purge_old()` metodu vardı ama `wp_schedule_event` ile cron'a bağlı değildi → audit tablosu sınırsız büyüme bug'ı. Şimdi `write()` her çağrıda 1/500 ihtimalle `dowaba_ai_audit_retention_days` (default 30) eski log'ları siler. Production disk-fill önlenir (WP cron disable edilse bile çalışır).
+
+### Notes
+
+- Backend (Dowaba ana repo) `BundleImportController::validateManifest` recursive Gemini JSON Schema check eklendi (2026-05-26). Yeni invalid manifest gönderildiğinde 422 ile import-time reject edilir.
+- `UnifiedAIService::callGeminiWithRetry` 400 body parse → `schema_invalid` UserErrorRecorder banner. Plugin geliştiriciler artık debug için Laravel log + audit log birlikte kullanabilir.
+
 ## [0.1.0] - 2026-05-23
 
 ### Added — Initial release

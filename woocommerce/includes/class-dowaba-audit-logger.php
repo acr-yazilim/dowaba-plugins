@@ -22,6 +22,14 @@ final class AuditLogger {
                 ],
                 ['%s', '%s', '%d', '%d', '%s', '%s']
             );
+
+            // Lazy retention cleanup — 1/500 ihtimalle eski log'ları sil.
+            // WP cron alternatif olabilir ama lazy daha güvenilir (cron disable edilebilir).
+            // Disk-fill bug'ı (audit tablosu sınırsız büyüme) önlenir.
+            if (random_int(1, 500) === 1) {
+                $retention = (int) get_option('dowaba_ai_audit_retention_days', 30);
+                self::purge_old(max(1, min(365, $retention)));
+            }
         } catch (\Throwable $e) {
             // Silent — audit fail-safe, request'i bozma
         }

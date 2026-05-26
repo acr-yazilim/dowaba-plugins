@@ -33,7 +33,7 @@ final class Manifest {
                 'allowed_hosts' => [parse_url($base, PHP_URL_HOST) ?: ''],
             ],
             'functions' => [
-                self::fn('opc_product_search', 'Ürün ara', 'Ad/SKU/kategoriye göre ürün listele.', 'read',
+                self::fn('wcm_product_search', 'Ürün ara', 'Ad/SKU/kategoriye göre ürün listele.', 'read',
                     ['type' => 'object', 'properties' => [
                         'query' => ['type' => 'string'],
                         'limit' => ['type' => 'integer', 'default' => 10, 'maximum' => 50],
@@ -42,42 +42,42 @@ final class Manifest {
                     ['q' => '{{arg.query}}', 'limit' => '{{arg.limit}}'], null, 5000,
                     ['data_path' => 'data', 'fields' => ['product_id', 'name', 'price', 'stock', 'url', 'thumb']]
                 ),
-                self::fn('opc_product_detail', 'Ürün detayı', 'Tek ürün tam bilgi.', 'read',
+                self::fn('wcm_product_detail', 'Ürün detayı', 'Tek ürün tam bilgi.', 'read',
                     ['type' => 'object', 'properties' => ['product_id' => ['type' => 'integer']], 'required' => ['product_id']],
                     'GET', '/product/{id}', null, null, 5000
                 ),
-                self::fn('opc_product_compare', 'Ürün karşılaştır', '2-3 ürünü yan yana.', 'read',
+                self::fn('wcm_product_compare', 'Ürün karşılaştır', '2-3 ürünü yan yana.', 'read',
                     ['type' => 'object', 'properties' => [
                         'product_ids' => ['type' => 'array', 'items' => ['type' => 'integer'], 'minItems' => 2, 'maxItems' => 3],
                     ], 'required' => ['product_ids']],
                     'GET', '/compare', ['ids' => '{{arg.product_ids}}'], null, 8000
                 ),
-                self::fn('opc_stock_check', 'Stok kontrol', 'Ürünün stok adedi.', 'read',
+                self::fn('wcm_stock_check', 'Stok kontrol', 'Ürünün stok adedi.', 'read',
                     ['type' => 'object', 'properties' => [
                         'product_id' => ['type' => 'integer'],
                         'sku' => ['type' => 'string'],
                     ]],
                     'GET', '/stock', ['product_id' => '{{arg.product_id}}', 'sku' => '{{arg.sku}}'], null, 3000
                 ),
-                self::fn('opc_category_list', 'Kategori liste', 'Mağaza kategori ağacı.', 'read',
+                self::fn('wcm_category_list', 'Kategori liste', 'Mağaza kategori ağacı.', 'read',
                     ['type' => 'object', 'properties' => ['parent_id' => ['type' => 'integer', 'default' => 0]]],
                     'GET', '/categories', ['parent_id' => '{{arg.parent_id}}'], null, 5000
                 ),
-                self::fn('opc_order_status', 'Sipariş durumu', 'Email match ile sipariş takibi.', 'read',
+                self::fn('wcm_order_status', 'Sipariş durumu', 'Email match ile sipariş takibi.', 'read',
                     ['type' => 'object', 'properties' => [
                         'order_id' => ['type' => 'integer'],
                         'email' => ['type' => 'string'],
                     ], 'required' => ['order_id', 'email']],
                     'GET', '/order/{id}', ['email' => '{{arg.email}}'], null, 5000
                 ),
-                self::fn('opc_customer_lookup', 'Müşteri sorgu', 'Telefon/email ile müşteri profili.', 'read',
+                self::fn('wcm_customer_lookup', 'Müşteri sorgu', 'Telefon/email ile müşteri profili.', 'read',
                     ['type' => 'object', 'properties' => [
                         'phone' => ['type' => 'string'],
                         'email' => ['type' => 'string'],
                     ]],
                     'GET', '/customer/lookup', ['phone' => '{{arg.phone}}', 'email' => '{{arg.email}}'], null, 5000
                 ),
-                self::fn('opc_cart_recover', 'Sepet hatırlat', 'Terkedilmiş sepete dönüş link.', 'read',
+                self::fn('wcm_cart_recover', 'Sepet hatırlat', 'Terkedilmiş sepete dönüş link.', 'read',
                     ['type' => 'object', 'properties' => [
                         'email' => ['type' => 'string'],
                         'customer_id' => ['type' => 'integer'],
@@ -85,15 +85,38 @@ final class Manifest {
                     'POST', '/cart/recover', null,
                     ['email' => '{{arg.email}}', 'customer_id' => '{{arg.customer_id}}'], 5000
                 ),
-                self::fn('opc_order_preview', 'Sipariş önizle', 'KRİTİK: sipariş yaratmadan ÖNCE özet. Müşteri onayı sonrası opc_order_confirm.', 'write',
+                self::fn('wcm_order_preview', 'Sipariş önizle', 'KRİTİK: sipariş yaratmadan ÖNCE özet. Müşteri onayı sonrası wcm_order_confirm.', 'write',
+                    // FIX 2026-05-26: Gemini JSON Schema strict — array için items, object için properties ZORUNLU.
+                    // Boş `{type: array}` ve `{type: object}` Gemini reject → tüm function listesi reddedilir →
+                    // AI hiç tool call yapmaz → kullanıcıya generic fallback gider (silent failure).
+                    // Bkz: PLUGIN_DEV_GUIDE.md §3 canlı vakası.
                     ['type' => 'object', 'properties' => [
-                        'items' => ['type' => 'array'],
-                        'customer' => ['type' => 'object'],
+                        'items' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'product_id' => ['type' => 'integer', 'description' => 'WooCommerce ürün ID'],
+                                    'quantity'   => ['type' => 'integer', 'default' => 1],
+                                ],
+                                'required' => ['product_id'],
+                            ],
+                        ],
+                        'customer' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'phone'   => ['type' => 'string'],
+                                'email'   => ['type' => 'string'],
+                                'name'    => ['type' => 'string'],
+                                'address' => ['type' => 'string'],
+                                'city'    => ['type' => 'string'],
+                            ],
+                        ],
                     ], 'required' => ['items', 'customer']],
                     'POST', '/order/preview', null,
                     ['items' => '{{arg.items}}', 'customer' => '{{arg.customer}}'], 8000
                 ),
-                self::fn('opc_order_confirm', 'Sipariş onayla', 'KRİTİK: SADECE müşteri preview\'ı onayladıktan sonra. 5dk TTL.', 'write',
+                self::fn('wcm_order_confirm', 'Sipariş onayla', 'KRİTİK: SADECE müşteri preview\'ı onayladıktan sonra. 5dk TTL.', 'write',
                     ['type' => 'object', 'properties' => [
                         'preview_id' => ['type' => 'string'],
                         'confirmed' => ['type' => 'boolean', 'default' => true],

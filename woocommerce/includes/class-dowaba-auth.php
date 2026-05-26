@@ -27,7 +27,7 @@ final class Auth {
         $provided_key = $m[1];
 
         // Format sanity check
-        if (!preg_match('/^opc_[a-f0-9]{32,128}$/i', $provided_key)) {
+        if (!preg_match('/^wcm_[a-f0-9]{32,128}$/i', $provided_key)) {
             return self::fail(401, 'Invalid bearer token', $client_ip);
         }
 
@@ -69,7 +69,7 @@ final class Auth {
      * @return string Plain key (sadece bir kez gösterilir)
      */
     public static function generate_key(): string {
-        $plain_key = 'opc_' . bin2hex(random_bytes(32));
+        $plain_key = 'wcm_' . bin2hex(random_bytes(32));
         $hash = hash('sha256', $plain_key);
         $prefix = substr($plain_key, 0, 12);
 
