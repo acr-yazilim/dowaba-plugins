@@ -6,9 +6,15 @@ PrestaShop 8.x + 1.7.x mağazasını **DoWaba AI**'ya bağlar. Müşteriler **Wh
 [![PHP](https://img.shields.io/badge/PHP-8.0+-purple?logo=php)](https://www.php.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../opencart/LICENSE)
 
+## 📥 Direkt İndir
+
+### ⬇️ [PrestaShop v0.2.5 — dowaba-ai-prestashop-0.2.5.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.5/dowaba-ai-prestashop-0.2.5.zip)
+
+> Tüm sürümler ve önceki release'ler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
+
 ## 🚀 Kurulum
 
-1. [Releases](https://github.com/rdtvaacar/dowaba-plugins/releases/latest) sayfasından `dowaba-ai-prestashop-X.Y.Z.zip` indir
+1. Yukarıdaki **direkt indirme linkinden** `dowaba-ai-prestashop-0.2.5.zip` dosyasını indir
 2. PrestaShop admin → **Modules → Module Manager → Upload a module**
 3. Modülü aktive et + **Configure**
 4. Manifest URL + API Key → [dowaba.com](https://dowaba.com) Bundle Import

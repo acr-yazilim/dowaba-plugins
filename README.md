@@ -22,28 +22,36 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 ✅ Mağaza siparişi #12345 oluştu
 ```
 
-## 📦 Plugins
+## 📦 Plugins — Direkt Download
 
-| Platform | Versiyon | Status | Marketplace |
+| Platform | En Son Versiyon | ZIP Download | Marketplace |
 |---|---|---|---|
-| **OpenCart 4.x** | v0.2.2 | ✅ Live | [📦 Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
-| **OpenCart 3.x** | v0.2.2 | ✅ Live | [📦 Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
-| **WooCommerce** | v0.1.0 | ✅ GitHub | ⏳ wp.org submission |
-| PrestaShop | 📋 Planlandı | — | — |
-| İkas | 📋 Planlandı | — | — |
-| Shopify | 📋 Planlandı | — | — |
-| Magento 2 | 📋 Planlandı | — | — |
+| **PrestaShop 1.7+ / 8.x** | **v0.2.5** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.5/dowaba-ai-prestashop-0.2.5.zip) | ⏳ addons.prestashop.com submission |
+| **OpenCart 4.x** | **v0.2.3** | [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc4-0.2.3.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
+| **OpenCart 3.x** | **v0.2.3** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc3-0.2.3.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
+| **WooCommerce** | **v0.2.0** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip) | ⏳ wordpress.org submission |
+| **Shopify** | — | OAuth-based (download yok) | ⏳ App Store Billing API resubmit |
+| **İkas** | — | OAuth-based (download yok) | ⏳ Partner App onayı |
+
+> 📋 **Tüm release'ler ve eski sürümler:** [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
 
 ## 🚀 Hızlı kurulum
 
+### PrestaShop
+1. [⬇️ PrestaShop ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.5/dowaba-ai-prestashop-0.2.5.zip) indir
+2. PrestaShop BO → Modules → Module Manager → Upload a module → ZIP'i sürükle
+3. **Configure** → API key + Manifest URL üret → DoWaba paneline Bundle Import yap
+
 ### OpenCart
-1. [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) sayfasından indir
-2. Admin → Extensions → Installer → Upload
+1. Mağazanın versiyonuna göre ZIP indir:
+   - [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc4-0.2.3.ocmod.zip)
+   - [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc3-0.2.3.ocmod.zip)
+2. Admin → Extensions → Installer → Upload → ZIP'i yükle → Refresh Modifications
 3. 5-step wizard → DoWaba Bundle Import
 
 ### WooCommerce
-1. [Releases](https://github.com/rdtvaacar/dowaba-plugins/releases/latest) sayfasından `dowaba-ai-X.Y.Z.zip` indir
-2. WP admin → Plugins → Add New → Upload Plugin
+1. [⬇️ WooCommerce ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip) indir
+2. WP admin → Plugins → Add New → Upload Plugin → ZIP'i yükle → Activate
 3. **DoWaba AI** menü → 5-step wizard → Bundle Import
 
 Detaylı kurulum: her plugin'in kendi README'sinde.

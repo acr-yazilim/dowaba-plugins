@@ -9,6 +9,14 @@
 
 WooCommerce mağazasını **DoWaba AI**'ya bağlar. Müşteriler **WhatsApp**, **Instagram DM**, **TikTok** üzerinden ürün arar, karşılaştırır, sipariş verir. 24/7 AI, 30+ dil.
 
+## 📥 Direkt İndir
+
+### ⬇️ [WooCommerce v0.2.0 — dowaba-ai-0.2.0.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip)
+
+WordPress admin → Plugins → Add New → Upload Plugin → ZIP'i yükle → Activate.
+
+> Tüm sürümler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
+
 ## 🎯 Ne yapar?
 
 ```

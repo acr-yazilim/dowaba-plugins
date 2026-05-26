@@ -5,10 +5,20 @@
 OpenCart mağazalarını **Dowaba AI**'ya bağlar. Müşteriler WhatsApp / Instagram / Mail / Voice (telefon) kanallarından doğal dilde ürün arar, karşılaştırır, sipariş verir. 7/24 AI asistan, Türkçe + 30+ dil.
 
 [![OpenCart Marketplace](https://img.shields.io/badge/OpenCart_Marketplace-Live-success?logo=opencart)](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
-[![Latest Release](https://img.shields.io/github/v/release/rdtvaacar/dowaba-plugins?label=latest&color=blue)](https://github.com/rdtvaacar/dowaba-plugins/releases)
+[![Latest Release](https://img.shields.io/badge/latest-v0.2.3-blue)](https://github.com/acr-yazilim/dowaba-plugins/releases/tag/opencart-v0.2.3)
 [![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.0.3.x-success)](https://www.opencart.com/)
 [![OpenCart 4.x](https://img.shields.io/badge/OpenCart-4.0.x-success)](https://www.opencart.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
+## 📥 Direkt İndir
+
+Mağaza versiyonuna göre:
+
+- **OpenCart 4.x:** ⬇️ [dowaba-opencart-oc4-0.2.3.ocmod.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc4-0.2.3.ocmod.zip)
+- **OpenCart 3.x:** ⬇️ [dowaba-opencart-oc3-0.2.3.ocmod.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.3/dowaba-opencart-oc3-0.2.3.ocmod.zip)
+
+> OpenCart Marketplace üzerinden de kurabilirsin (otomatik update için tercih edilir): [📦 Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
+> Tüm sürümler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
 
 📦 **[Install from OpenCart Marketplace →](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)**
 
