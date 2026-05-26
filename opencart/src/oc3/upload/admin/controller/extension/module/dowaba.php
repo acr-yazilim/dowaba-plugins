@@ -217,9 +217,12 @@ class ControllerExtensionModuleDowaba extends Controller {
         $data['user_token']     = $this->session->data['user_token'];
         $data['action']         = $this->url->link('extension/module/dowaba', 'user_token=' . $data['user_token'], true);
         $data['cancel']         = $this->url->link('marketplace/extension', 'user_token=' . $data['user_token'] . '&type=module', true);
-        $data['regenerate_url'] = $this->url->link('extension/module/dowaba/regenerateKey', 'user_token=' . $data['user_token'], true);
-        $data['test_url']       = $this->url->link('extension/module/dowaba/testConnection', 'user_token=' . $data['user_token'], true);
-        $data['audit_log_url']  = $this->url->link('extension/module/dowaba/auditLog', 'user_token=' . $data['user_token'], true);
+        // OpenCart'ın url->link() metodu URL'i `&amp;` HTML-encoded döndürür (href attribute için).
+        // JS fetch'te bu string literal `&amp;` olur → user_token parse edilemez → admin login redirect → JSON parse fail.
+        // html_entity_decode ile `&amp;` → `&` geri döndürüyoruz (JS context için).
+        $data['regenerate_url'] = html_entity_decode($this->url->link('extension/module/dowaba/regenerateKey', 'user_token=' . $data['user_token'], true), ENT_QUOTES, 'UTF-8');
+        $data['test_url']       = html_entity_decode($this->url->link('extension/module/dowaba/testConnection', 'user_token=' . $data['user_token'], true), ENT_QUOTES, 'UTF-8');
+        $data['audit_log_url']  = html_entity_decode($this->url->link('extension/module/dowaba/auditLog', 'user_token=' . $data['user_token'], true), ENT_QUOTES, 'UTF-8');
         $data['manifest_url']   = $this->buildManifestUrl();
 
         // Error + success
