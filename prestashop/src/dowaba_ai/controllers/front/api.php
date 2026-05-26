@@ -17,10 +17,10 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_.'dowaba_ai/classes/Auth.php';
-require_once _PS_MODULE_DIR_.'dowaba_ai/classes/ScopeGuard.php';
-require_once _PS_MODULE_DIR_.'dowaba_ai/classes/AuditLogger.php';
-require_once _PS_MODULE_DIR_.'dowaba_ai/classes/OrderPreview.php';
+require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/Auth.php';
+require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/ScopeGuard.php';
+require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/AuditLogger.php';
+require_once _PS_MODULE_DIR_ . 'dowaba_ai/classes/OrderPreview.php';
 
 class DowabaAiApiModuleFrontController extends ModuleFrontController
 {
@@ -78,9 +78,9 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         }
 
         $id_lang = (int) $this->context->language->id;
-        // PrestaShop core searchByName(int $id_lang, string $query, $context = null, bool $orderByPrice = false)
-        // accepts max 4 params; limit is enforced post-fetch.
-        $products = Product::searchByName($id_lang, $query, null, false);
+        // PrestaShop core searchByName(int $id_lang, string $query, ?Context $context = null, ?int $limit = null)
+        // Parameter #4 is $limit (int|null). Defansif olarak post-fetch slice da uygulanır.
+        $products = Product::searchByName($id_lang, $query, null, $limit);
         if (is_array($products) && count($products) > $limit) {
             $products = array_slice($products, 0, $limit);
         }
@@ -243,9 +243,9 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         $id_lang = (int) $this->context->language->id;
         $rows = Db::getInstance()->executeS(
             'SELECT c.id_category, cl.name, c.id_parent
-             FROM `'._DB_PREFIX_.'category` c
-             INNER JOIN `'._DB_PREFIX_.'category_lang` cl ON cl.id_category = c.id_category AND cl.id_lang = '.$id_lang.'
-             WHERE c.id_parent = '.(int) $parent.' AND c.active = 1
+             FROM `' . _DB_PREFIX_ . 'category` c
+             INNER JOIN `' . _DB_PREFIX_ . 'category_lang` cl ON cl.id_category = c.id_category AND cl.id_lang = ' . $id_lang . '
+             WHERE c.id_parent = ' . (int) $parent . ' AND c.active = 1
              ORDER BY c.position ASC'
         ) ?: [];
 
@@ -313,7 +313,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
 
         $customer = null;
         if ('' !== $email) {
-            $row = Db::getInstance()->getRow('SELECT * FROM `'._DB_PREFIX_."customer` WHERE LOWER(email) = '".pSQL($email)."' LIMIT 1");
+            $row = Db::getInstance()->getRow('SELECT * FROM `' . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL($email) . "' LIMIT 1");
             if ($row) {
                 $customer = new Customer((int) $row['id_customer']);
             }
@@ -321,9 +321,9 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         if ((!$customer || !Validate::isLoadedObject($customer)) && '' !== $phone) {
             $norm = preg_replace('/\D+/', '', $phone);
             $row = Db::getInstance()->getRow(
-                'SELECT c.id_customer FROM `'._DB_PREFIX_.'customer` c
-                 INNER JOIN `'._DB_PREFIX_."address` a ON a.id_customer = c.id_customer
-                 WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '".pSQL($norm)."'
+                'SELECT c.id_customer FROM `' . _DB_PREFIX_ . 'customer` c
+                 INNER JOIN `' . _DB_PREFIX_ . "address` a ON a.id_customer = c.id_customer
+                 WHERE REPLACE(REPLACE(REPLACE(a.phone, ' ', ''), '-', ''), '+', '') = '" . pSQL($norm) . "'
                  LIMIT 1"
             );
             if ($row) {
@@ -338,12 +338,12 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         }
 
         $orders = Db::getInstance()->executeS(
-            'SELECT id_order, total_paid, date_add FROM `'._DB_PREFIX_.'orders` WHERE id_customer = '.(int) $customer->id.' ORDER BY id_order DESC LIMIT 5'
+            'SELECT id_order, total_paid, date_add FROM `' . _DB_PREFIX_ . 'orders` WHERE id_customer = ' . (int) $customer->id . ' ORDER BY id_order DESC LIMIT 5'
         ) ?: [];
 
         $this->respond(200, ['data' => [
             'customer_id' => (int) $customer->id,
-            'name' => trim($customer->firstname.' '.$customer->lastname),
+            'name' => trim($customer->firstname . ' ' . $customer->lastname),
             'email' => $customer->email,
             'created_at' => $customer->date_add,
             'recent_orders' => array_map(fn ($o) => [
@@ -371,7 +371,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         }
 
         $token = bin2hex(random_bytes(16));
-        $link = $this->context->link->getPageLink('my-account', true).'?dwb_recover='.$token;
+        $link = $this->context->link->getPageLink('my-account', true) . '?dwb_recover=' . $token;
         $this->respond(200, ['data' => ['recover_link' => $link, 'expires_in' => 86400]]);
     }
 
@@ -525,7 +525,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
                 'total' => $preview['total'],
                 'currency' => $preview['currency'],
             ],
-            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #'.$order_id.'" bildir.',
+            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #' . $order_id . '" bildir.',
         ]);
     }
 
@@ -541,7 +541,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         // Customer (var mı? yoksa guest oluştur)
         $customer_id = 0;
         if ($customer['email']) {
-            $row = Db::getInstance()->getRow('SELECT id_customer FROM `'._DB_PREFIX_."customer` WHERE LOWER(email) = '".pSQL(strtolower($customer['email']))."' LIMIT 1");
+            $row = Db::getInstance()->getRow('SELECT id_customer FROM `' . _DB_PREFIX_ . "customer` WHERE LOWER(email) = '" . pSQL(strtolower($customer['email'])) . "' LIMIT 1");
             if ($row) {
                 $customer_id = (int) $row['id_customer'];
             }
@@ -551,7 +551,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             $new = new Customer();
             $new->firstname = $first;
             $new->lastname = $last;
-            $new->email = $customer['email'] ?: ('guest+'.uniqid().'@dowaba.local');
+            $new->email = $customer['email'] ?: ('guest+' . uniqid() . '@dowaba.local');
             $new->passwd = Tools::hash(bin2hex(random_bytes(16)));
             $new->is_guest = true;
             $new->newsletter = false;
@@ -611,7 +611,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
         // (validateOrder is defined on PaymentModule subclass, not on Module parent).
         call_user_func([
             $paymentModule, 'validateOrder',
-        ], (int) $cart->id, (int) Configuration::get('PS_OS_PREPARATION'), (float) $preview['total'], 'Cash on Delivery (DoWaba AI)', 'Siparis DoWaba AI uzerinden olusturuldu (preview_id: '.($preview['_preview_id'] ?? '').')', [], (int) $this->context->currency->id, false, $cart->secure_key);
+        ], (int) $cart->id, (int) Configuration::get('PS_OS_PREPARATION'), (float) $preview['total'], 'Cash on Delivery (DoWaba AI)', 'Siparis DoWaba AI uzerinden olusturuldu (preview_id: ' . ($preview['_preview_id'] ?? '') . ')', [], (int) $this->context->currency->id, false, $cart->secure_key);
 
         // currentOrder property is set by PaymentModule::validateOrder() runtime.
         $orderId = isset($paymentModule->currentOrder) ? (int) $paymentModule->currentOrder : 0;
@@ -717,7 +717,7 @@ class DowabaAiApiModuleFrontController extends ModuleFrontController
             header("HTTP/1.1 $status $text", true, $status);
         }
         header('Content-Type: application/json; charset=utf-8');
-        header('X-Dowaba-Duration: '.$duration);
+        header('X-Dowaba-Duration: ' . $duration);
         echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }

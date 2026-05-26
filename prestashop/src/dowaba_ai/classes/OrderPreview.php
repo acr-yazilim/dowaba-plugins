@@ -21,7 +21,7 @@ class DowabaOrderPreview
 
     public static function generateId(): string
     {
-        return 'prv_'.bin2hex(random_bytes(12));
+        return 'prv_' . bin2hex(random_bytes(12));
     }
 
     public static function store(string $preview_id, array $payload): void
@@ -29,12 +29,12 @@ class DowabaOrderPreview
         $payload['_preview_id'] = $preview_id;
         $payload['_stored_at'] = time();
         $payload['_expires_at'] = time() + self::TTL_SECONDS;
-        Cache::store(self::CACHE_PREFIX.$preview_id, $payload);
+        Cache::store(self::CACHE_PREFIX . $preview_id, $payload);
     }
 
     public static function peek(string $preview_id): ?array
     {
-        $key = self::CACHE_PREFIX.$preview_id;
+        $key = self::CACHE_PREFIX . $preview_id;
         if (!Cache::isStored($key)) {
             return null;
         }
@@ -59,7 +59,7 @@ class DowabaOrderPreview
         if (null === $payload) {
             return null;
         }
-        Cache::clean(self::CACHE_PREFIX.$preview_id);
+        Cache::clean(self::CACHE_PREFIX . $preview_id);
 
         return $payload;
     }

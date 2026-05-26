@@ -32,11 +32,11 @@ class DowabaScopeGuard
     public static function check(string $scope): array
     {
         if (!in_array($scope, ['read', 'write'], true)) {
-            return ['allowed' => false, 'status' => 500, 'error' => 'Unknown scope: '.$scope];
+            return ['allowed' => false, 'status' => 500, 'error' => 'Unknown scope: ' . $scope];
         }
-        $enabled = (bool) Configuration::get('DOWABA_AI_SCOPE_'.strtoupper($scope));
+        $enabled = (bool) Configuration::get('DOWABA_AI_SCOPE_' . strtoupper($scope));
         if (!$enabled) {
-            return ['allowed' => false, 'status' => 403, 'error' => 'Scope "'.$scope.'" is disabled in module settings'];
+            return ['allowed' => false, 'status' => 403, 'error' => 'Scope "' . $scope . '" is disabled in module settings'];
         }
 
         return ['allowed' => true, 'status' => 200, 'error' => null];

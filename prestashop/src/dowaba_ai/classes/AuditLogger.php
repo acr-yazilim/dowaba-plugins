@@ -20,14 +20,14 @@ class DowabaAuditLogger
         try {
             $db = Db::getInstance();
             $error_safe = null !== $error_message ? mb_substr($error_message, 0, 500, 'UTF-8') : null;
-            $sql = 'INSERT INTO `'._DB_PREFIX_."dowaba_audit`
+            $sql = 'INSERT INTO `' . _DB_PREFIX_ . "dowaba_audit`
                     (function_slug, request_ip, status_code, duration_ms, error_message, created_at)
                     VALUES (
-                        '".pSQL(mb_substr($function_slug, 0, 64, 'UTF-8'))."',
-                        '".pSQL(mb_substr($request_ip, 0, 45, 'UTF-8'))."',
-                        ".(int) $status_code.',
-                        '.(int) $duration_ms.',
-                        '.(null === $error_safe ? 'NULL' : "'".pSQL($error_safe)."'").',
+                        '" . pSQL(mb_substr($function_slug, 0, 64, 'UTF-8')) . "',
+                        '" . pSQL(mb_substr($request_ip, 0, 45, 'UTF-8')) . "',
+                        " . (int) $status_code . ',
+                        ' . (int) $duration_ms . ',
+                        ' . (null === $error_safe ? 'NULL' : "'" . pSQL($error_safe) . "'") . ',
                         NOW()
                     )';
             $db->execute($sql);
@@ -37,7 +37,7 @@ class DowabaAuditLogger
             if (1 === random_int(1, 500)) {
                 $retention = (int) (Configuration::get('DOWABA_AI_AUDIT_RETENTION_DAYS') ?: 30);
                 $retention = max(1, min(365, $retention));
-                $db->execute('DELETE FROM `'._DB_PREFIX_.'dowaba_audit` WHERE created_at < DATE_SUB(NOW(), INTERVAL '.$retention.' DAY)');
+                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'dowaba_audit` WHERE created_at < DATE_SUB(NOW(), INTERVAL ' . $retention . ' DAY)');
             }
         } catch (\Throwable $e) {
             // Silent
@@ -48,13 +48,13 @@ class DowabaAuditLogger
     {
         $where = ['1=1'];
         if (null !== $function_slug && '' !== $function_slug) {
-            $where[] = "function_slug = '".pSQL($function_slug)."'";
+            $where[] = "function_slug = '" . pSQL($function_slug) . "'";
         }
         if (null !== $status_code) {
-            $where[] = 'status_code = '.(int) $status_code;
+            $where[] = 'status_code = ' . (int) $status_code;
         }
-        $sql = 'SELECT * FROM `'._DB_PREFIX_.'dowaba_audit` WHERE '.implode(' AND ', $where)
-             .' ORDER BY created_at DESC LIMIT '.max(1, min(500, $limit));
+        $sql = 'SELECT * FROM `' . _DB_PREFIX_ . 'dowaba_audit` WHERE ' . implode(' AND ', $where)
+             . ' ORDER BY created_at DESC LIMIT ' . max(1, min(500, $limit));
 
         return Db::getInstance()->executeS($sql) ?: [];
     }

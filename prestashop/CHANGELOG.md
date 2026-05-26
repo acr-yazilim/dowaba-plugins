@@ -2,6 +2,20 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.2] - 2026-05-26
+
+### Fixed (validator.prestashop.com v0.2.1 raporu kapanışı)
+
+- **`Product::searchByName()` parametre tipi (Compatibility)** — 4. parametre `$limit` int|null bekliyor, plugin `false` geçiyordu (eski 5-arg legacy hatası). Fix: `Product::searchByName($id_lang, $query, null, $limit)`. Defansif post-fetch slice korundu.
+- **`concat_space` standard (Standards × ~18 dosya)** — Tüm string concat operatörleri (`.`) etrafına tek boşluk eklendi (PSR-12 + PrestaShop coding standard): `'foo'.'bar'` → `'foo' . 'bar'`. php-cs-fixer `concat_space => spacing: 'one'` rule ile otomatik.
+- **`nullable_type_declaration_for_default_null_value` standard** — Default `null` değeri olan parametrelerin tipi `?T` formatına çekildi (PrestaShop core convention). Mevcut signature'lar zaten uyumlu, fixer dokunmadı; rule explicit etkinleştirildi.
+
+### Notes
+
+- Yeni `.php-cs-fixer.dist.php` config eklendi (@PSR12 + @Symfony + concat_space spacing-one + nullable_type_declaration + single_quote + binary_operator_spaces + trailing_comma_in_multiline + no_useless_return/else). PHP-CS-Fixer 3.13.2 + PHP_CS_FIXER_IGNORE_ENV=1 ile PHP 8.3'te çalışır.
+- v0.2.1 ile aynı 10 fonksiyon + `psm_*` slug + Bundle Import flow.
+- BC-safe upgrade — mevcut kurulumlar etkilenmez.
+
 ## [0.2.1] - 2026-05-26
 
 ### Fixed (validator.prestashop.com v0.2.0 raporu kapanışı)

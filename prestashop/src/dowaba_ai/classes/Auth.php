@@ -57,7 +57,7 @@ class DowabaAuth
 
     public static function generateKey(): string
     {
-        $plain_key = 'psm_'.bin2hex(random_bytes(32));
+        $plain_key = 'psm_' . bin2hex(random_bytes(32));
         Configuration::updateValue('DOWABA_AI_API_KEY_HASH', hash('sha256', $plain_key));
         Configuration::updateValue('DOWABA_AI_API_KEY_PREFIX', substr($plain_key, 0, 12));
         Configuration::deleteByName('DOWABA_AI_API_KEY_LAST_USED');
