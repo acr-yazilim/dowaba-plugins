@@ -64,9 +64,14 @@ find src -name "*.php" -print0 | while IFS= read -r -d '' f; do
 done
 echo "✅ PHP syntax OK (all files in src/)"
 
-# OC4 build — install.json (OC4 native) + install.xml (Cloud Marketplace compat)
+# OC4 build — install.json + install.xml + upload/ İÇERİĞİ (upload/ wrapper'ı OLMADAN)
+# OC4 marketplace/installer.php zip'i extract ederken `extension/<code>/<destination>`
+# olarak yazar. Yani zip'te `upload/admin/...` varsa, çıktı `extension/dowaba_ai/upload/admin/...`
+# olur (upload/ literal kalır). Doğru pattern: zip'te direkt `admin/`, `catalog/`, `system/`.
+# OC4 default extension'lara baktığımızda (extension/opencart/) da upload/ wrapper YOK.
 echo "📦 OC4: building $OUT_OC4..."
-(cd src/oc4 && zip -qr "../../$OUT_OC4" install.json install.xml upload/ -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
+(cd src/oc4 && zip -qr "../../$OUT_OC4" install.json install.xml -x "*.DS_Store")
+(cd src/oc4/upload && zip -qr "../../../$OUT_OC4" . -x "*.DS_Store" "*/.git/*" "*/.gitkeep")
 SIZE_OC4=$(du -k "$OUT_OC4" | cut -f1)
 echo "  ✅ $OUT_OC4 (${SIZE_OC4} KB)"
 
