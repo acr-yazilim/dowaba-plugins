@@ -25,7 +25,7 @@ class Dowaba_Ai extends Module
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.2.7';
+        $this->version = '0.2.8';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
         // Explicit min/max — addons.prestashop.com static analyzer requires literal strings,

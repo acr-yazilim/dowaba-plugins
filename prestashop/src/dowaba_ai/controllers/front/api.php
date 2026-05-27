@@ -516,15 +516,25 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             return;
         }
 
+        // Sipariş PaymentModule::validateOrder ile PS_OS_PREPARATION ("Awaiting payment / Hazırlanıyor")
+        // statüsünde açılır — COD/wire transfer ile. Müşteri zaten WhatsApp'tan onayladığı için
+        // ödeme adımına gönderilmez; aşağıdaki link sipariş takip/onay sayfasıdır.
+        $payment_method = 'cash_on_delivery';
         $this->respond(200, [
             'data' => [
                 'order_id' => $order_id,
                 'status' => 'pending',
-                'payment_url' => $this->context->link->getPageLink('order-confirmation', true, null, ['id_order' => $order_id]),
+                'payment_method' => $payment_method,
+                // Sipariş takip linki — PrestaShop order-confirmation sayfası ("Siparişiniz alındı" özet).
+                // ÖNEMLİ: Bu KART ÖDEMESİ alma linki DEĞİL — müşteri zaten WhatsApp'ta onayladı,
+                // tahsilat kapıda/havale ile yapılır.
+                'order_url' => $this->context->link->getPageLink('order-confirmation', true, null, ['id_order' => $order_id]),
                 'total' => $preview['total'],
                 'currency' => $preview['currency'],
             ],
-            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #' . $order_id . '" bildir.',
+            'note' => 'AI\'ya: müşteriye "Siparişin oluştu #' . $order_id . '" bildir + ödeme yönteminin '
+                . '"kapıda ödeme" olduğunu söyle. order_url sipariş özet/takip sayfasıdır — '
+                . '"ödeme linki" diye sunma.',
         ]);
     }
 
@@ -625,6 +635,7 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
     {
         $id = (int) $row['id_product'];
         $product = new Product($id, false, $id_lang);
+        $images = $this->productImages($product, $id_lang, 3);
 
         return [
             'product_id' => $id,
@@ -634,12 +645,22 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             'stock' => (int) StockAvailable::getQuantityAvailableByProduct($id),
             'in_stock' => StockAvailable::getQuantityAvailableByProduct($id) > 0,
             'url' => $this->context->link->getProductLink($product),
-            'thumb' => $this->context->link->getImageLink($product->link_rewrite, Product::getCover($id)['id_image'] ?? 0, 'home_default'),
+            // Geriye dönük uyum — eski 'thumb' field'ı home_default URL (kapak)
+            'thumb' => $images['cover_image'],
+            // Yeni zenginleştirilmiş alanlar (Shopify paritesi)
+            'cover_image' => $images['cover_image'],
+            'thumbnail' => $images['thumbnail'],
+            'gallery_images' => $images['gallery_images'],
+            'gallery_count' => count($images['gallery_images']),
         ];
     }
 
     private function shapeProductFull(Product $p): array
     {
+        $id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
+        // Detayda 10 görsel yeterli (kart vb. carousel için)
+        $images = $this->productImages($p, $id_lang, 10);
+
         return [
             'product_id' => (int) $p->id,
             'name' => $p->name,
@@ -648,7 +669,71 @@ class Dowaba_AiApiModuleFrontController extends ModuleFrontController
             'stock' => (int) StockAvailable::getQuantityAvailableByProduct((int) $p->id),
             'in_stock' => StockAvailable::getQuantityAvailableByProduct((int) $p->id) > 0,
             'url' => $this->context->link->getProductLink($p),
-            'thumb' => $this->context->link->getImageLink($p->link_rewrite, Product::getCover((int) $p->id)['id_image'] ?? 0, 'home_default'),
+            'thumb' => $images['cover_image'],
+            'cover_image' => $images['cover_image'],
+            'thumbnail' => $images['thumbnail'],
+            'gallery_images' => $images['gallery_images'],
+            'gallery_count' => count($images['gallery_images']),
+        ];
+    }
+
+    /**
+     * Ürün görsellerini Shopify paritesinde döndür.
+     *
+     * @return array{
+     *   cover_image: string|null,     // PrestaShop 'home_default' (250x250) — büyük kapak
+     *   thumbnail: string|null,       // 'home_default' — şu an PS image types arasında 250x250 kapak
+     *   gallery_images: array<int, array{url: string, thumbnail: string}>
+     * }
+     */
+    private function productImages(Product $product, int $id_lang, int $limit): array
+    {
+        $id_product = (int) $product->id;
+        $link_rewrite = $product->link_rewrite;
+        if (is_array($link_rewrite)) {
+            // PrestaShop multi-lang load → array, lang fallback
+            $link_rewrite = $link_rewrite[$id_lang] ?? reset($link_rewrite);
+        }
+
+        $cover_id = (int) (Product::getCover($id_product)['id_image'] ?? 0);
+        $cover_url = $cover_id
+            ? $this->context->link->getImageLink($link_rewrite, $cover_id, 'home_default')
+            : null;
+
+        // Tüm görsel listesi — Image::getImages dönüş: [{id_image, cover, position, legend}, ...]
+        $all = Image::getImages($id_lang, $id_product) ?: [];
+        // Cover'ı en başa al
+        usort($all, function ($a, $b) {
+            $ac = isset($a['cover']) ? (int) $a['cover'] : 0;
+            $bc = isset($b['cover']) ? (int) $b['cover'] : 0;
+            if ($ac !== $bc) {
+                return $bc <=> $ac; // cover=1 önce
+            }
+            return ((int) ($a['position'] ?? 0)) <=> ((int) ($b['position'] ?? 0));
+        });
+
+        $gallery = [];
+        $seen = [];
+        foreach ($all as $img) {
+            $iid = (int) ($img['id_image'] ?? 0);
+            if ($iid <= 0 || isset($seen[$iid])) {
+                continue;
+            }
+            $seen[$iid] = true;
+            $gallery[] = [
+                // 'large_default' tipik 800x800 — PrestaShop install'ları çoğunda default kayıtlı
+                'url' => $this->context->link->getImageLink($link_rewrite, $iid, 'large_default'),
+                'thumbnail' => $this->context->link->getImageLink($link_rewrite, $iid, 'home_default'),
+            ];
+            if (count($gallery) >= $limit) {
+                break;
+            }
+        }
+
+        return [
+            'cover_image' => $cover_url,
+            'thumbnail' => $cover_url, // PS image types arası dönüştürme yok — home_default 250x250 default
+            'gallery_images' => $gallery,
         ];
     }
 

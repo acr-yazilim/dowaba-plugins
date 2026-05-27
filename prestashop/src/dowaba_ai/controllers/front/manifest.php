@@ -44,7 +44,9 @@ class Dowaba_AiManifestModuleFrontController extends ModuleFrontController
                 $this->fn(
                     'psm_product_search',
                     'Ürün ara',
-                    'Ad/SKU/kategoriye göre ürün listele.',
+                    'Ad/SKU/kategoriye göre ürün listele. Her ürün için cover_image (kapak), '
+                    . 'thumbnail ve gallery_images döner. Müşteriye ürün önerirken cevabının '
+                    . 'sonunda yeni satırda [GORSEL:cover_image_url] yazarak kapak fotoğrafını da gönder.',
                     'read',
                     ['type' => 'object', 'properties' => [
                         'query' => ['type' => 'string'],
@@ -55,12 +57,14 @@ class Dowaba_AiManifestModuleFrontController extends ModuleFrontController
                     ['q' => '{{arg.query}}', 'limit' => '{{arg.limit}}'],
                     null,
                     5000,
-                    ['data_path' => 'data', 'fields' => ['product_id', 'name', 'price', 'stock', 'url', 'thumb']]
+                    ['data_path' => 'data', 'fields' => ['product_id', 'name', 'price', 'stock', 'url', 'cover_image', 'thumbnail', 'gallery_images']]
                 ),
                 $this->fn(
                     'psm_product_detail',
                     'Ürün detayı',
-                    'Tek ürün tam bilgi.',
+                    'Tek ürün tam bilgi. gallery_images dizisi ürünün tüm görsellerini içerir '
+                    . '(her biri url/thumbnail). Müşteri detay isterse cevabın sonunda en az 2-3 '
+                    . 'görseli ayrı satırlarda [GORSEL:gallery_images[i].url] blokları olarak paylaş.',
                     'read',
                     ['type' => 'object', 'properties' => ['product_id' => ['type' => 'integer']], 'required' => ['product_id']],
                     'GET',
@@ -72,7 +76,9 @@ class Dowaba_AiManifestModuleFrontController extends ModuleFrontController
                 $this->fn(
                     'psm_product_compare',
                     'Ürün karşılaştır',
-                    '2-3 ürün yan yana.',
+                    '2-3 ürün yan yana — fiyat, stok, attribute. Her ürün için cover_image ve '
+                    . 'gallery_images döner. Karşılaştırma sunarken her ürünün kapak görselini '
+                    . 'sıralı [GORSEL:cover_image_url] satırları olarak da paylaş ki müşteri görsel olarak yan yana görsün.',
                     'read',
                     ['type' => 'object', 'properties' => [
                         'product_ids' => ['type' => 'array', 'items' => ['type' => 'integer'], 'minItems' => 2, 'maxItems' => 3],

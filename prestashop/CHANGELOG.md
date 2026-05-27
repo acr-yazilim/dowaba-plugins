@@ -2,6 +2,30 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.8] - 2026-05-27
+
+### Added (Shopify paritesi — görsel zenginleştirme)
+
+- **`shapeProductRow` + `shapeProductFull` artık `cover_image`, `thumbnail`,
+  `gallery_images[]`, `gallery_count` döner.** Eski `thumb` alanı geriye dönük
+  uyum için korundu (cover_image ile aynı URL). Yeni `productImages()` helper:
+  - `Product::getCover()` kapak ID'sini alır
+  - `Image::getImages($lang, $product)` tüm görsel listesi (cover=1 önce sort)
+  - URL'ler `home_default` (250×250 thumb) ve `large_default` (800×800 medium)
+    image type'larında
+  - `gallery_images[i]` her biri `{url, thumbnail}` — search'te 3, detail'de 10 limit
+- **Manifest description'ları `[GORSEL:cover_image_url]` AI ipucu içeriyor.**
+  AI cevabında WhatsApp/IG/TikTok carousel görseli paylaşması için. `psm_product_search`
+  `fields` array'i `cover_image/thumbnail/gallery_images` ekledi.
+
+### Changed (yanıltıcı field düzeltmesi)
+
+- **`psm_order_confirm` response: `payment_url` → `order_url` rename.** Eski isim
+  müşteriye "ödeme linki gönderiyorum" sandırıyor olabilirdi; gerçekte PrestaShop
+  order-confirmation sayfası sipariş özet/takip linkidir. Yeni response ek alan:
+  `payment_method: cash_on_delivery` + AI'ya net talimat ("ödeme kapıda, link
+  takip içindir") `note` field'ında.
+
 ## [0.2.5] - 2026-05-26
 
 ### Fixed (canlı test regresyonu — KRİTİK)
