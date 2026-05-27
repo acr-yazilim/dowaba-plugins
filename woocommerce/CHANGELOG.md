@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.3.0] - 2026-05-28
+
+### Added — Görsel desteği (tüm kanallar)
+
+- **Ürün listesinde `cover` field** (`woocommerce_single` ~600×600, fallback `full`) — mevcut `thumb` (300×300) korundu. AI'a iki boyut da expose edildi.
+- **Ürün detayında `gallery_images[]` dizisi** — kapak + tüm WC `gallery_image_ids` her biri için `{thumb, medium, full, is_cover, position, alt}` döner. AI artık ürün galerisinden çoklu görsel okur, "kapak + 2 ek = max 3" kuralıyla kanallara native attach edilir.
+- **Karşılaştırma response'unda `cover`** — `shape_product` generic değiştiği için 2-3 ürün karşılaştırmada her birinin kapak görseli otomatik döner.
+
+### Fixed — Dowaba template engine path uyumu
+
+- **`/product/{id}` → `/product/{{arg.product_id}}`**, **`/order/{id}` → `/order/{{arg.order_id}}`** — Dowaba runtime sadece `{{arg.X}}` double-brace template'leri parse eder; `{id}` single-brace WordPress REST regex sözdizimi literal kalıyordu → `wcm_product_detail` ve `wcm_order_status` her çağrıda 404 dönüyordu. OpenCart v0.2.12'de aynı düzeltme yapılmıştı; WooCommerce'te bu sürüme kadar kaçmıştı.
+
+### Backend (Dowaba ana repo, eşzamanlı destek)
+
+- `UnifiedAIService.FUNCTION_CALLING_RULES` SHOP GÖRSEL DESTEĞİ bloku eklendi (`[GORSEL:url]` direktifi + zorunlu format + yasak markdown image syntax).
+- `AiMediaTagParser` markdown image fallback (`![alt](url)` + `[![alt](img)](link)` yakalar — AI prompt'tan saparsa kanal yine görseli attach eder).
+- `MarkdownHelper.toHtml` negative lookbehind `(?<!\[GORSEL:)` ile linkifier tag URL'lerini bozmaz.
+- `HttpHandler` GET fix: `Http::get($url, [])` Guzzle URL'in query string'ini strip ediyordu → `$query = null` (manuel inşa edilen `?q=...&limit=...` korunur).
+- `BundleImportController` response'a `is_active` field + dinamik note ("otomatik aktive edildi" vs "tek tek aktive et") — `auto_activate: true` bundle'lar yanıltıcı pasif uyarısı göstermez.
+
+### Notes
+
+- Manifest schema `wcm_*` (v0.2.0'dan beri), 10 function aynı slug'lar. Migration gerekmez — mevcut Bundle Import "Var olanı güncelle" ile alınır, eski function tanımları yeni cover/gallery field tanımları + path template ile değişir.
+- Live tested: WP 6.7 + WC 9.5.2 + PHP 8.2 + cloudflared tunnel + Dowaba prod site_id=76. `iphone var mı` → 2 ürün cover grid (Widget HTML), `iphone 15 pro detay` → 3 görsel galeri.
+
 ## [0.2.0] - 2026-05-26
 
 ### ⚠️ BREAKING

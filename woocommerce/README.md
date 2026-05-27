@@ -11,11 +11,11 @@ WooCommerce mağazasını **DoWaba AI**'ya bağlar. Müşteriler **WhatsApp**, *
 
 ## 📥 Direkt İndir
 
-### ⬇️ [WooCommerce v0.2.0 — dowaba-ai-0.2.0.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip)
+### ⬇️ [WooCommerce v0.3.0 — dowaba-ai-0.3.0.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.0/dowaba-ai-0.3.0.zip)
 
 WordPress admin → Plugins → Add New → Upload Plugin → ZIP'i yükle → Activate.
 
-> Tüm sürümler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
+> Tüm sürümler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases) • Değişiklikler: [CHANGELOG.md](./CHANGELOG.md)
 
 ## 🎯 Ne yapar?
 
@@ -31,7 +31,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 
 ## 🚀 Hızlı kurulum
 
-1. [Releases](https://github.com/rdtvaacar/dowaba-plugins/releases) sayfasından `dowaba-ai-X.Y.Z.zip` indir
+1. [Releases](https://github.com/acr-yazilim/dowaba-plugins/releases) sayfasından `dowaba-ai-X.Y.Z.zip` indir
 2. WP admin → **Plugins → Add New → Upload Plugin** → upload
 3. **Activate**
 4. WP admin menüsünden **DoWaba AI** → 5-step wizard
@@ -84,7 +84,7 @@ bash build.sh
 ## 🆘 Destek
 
 - 📧 [dowaba.com/destek](https://dowaba.com/destek)
-- 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
+- 💬 [GitHub Issues](https://github.com/acr-yazilim/dowaba-plugins/issues)
 
 ## 📜 Lisans
 
