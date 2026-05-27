@@ -72,11 +72,12 @@ final class Api {
             'data' => array_merge(
                 self::shape_product($product),
                 [
-                    'description' => wp_strip_all_tags($product->get_description() ?: ''),
-                    'short'       => wp_strip_all_tags($product->get_short_description() ?: ''),
-                    'sku'         => $product->get_sku(),
-                    'weight'      => $product->get_weight(),
-                    'attributes'  => $attrs,
+                    'description'    => wp_strip_all_tags($product->get_description() ?: ''),
+                    'short'          => wp_strip_all_tags($product->get_short_description() ?: ''),
+                    'sku'            => $product->get_sku(),
+                    'weight'         => $product->get_weight(),
+                    'attributes'     => $attrs,
+                    'gallery_images' => self::shape_gallery($product),
                 ]
             ),
         ]);
@@ -468,6 +469,8 @@ final class Api {
 
         $image_id = $p->get_image_id();
         $thumb = $image_id ? wp_get_attachment_image_url($image_id, 'woocommerce_thumbnail') : null;
+        $cover = $image_id ? wp_get_attachment_image_url($image_id, 'woocommerce_single') : null;
+        if (!$cover && $image_id) $cover = wp_get_attachment_image_url($image_id, 'full');
 
         return [
             'product_id'     => $p->get_id(),
@@ -479,7 +482,38 @@ final class Api {
             'in_stock'       => $p->is_in_stock(),
             'url'            => $p->get_permalink(),
             'thumb'          => $thumb,
+            'cover'          => $cover,
         ];
+    }
+
+    /**
+     * Ürün galeri görselleri — kapak + WC gallery_image_ids her biri için thumb/medium/full URL.
+     * AI panel/widget'in karşılaştırma + slider için kullanır.
+     */
+    private static function shape_gallery(\WC_Product $p): array {
+        $gallery = [];
+        $cover_id = $p->get_image_id();
+        $ids = array_filter(array_map('intval', (array) $p->get_gallery_image_ids()));
+        $all_ids = $cover_id ? array_values(array_unique(array_merge([$cover_id], $ids))) : $ids;
+
+        foreach ($all_ids as $idx => $img_id) {
+            $thumb  = wp_get_attachment_image_url($img_id, 'woocommerce_thumbnail');
+            $medium = wp_get_attachment_image_url($img_id, 'woocommerce_single');
+            $full   = wp_get_attachment_image_url($img_id, 'full');
+            if (!$thumb && !$medium && !$full) continue;
+
+            $alt = (string) get_post_meta($img_id, '_wp_attachment_image_alt', true);
+            $gallery[] = [
+                'image_id' => $img_id,
+                'is_cover' => $img_id === $cover_id,
+                'position' => $idx,
+                'alt'      => $alt,
+                'thumb'    => $thumb ?: $medium ?: $full,
+                'medium'   => $medium ?: $full,
+                'full'     => $full ?: $medium,
+            ];
+        }
+        return $gallery;
     }
 
     /**

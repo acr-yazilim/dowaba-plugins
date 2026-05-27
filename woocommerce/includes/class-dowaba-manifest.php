@@ -33,20 +33,20 @@ final class Manifest {
                 'allowed_hosts' => [parse_url($base, PHP_URL_HOST) ?: ''],
             ],
             'functions' => [
-                self::fn('wcm_product_search', 'Ürün ara', 'Ad/SKU/kategoriye göre ürün listele.', 'read',
+                self::fn('wcm_product_search', 'Ürün ara', 'Ad/SKU/kategoriye göre ürün listele. Her ürün için kapak (cover) + küçük (thumb) görsel döner.', 'read',
                     ['type' => 'object', 'properties' => [
                         'query' => ['type' => 'string'],
                         'limit' => ['type' => 'integer', 'default' => 10, 'maximum' => 50],
                     ], 'required' => ['query']],
                     'GET', '/products',
                     ['q' => '{{arg.query}}', 'limit' => '{{arg.limit}}'], null, 5000,
-                    ['data_path' => 'data', 'fields' => ['product_id', 'name', 'price', 'stock', 'url', 'thumb']]
+                    ['data_path' => 'data', 'fields' => ['product_id', 'name', 'price', 'stock', 'url', 'thumb', 'cover']]
                 ),
-                self::fn('wcm_product_detail', 'Ürün detayı', 'Tek ürün tam bilgi.', 'read',
+                self::fn('wcm_product_detail', 'Ürün detayı', 'Tek ürün tam bilgi — açıklama, SKU, attribute\'lar + gallery_images (kapak + tüm galeri görselleri, thumb/medium/full URL).', 'read',
                     ['type' => 'object', 'properties' => ['product_id' => ['type' => 'integer']], 'required' => ['product_id']],
-                    'GET', '/product/{id}', null, null, 5000
+                    'GET', '/product/{{arg.product_id}}', null, null, 5000
                 ),
-                self::fn('wcm_product_compare', 'Ürün karşılaştır', '2-3 ürünü yan yana.', 'read',
+                self::fn('wcm_product_compare', 'Ürün karşılaştır', '2-3 ürünü yan yana — fiyat, attribute farkları + her ürünün kapak görseli.', 'read',
                     ['type' => 'object', 'properties' => [
                         'product_ids' => ['type' => 'array', 'items' => ['type' => 'integer'], 'minItems' => 2, 'maxItems' => 3],
                     ], 'required' => ['product_ids']],
@@ -68,7 +68,7 @@ final class Manifest {
                         'order_id' => ['type' => 'integer'],
                         'email' => ['type' => 'string'],
                     ], 'required' => ['order_id', 'email']],
-                    'GET', '/order/{id}', ['email' => '{{arg.email}}'], null, 5000
+                    'GET', '/order/{{arg.order_id}}', ['email' => '{{arg.email}}'], null, 5000
                 ),
                 self::fn('wcm_customer_lookup', 'Müşteri sorgu', 'Telefon/email ile müşteri profili.', 'read',
                     ['type' => 'object', 'properties' => [
