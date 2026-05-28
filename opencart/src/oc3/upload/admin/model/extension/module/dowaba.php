@@ -28,17 +28,44 @@ class ModelExtensionModuleDowaba extends Model {
         // - admin Edit'e tıklayınca permission yok → access denied → login redirect
         // - AJAX'lar (regenerateKey vs.) HTML login sayfası dönüyor → "not valid JSON"
         // Direkt DB query (model context'inde $this->user erişilemez).
+        // 2026-05-27 KRITIK FIX (v0.2.14): Önceki versiyonlar unserialize fail edince
+        // permission'ı SIFIRLIYORDU (boş array ile UPDATE). Müşterilerin admin
+        // user_group permission'larının tümü siliniyordu. Bu versiyonda:
+        //  - Mevcut permission tanınmıyorsa (unserialize fail veya format farklı)
+        //    HİÇ DOKUNMA, skip et.
+        //  - Sadece access[]+modify[] array'leri TAM DOLU ise route ekle.
+        //  - JSON saklanmış olabilir (custom temalar) → JSON parse fallback.
         $route = 'extension/module/dowaba';
         $rows = $this->db->query("SELECT user_group_id, permission FROM `" . DB_PREFIX . "user_group` WHERE user_group_id = 1")->rows;
         foreach ($rows as $row) {
-            // OC3'te permission PHP serialize() ile saklanır (JSON DEĞİL — OC4'le fark!).
-            $perm = @unserialize($row['permission']);
-            if (!is_array($perm)) $perm = array('access' => array(), 'modify' => array());
-            foreach (array('access', 'modify') as $key) {
-                if (!isset($perm[$key]) || !is_array($perm[$key])) $perm[$key] = array();
-                if (!in_array($route, $perm[$key], true)) $perm[$key][] = $route;
+            $raw = (string) $row['permission'];
+
+            // Önce serialize dene (OC3 default)
+            $perm = @unserialize($raw);
+
+            // serialize fail ederse JSON dene (bazı customization'lar JSON saklar)
+            $usesJson = false;
+            if (!is_array($perm)) {
+                $perm = @json_decode($raw, true);
+                $usesJson = is_array($perm);
             }
-            $this->db->query("UPDATE `" . DB_PREFIX . "user_group` SET permission = '" . $this->db->escape(serialize($perm)) . "' WHERE user_group_id = " . (int)$row['user_group_id']);
+
+            // Format hâlâ tanımsız → DOKUNMA, müşterinin permission'larını koru
+            if (!is_array($perm) || !isset($perm['access']) || !is_array($perm['access']) || !isset($perm['modify']) || !is_array($perm['modify'])) {
+                continue;
+            }
+
+            $changed = false;
+            foreach (array('access', 'modify') as $key) {
+                if (!in_array($route, $perm[$key], true)) {
+                    $perm[$key][] = $route;
+                    $changed = true;
+                }
+            }
+            if (!$changed) continue; // zaten var, gereksiz UPDATE atma
+
+            $newValue = $usesJson ? json_encode($perm) : serialize($perm);
+            $this->db->query("UPDATE `" . DB_PREFIX . "user_group` SET permission = '" . $this->db->escape($newValue) . "' WHERE user_group_id = " . (int)$row['user_group_id']);
         }
     }
 
@@ -47,9 +74,27 @@ class ModelExtensionModuleDowaba extends Model {
     }
 
     public function getAuditLog($limit = 100, $functionSlug = null, $statusCode = null) {
-        // Defansif: install() hook çalışmadıysa (FTP upload / ocmod fail) tabloyu burada da oluştur.
-        // CREATE TABLE IF NOT EXISTS idempotent; her çağrıda ekstra yük yok (MySQL skip eder).
-        $this->install();
+        // 2026-05-27 KRITIK FIX (v0.2.14): Önceden $this->install() çağrılıyordu — bu
+        // her admin AJAX call'ında permission update'i tetikliyordu (felaket pattern).
+        // Şimdi sadece tablo varsa SELECT yap; yoksa try/catch ile sessizce başarısız ol.
+        // Tablo create işi install hook'unda bir kez (modül kurulum).
+        try {
+            $this->db->query("CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "dowaba_audit` (
+                `audit_id`       INT(11) NOT NULL AUTO_INCREMENT,
+                `function_slug`  VARCHAR(64) NOT NULL,
+                `request_ip`     VARCHAR(45) NOT NULL,
+                `status_code`    SMALLINT(3) NOT NULL,
+                `duration_ms`    INT(11) NOT NULL DEFAULT 0,
+                `error_message`  TEXT NULL,
+                `created_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (`audit_id`),
+                INDEX `idx_created_at`   (`created_at`),
+                INDEX `idx_function_slug`(`function_slug`),
+                INDEX `idx_status_code`  (`status_code`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        } catch (\Throwable $e) {
+            return array();
+        }
 
         $sql = "SELECT * FROM `" . DB_PREFIX . "dowaba_audit` WHERE 1=1";
 
