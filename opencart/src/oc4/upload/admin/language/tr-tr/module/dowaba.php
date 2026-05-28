@@ -19,6 +19,11 @@ $_['text_step_4_desc']         = 'AI\'ın hangi function kategorilerini çağır
 $_['text_step_5_title']        = 'Adım 5 — Bağlantı Testi';
 $_['text_step_5_desc']         = 'Manifest URL\'in erişilebilir mi ve geçerli JSON döndürüyor mu doğrula.';
 
+// .htaccess sunucu yapılandırma önerisi (header yöntemi — daha güvenli; query fallback otomatik var)
+$_['text_htaccess_title']      = 'Önerilen: Authorization Header Yapılandırması';
+$_['text_htaccess_desc']       = 'Bazı sunucular (Apache/LiteSpeed/FastCGI) Authorization başlığını PHP\'ye geçirmez; bu durumda API "Bearer token required" (401) hatası döner. En güvenli kurulum için mağazanızın kök .htaccess dosyasına, "RewriteEngine On" satırından hemen sonra şu iki satırı ekleyin:';
+$_['text_htaccess_note']       = 'Bu satırları eklemeseniz de entegrasyon çalışır (anahtar query parametresiyle gönderilir), ancak header yöntemi daha güvenlidir — API anahtarı sunucu erişim loglarına yazılmaz.';
+
 // Entry labels
 $_['entry_status']             = 'Durum';
 $_['entry_api_key']            = 'API Anahtarı';

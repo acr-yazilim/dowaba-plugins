@@ -13,7 +13,7 @@ class ControllerExtensionDowabaAiManifest extends Controller {
      * Sonuçta her sürümde fallback '0.2.3' dönüyordu — manifest sürüm bilgisi takılı kalıyordu.
      * Çözüm: const olarak gömüldü. build.sh sed ile install.xml'deki version'la senkron tutuyor.
      */
-    const PLUGIN_VERSION = '0.2.17';
+    const PLUGIN_VERSION = '0.2.19';
 
     public function index() {
         $base = $this->resolveBaseUrl();
@@ -171,6 +171,11 @@ class ControllerExtensionDowabaAiManifest extends Controller {
         if ($queryExtra) {
             foreach ($queryExtra as $k => $v) $query[$k] = $v;
         }
+        // 2026-05-29 (v0.2.19): Authorization header strip fallback — token query'e eklenir.
+        // Apache/LiteSpeed HTTP_AUTHORIZATION'ı PHP'ye geçirmeyen sunucularda Bearer header
+        // auth.php'ye ulaşmaz; query token fallback (auth.php authHeader) ile çalışır.
+        // .htaccess RewriteRule varsa header tercih edilir. Güvenlik: hash_equals + opc_ format.
+        $query['token'] = '{{connection.credentials.token}}';
 
         $config = array(
             'method'         => $method,

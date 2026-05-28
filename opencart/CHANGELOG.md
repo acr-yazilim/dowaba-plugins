@@ -2,6 +2,38 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.19] - 2026-05-29
+
+### Fixed — KRİTİK: Authorization header strip (gerçek-dünya shared hosting)
+
+- **Bearer token query-param fallback (OC3 + OC4)** — Apache/LiteSpeed/FastCGI ortamlarında
+  `HTTP_AUTHORIZATION` PHP'ye geçmiyor (kök `.htaccess`'te `RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`
+  yoksa) → `Authorization: Bearer` header `auth.php`'ye ulaşmıyor → tüm API çağrıları
+  `401 {"error":"Bearer token required"}`. Docker + Cloudflare tunnel test ortamı (v0.2.1) Authorization'ı
+  geçirdiği için bu yakalanamamıştı; **ilk gerçek müşteri kurulumunda (kirtasiyeistoc.com)** ortaya çıktı.
+  - `auth.php::authHeader()` (OC3+OC4): header bulunamazsa `?token=` / `?api_key=` query param
+    fallback okur, `Bearer ` ile wrap ederek `verify()` regex'ine geçirir (verify() değişmedi).
+  - `manifest.php` (OC3+OC4): her function `query_template`'ine `token: {{connection.credentials.token}}`
+    eklendi → Dowaba HttpHandler token'ı query string'de de gönderir.
+  - **Güvenlik korunur**: `opc_` format check + `sha256` `hash_equals` query'den gelen token'a da
+    aynen uygulanır. `.htaccess` RewriteRule mevcutsa `auth.php` header'ı önce dener (öncelik: header → query).
+
+### Added
+
+- **Admin panelde `.htaccess` yapılandırma uyarısı (OC3 + OC4)** — Module ayar sayfasında Adım 1 (API Key)
+  altına "Önerilen: Authorization Header Yapılandırması" bilgi kutusu eklendi. RewriteRule iki satırını
+  kopyalanabilir (`user-select:all`) gösterir + "eklenmezse query-token fallback ile yine çalışır" notu.
+  3 yeni dil anahtarı (`text_htaccess_title` / `_desc` / `_note`) tr-tr + en-gb. **Plugin `.htaccess`'e
+  DOKUNMAZ / otomatik değiştirmez — sadece kullanıcıya talimat gösterir** (müşteri SEO/rewrite kuralları korunur).
+
+### Operasyon notu
+
+- Mevcut kurulumlar (eski manifest'ten import edilmiş, token query'siz) için 2 seçenek:
+  - **(a)** Mağaza kök `.htaccess`'ine RewriteRule ekle → header PHP'ye geçer, re-install/re-import GEREKMEZ.
+    En güvenli — token query'e/access.log'a gitmez.
+  - **(b)** Plugin'i v0.2.19'a güncelle + Dowaba panelden bundle'ı "Var olanı güncelle" ile re-import →
+    query token fallback devreye girer (.htaccess erişimi olmayan müşteriler için).
+
 ## [0.2.3] - 2026-05-26
 
 ### Fixed

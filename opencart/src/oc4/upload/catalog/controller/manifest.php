@@ -24,7 +24,7 @@ class Manifest extends \Opencart\System\Engine\Controller {
      * extension/<code>/ farklı). Sonuçta '0.0.0-dev' fallback dönebiliyordu.
      * Çözüm: const olarak gömüldü. build.sh sed ile install.json'daki version'la senkron tutuyor.
      */
-    const PLUGIN_VERSION = '0.2.17';
+    const PLUGIN_VERSION = '0.2.19';
 
     public function index(): void {
         $this->load->language('extension/dowaba_ai/module/dowaba');
@@ -70,6 +70,20 @@ class Manifest extends \Opencart\System\Engine\Controller {
                 $this->fnOrderConfirm(),
             ],
         ];
+
+        // 2026-05-29 (v0.2.19): Authorization header strip fallback — token query'e enjekte.
+        // Apache/LiteSpeed/FastCGI HTTP_AUTHORIZATION'ı PHP'ye geçirmeyen sunucularda
+        // (kök .htaccess'te `RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`
+        // yoksa) Bearer header auth.php'ye ulaşmaz → 401 "Bearer token required". Her
+        // function'ın query_template'ine token eklenir; Auth::verify header bulamazsa
+        // query'den okur (auth.php authHeader fallback). .htaccess fix'i varsa header
+        // tercih edilir. Güvenlik: opc_ format + sha256 hash_equals query token'a da uygulanır.
+        foreach ($manifest['functions'] as &$fn) {
+            if (isset($fn['http_config']['query_template']) && is_array($fn['http_config']['query_template'])) {
+                $fn['http_config']['query_template']['token'] = '{{connection.credentials.token}}';
+            }
+        }
+        unset($fn);
 
         $this->response->addHeader('Content-Type: application/json; charset=utf-8');
         $this->response->addHeader('Access-Control-Allow-Origin: *');  // manifest public read

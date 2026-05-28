@@ -69,6 +69,19 @@ final class DowabaAuth {
                 if (!empty($headers[$key])) return (string)$headers[$key];
             }
         }
+
+        // 2026-05-29 (v0.2.19): Authorization header strip fallback — query param.
+        // Apache/LiteSpeed/FastCGI ortamlarinda HTTP_AUTHORIZATION PHP'ye gecmez
+        // (kok .htaccess'te `RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`
+        // yoksa) — gercek-dunya shared hosting'de cok yaygin. Dowaba HttpHandler v0.2.19
+        // manifest'inden token'i query'e de gonderir; header bulunamazsa buradan okunur.
+        // GUVENLIK: opc_ format check + sha256 hash_equals verify()'da query token'a da
+        // aynen uygulanir. 'Bearer ' ile wrap edilir → verify() regex'i degismeden calisir.
+        $get = $request->get;
+        foreach (array('token', 'api_key') as $qk) {
+            if (!empty($get[$qk])) return 'Bearer ' . (string) $get[$qk];
+        }
+
         return '';
     }
 

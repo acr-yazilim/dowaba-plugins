@@ -117,6 +117,18 @@ final class Auth {
             }
         }
 
+        // 2026-05-29 (v0.2.19): Authorization header strip fallback — query param.
+        // Apache/LiteSpeed/FastCGI HTTP_AUTHORIZATION'ı PHP'ye geçirmeyince (kök .htaccess'te
+        // `RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]` yoksa) header boş gelir
+        // — gerçek-dünya shared hosting'de çok yaygın. Dowaba HttpHandler v0.2.19 manifest'inden
+        // token'ı query'e de gönderir; header yoksa buradan okunur. Güvenlik: opc_ format +
+        // sha256 hash_equals verify()'da query token'a da aynen uygulanır. 'Bearer ' wrap →
+        // verify() regex'i sabit kalır.
+        $get = $request->get;
+        foreach (['token', 'api_key'] as $qk) {
+            if (!empty($get[$qk])) return 'Bearer ' . (string) $get[$qk];
+        }
+
         return '';
     }
 

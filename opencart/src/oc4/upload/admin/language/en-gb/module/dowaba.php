@@ -19,6 +19,11 @@ $_['text_step_4_desc']         = 'Toggle which categories of functions the AI ca
 $_['text_step_5_title']        = 'Step 5 — Connection Test';
 $_['text_step_5_desc']         = 'Verify that your manifest URL is reachable and returns valid JSON.';
 
+// .htaccess server config recommendation (header method — more secure; query fallback is automatic)
+$_['text_htaccess_title']      = 'Recommended: Authorization Header Configuration';
+$_['text_htaccess_desc']       = 'Some servers (Apache/LiteSpeed/FastCGI) do not pass the Authorization header to PHP; in that case the API returns "Bearer token required" (401). For the most secure setup, add these two lines to your store\'s root .htaccess file, right after the "RewriteEngine On" line:';
+$_['text_htaccess_note']       = 'Even without these lines the integration still works (the key is sent as a query parameter), but the header method is more secure — the API key is not written to server access logs.';
+
 // Entry labels
 $_['entry_status']             = 'Status';
 $_['entry_api_key']            = 'API Key';

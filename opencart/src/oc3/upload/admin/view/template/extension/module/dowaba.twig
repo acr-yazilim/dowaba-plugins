@@ -54,6 +54,17 @@
                 </div>
               </div>
             </div>
+
+            {# .htaccess sunucu yapılandırma önerisi — header yöntemi (daha güvenli).
+               Plugin .htaccess'e DOKUNMAZ; sadece kullanıcıya talimat gösterir.
+               Eklenmezse auth.php query-param token fallback otomatik devreye girer. #}
+            <div class="alert alert-info" style="margin-top:12px;">
+              <p style="margin-bottom:6px;"><strong><i class="fa fa-shield"></i> {{ text_htaccess_title }}</strong></p>
+              <p style="margin-bottom:6px;font-size:13px;">{{ text_htaccess_desc }}</p>
+              <pre style="margin-bottom:6px;user-select:all;">RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]</pre>
+              <p style="margin-bottom:0;font-size:12px;" class="text-muted">{{ text_htaccess_note }}</p>
+            </div>
           </fieldset>
 
           {# STEP 2 — Manifest URL #}

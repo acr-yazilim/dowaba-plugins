@@ -7,29 +7,49 @@
 
   OCMOD 3.x format: vQmod tarzı XML modifier. OC3 extension installer
   bunu yükleyince admin menüsüne otomatik ekleme yapar.
+
+  2026-05-29 (v0.2.18) — DEFANSİF FIX:
+  Custom temalar veya 3rd-party extension'lar `column_left.php`'yi
+  modifiye etmiş olabilir (kirtasiyeistoc.com müşterisi raporu).
+  Eski tek-anchor `$data['menus'][] = array(` bulunamayınca eski
+  OCMOD tüm modification'ı abort ediyor + müşteri "menü görünmüyor"
+  diyor.
+
+  Şimdi:
+  1. Daha güvenilir anchor → `$data['menus'] = array();` (init satırı,
+     column_left.php'de KESİN bir kez bulunur, OC 3.0.x tümünde standart)
+  2. <file ... error="skip"> + <operation error="skip"> — anchor
+     bulunamasa bile plugin'in geri kalanı (controller/model/library/
+     API/manifest) sorunsuz kurulsun. Menü shortcut görünmez ama
+     müşteri yine Extensions → Modules → "Dowaba AI" üzerinden
+     yönetebilir → kayıp yok, sadece UX downgrade.
 -->
 <modification>
     <name>Dowaba AI Integration</name>
     <code>dowaba_ai</code>
-    <version>0.2.17</version>
+    <version>0.2.19</version>
     <author>Aydın Acar (Dowaba)</author>
     <link>https://github.com/rdtvaacar/dowaba-plugins</link>
 
-    <!-- Admin column_left.php menüsüne "Dowaba AI" item ekle (modules grubu altında) -->
-    <file path="admin/controller/common/column_left.php">
-        <operation>
-            <search><![CDATA[$data['menus'][] = array(]]></search>
+    <!-- Admin column_left.php menüsüne "Dowaba AI" item ekle.
+         Anchor = render satırı: tüm menüler kurulduktan SONRA, view'a geçmeden ÖNCE çalışan
+         tekil core satır. Her OC3 kurulumunda KESİN var, custom temalarda bile silinmez
+         (fonksiyonun çıktısı). Menü item'ı bu satırdan hemen önce $data['menus']'a eklenir.
+         error="skip" → anchor bulunamazsa modification abort etmesin, sadece bu operation skip
+         olsun (plugin'in geri kalanı — controller/model/library/API — sorunsuz kurulsun). -->
+    <file path="admin/controller/common/column_left.php" error="skip">
+        <operation error="skip">
+            <search><![CDATA[$this->response->setOutput($this->load->view('common/column_left', $data));]]></search>
             <add position="before"><![CDATA[
-            // Dowaba AI — direct admin menu shortcut
+            // Dowaba AI — direct admin menu shortcut (added by OCMOD)
             if ($this->user->hasPermission('access', 'extension/module/dowaba')) {
-                $dowaba_ai_menu = array(
+                $data['menus'][] = array(
                     'id'       => 'dwb-menu-dowaba-ai',
                     'icon'     => 'fa-robot',
                     'name'     => 'Dowaba AI',
                     'href'     => $this->url->link('extension/module/dowaba', 'user_token=' . $this->session->data['user_token'], true),
                     'children' => array()
                 );
-                $data['menus'][] = $dowaba_ai_menu;
             }
             ]]></add>
         </operation>
