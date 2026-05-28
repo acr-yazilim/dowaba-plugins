@@ -7,10 +7,36 @@
  * Default method index() — query param `action` ile dispatch.
  */
 
-require_once DIR_SYSTEM . 'library/dowaba_ai/auth.php';
-require_once DIR_SYSTEM . 'library/dowaba_ai/scope_guard.php';
-require_once DIR_SYSTEM . 'library/dowaba_ai/audit_logger.php';
-require_once DIR_SYSTEM . 'library/dowaba_ai/order_preview.php';
+// 2026-05-28: Defansif require_once — eski sürümlerden upgrade veya OCMOD
+// installer fail'i nedeniyle library dosyalarının bir kısmı eksik kalırsa,
+// PHP fatal "failed opening required" → boş 500 yerine net JSON hatası dönsün.
+// Tanı: müşteriden "API 500" gelirse manifest endpoint'i + bu endpoint'i
+// çağırıp "missing files" listesini hemen alabiliyoruz.
+$__dowabaLibs = ['auth.php', 'scope_guard.php', 'audit_logger.php', 'order_preview.php'];
+$__dowabaMissing = [];
+foreach ($__dowabaLibs as $__lib) {
+    $__path = DIR_SYSTEM . 'library/dowaba_ai/' . $__lib;
+    if (!is_file($__path)) {
+        $__dowabaMissing[] = $__lib;
+    } else {
+        require_once $__path;
+    }
+}
+if (!empty($__dowabaMissing)) {
+    http_response_code(500);
+    if (!headers_sent()) {
+        header('HTTP/1.1 500 Internal Server Error', true, 500);
+        header('Content-Type: application/json; charset=utf-8');
+    }
+    echo json_encode([
+        'error' => 'plugin_install_incomplete',
+        'message' => 'Plugin library dosyalari eksik — OCMOD installer fail veya kismi upgrade. Lutfen Uninstall + tekrar Install yapin.',
+        'missing_files' => $__dowabaMissing,
+        'expected_path' => DIR_SYSTEM . 'library/dowaba_ai/',
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+unset($__dowabaLibs, $__dowabaMissing, $__lib, $__path);
 
 /**
  * Dowaba AI — Catalog REST API Controller
