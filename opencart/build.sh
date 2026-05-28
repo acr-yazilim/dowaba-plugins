@@ -64,6 +64,25 @@ find src -name "*.php" -print0 | while IFS= read -r -d '' f; do
 done
 echo "✅ PHP syntax OK (all files in src/)"
 
+# Manifest PLUGIN_VERSION sync — install.xml/install.json'la birebir aynı olmalı.
+# 2026-05-28: önceden runtime install.xml parse'ı OCMOD installer'da fail oluyordu
+# ve manifest hep '0.2.3' fallback dönüyordu. Şimdi const tek otorite, build burada
+# install.xml ↔ manifest senkronunu otomatik düzeltir (sed) + doğrular (grep).
+echo "🔁 Manifest PLUGIN_VERSION sync (install.xml=v${VERSION})..."
+sed -i.bak -E "s/const PLUGIN_VERSION = '[^']+';/const PLUGIN_VERSION = '${VERSION}';/" \
+  src/oc3/upload/catalog/controller/extension/dowaba_ai/manifest.php \
+  src/oc4/upload/catalog/controller/manifest.php
+rm -f src/oc3/upload/catalog/controller/extension/dowaba_ai/manifest.php.bak \
+      src/oc4/upload/catalog/controller/manifest.php.bak
+
+OC3_MANIFEST_VER=$(grep -oE "PLUGIN_VERSION = '[^']+'" src/oc3/upload/catalog/controller/extension/dowaba_ai/manifest.php | sed -E "s/PLUGIN_VERSION = '([^']+)'/\1/")
+OC4_MANIFEST_VER=$(grep -oE "PLUGIN_VERSION = '[^']+'" src/oc4/upload/catalog/controller/manifest.php | sed -E "s/PLUGIN_VERSION = '([^']+)'/\1/")
+if [[ "$OC3_MANIFEST_VER" != "$VERSION" || "$OC4_MANIFEST_VER" != "$VERSION" ]]; then
+  echo "❌ Manifest version mismatch! install.xml=$VERSION but OC3=$OC3_MANIFEST_VER OC4=$OC4_MANIFEST_VER"
+  exit 1
+fi
+echo "  ✅ OC3 manifest = ${OC3_MANIFEST_VER}, OC4 manifest = ${OC4_MANIFEST_VER}"
+
 # OC4 build — install.json + install.xml + upload/ İÇERİĞİ (upload/ wrapper'ı OLMADAN)
 # OC4 marketplace/installer.php zip'i extract ederken `extension/<code>/<destination>`
 # olarak yazar. Yani zip'te `upload/admin/...` varsa, çıktı `extension/dowaba_ai/upload/admin/...`

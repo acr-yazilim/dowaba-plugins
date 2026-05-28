@@ -17,6 +17,15 @@ namespace Opencart\Catalog\Controller\Extension\DowabaAi;
  */
 class Manifest extends \Opencart\System\Engine\Controller {
 
+    /**
+     * Plugin sürümü — TEK OTORİTE.
+     * 2026-05-28 BUG FIX: Önceden DIR_OPENCART.'extension/dowaba_ai/install.json' parse'a güveniyorduk;
+     * OC4 marketplace installer extract path'i versiyonlar arası tutarsız (extension/<code>/upload/ vs.
+     * extension/<code>/ farklı). Sonuçta '0.0.0-dev' fallback dönebiliyordu.
+     * Çözüm: const olarak gömüldü. build.sh sed ile install.json'daki version'la senkron tutuyor.
+     */
+    const PLUGIN_VERSION = '0.2.15';
+
     public function index(): void {
         $this->load->language('extension/dowaba_ai/module/dowaba');
 
@@ -109,12 +118,9 @@ class Manifest extends \Opencart\System\Engine\Controller {
     }
 
     private function getPluginVersion(): string {
-        $installFile = DIR_OPENCART . 'extension/dowaba_ai/install.json';
-        if (!is_file($installFile)) {
-            return '0.0.0-dev';
-        }
-        $manifest = json_decode((string) @file_get_contents($installFile), true);
-        return is_array($manifest) ? ($manifest['version'] ?? '0.0.0-dev') : '0.0.0-dev';
+        // 2026-05-28: runtime install.json parse'ı KALDIRILDI — OC4 extract path tutarsızdı.
+        // const tek otorite, build.sh ile sync.
+        return self::PLUGIN_VERSION;
     }
 
     // ---------------------------------------------------------------- functions

@@ -6,6 +6,15 @@
  */
 class ControllerExtensionDowabaAiManifest extends Controller {
 
+    /**
+     * Plugin sürümü — TEK OTORİTE.
+     * 2026-05-28 BUG FIX: Önceden runtime'da DIR_SYSTEM.'../install.xml' parse edilmeye çalışılıyordu,
+     * ama OCMOD installer install.xml'i kuruluma kopyalamıyor (sadece directive olarak işliyor + atıyor).
+     * Sonuçta her sürümde fallback '0.2.3' dönüyordu — manifest sürüm bilgisi takılı kalıyordu.
+     * Çözüm: const olarak gömüldü. build.sh sed ile install.xml'deki version'la senkron tutuyor.
+     */
+    const PLUGIN_VERSION = '0.2.15';
+
     public function index() {
         $base = $this->resolveBaseUrl();
         $apiBase = $base . '/index.php';
@@ -203,18 +212,8 @@ class ControllerExtensionDowabaAiManifest extends Controller {
     }
 
     private function getPluginVersion() {
-        // Version tek otorite: install.xml. 2026-05-26: önceden 3 farklı yerde
-        // farklı değer vardı (install.xml 0.2.2, manifest 0.2.0, user_agent 0.1.0).
-        // Şimdi install.xml'i runtime parse ediyoruz → SemVer disiplini garanti.
-        $xmlPath = DIR_SYSTEM . '../install.xml';
-        if (is_file($xmlPath)) {
-            try {
-                $xml = @simplexml_load_file($xmlPath);
-                if ($xml && isset($xml->version)) {
-                    return (string) $xml->version;
-                }
-            } catch (\Throwable $e) {}
-        }
-        return '0.2.3'; // fallback
+        // 2026-05-28: runtime install.xml parse'ı KALDIRILDI — OCMOD installer install.xml'i
+        // kuruluma kopyalamıyor (sadece directive). const tek otorite, build.sh ile sync.
+        return self::PLUGIN_VERSION;
     }
 }
