@@ -5,7 +5,12 @@
 #
 # OC4 minimum gereksinimler: PHP 8.0+, MySQL 5.7+, GD, mbstring, curl, zip, openssl.
 
-FROM php:8.2-apache
+# 2026-05-28: PHP version'ı build-arg ile parametrize. Plugin compat test için
+# 7.0, 7.4, 8.0, 8.1, 8.2 hepsi build edilebilir → image-tag farklı, aynı OC3 source
+# mount edilir, sadece runtime PHP değişir.
+#   docker build --build-arg PHP_VERSION=7.0 -t dwb-oc-php70 .
+ARG PHP_VERSION=8.2
+FROM php:${PHP_VERSION}-apache
 
 # ---- System packages + PHP extensions ----
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -20,7 +25,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         unzip \
         default-mysql-client \
- && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+ && PHP_MAJOR=$(php -r 'echo PHP_MAJOR_VERSION;') \
+ && PHP_MINOR=$(php -r 'echo PHP_MINOR_VERSION;') \
+ && if [ "$PHP_MAJOR" -ge 8 ] || ([ "$PHP_MAJOR" -eq 7 ] && [ "$PHP_MINOR" -ge 4 ]); then \
+        docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    else \
+        docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-webp-dir=/usr/include/; \
+    fi \
  && docker-php-ext-install -j"$(nproc)" \
         mysqli \
         pdo_mysql \

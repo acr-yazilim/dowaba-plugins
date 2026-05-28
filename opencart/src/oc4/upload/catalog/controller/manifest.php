@@ -24,7 +24,7 @@ class Manifest extends \Opencart\System\Engine\Controller {
      * extension/<code>/ farklı). Sonuçta '0.0.0-dev' fallback dönebiliyordu.
      * Çözüm: const olarak gömüldü. build.sh sed ile install.json'daki version'la senkron tutuyor.
      */
-    const PLUGIN_VERSION = '0.2.16';
+    const PLUGIN_VERSION = '0.2.17';
 
     public function index(): void {
         $this->load->language('extension/dowaba_ai/module/dowaba');

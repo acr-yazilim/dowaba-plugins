@@ -210,7 +210,8 @@ class ControllerExtensionDowabaAiApi extends Controller {
         $idsRaw = $this->request->get['ids'] ?? '';
         $ids = is_array($idsRaw) ? $idsRaw : explode(',', (string) $idsRaw);
         $ids = array_map('intval', $ids);
-        $ids = array_filter($ids, fn($id) => $id > 0);
+        // 2026-05-29: arrow function (PHP 7.4+) yerine closure — PHP 7.0+ uyumlu
+        $ids = array_filter($ids, function($id) { return $id > 0; });
         $ids = array_values(array_unique($ids));
 
         if (count($ids) < 2 || count($ids) > 3) {
@@ -236,7 +237,8 @@ class ControllerExtensionDowabaAiApi extends Controller {
             );
 
             foreach ($shapedAttrs as $name => $val) {
-                $allAttributes[$name] ??= [];
+                // 2026-05-29: ??= (PHP 7.4+) yerine geleneksel ?? — PHP 7.0+ uyumlu
+                $allAttributes[$name] = $allAttributes[$name] ?? [];
                 $allAttributes[$name][$pid] = $val;
             }
         }
@@ -408,12 +410,12 @@ class ControllerExtensionDowabaAiApi extends Controller {
                 'email'       => $customer['email'] ?? '',
                 'phone'       => $customer['telephone'] ?? '',
                 'created_at'  => $customer['date_added'] ?? null,
-                'recent_orders' => array_map(fn($o) => [
+                'recent_orders' => array_map(function($o) { return [
                     'order_id' => (int) $o['order_id'],
                     'total'    => (float) $o['total'],
                     'currency' => $o['currency_code'] ?? '',
                     'date'     => $o['date_added'] ?? null,
-                ], $orders),
+                ]; }, $orders),
             ],
         ]);
     }
@@ -659,7 +661,7 @@ class ControllerExtensionDowabaAiApi extends Controller {
         $lastname = $nameParts[1] ?? 'Müşteri';
 
         // Products payload — OC4 order_product schema ile birebir
-        $orderProducts = array_map(fn($it) => [
+        $orderProducts = array_map(function($it) { return [
             'product_id'   => (int) $it['product_id'],
             'master_id'    => 0,       // OC4: parent_product (variant) için, default 0
             'name'         => $it['name'],
@@ -673,7 +675,7 @@ class ControllerExtensionDowabaAiApi extends Controller {
             'subscription' => [],      // OC4: tekrarlanan abonelik bilgisi, default boş
             'reward'       => 0,
             'subtract'     => 1,       // stoktan düş
-        ], $items);
+        ]; }, $items);
 
         // Totals payload (OpenCart format)
         $orderTotals = [
