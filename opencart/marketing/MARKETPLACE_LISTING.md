@@ -55,7 +55,7 @@ Modules → Customer Service
 ### Field: **Version**
 
 ```
-0.2.1
+0.2.20
 ```
 
 ### Field: **Short Description** (max 200 char)
@@ -143,7 +143,7 @@ Detaylar: https://dowaba.com/pricing
 ## 🆘 Destek
 
 - 📧 https://dowaba.com/destek (24 saat içinde yanıt)
-- 💬 GitHub Issues: https://github.com/rdtvaacar/dowaba-plugins/issues
+- 💬 GitHub Issues: https://github.com/acr-yazilim/dowaba-plugins/issues
 - 📚 Dokümantasyon: https://docs.dowaba.com/opencart
 - 🎬 Video demo: [YouTube link burada]
 
@@ -156,13 +156,14 @@ Detaylar: https://dowaba.com/pricing
 
 ## 🔄 Versiyon Geçmişi
 
+- **v0.2.20** (2026-05-29): Kararlılık serisi — kurulum + API anahtarı kaydı düzeltmeleri (OC3+OC4), Authorization header fallback, PHP 7.0+ uyumu, ürün görsel/galeri desteği
 - **v0.2.1** (2026-05-23): OC3 schema fixes (paralel listing için)
 - **v0.2.0**: OpenCart 3.x dual support eklendi
 - **v0.1.2**: OC4 routing fix + canlı entegrasyon doğrulandı
 - **v0.1.1**: 4 kritik güvenlik fix
 - **v0.1.0**: İlk public release
 
-Tam değişiklik geçmişi: [CHANGELOG](https://github.com/rdtvaacar/dowaba-plugins/blob/main/opencart/CHANGELOG.md)
+Tam değişiklik geçmişi: [CHANGELOG](https://github.com/acr-yazilim/dowaba-plugins/blob/main/opencart/CHANGELOG.md)
 
 ## 🌍 Dil Desteği
 
@@ -189,7 +190,7 @@ Security highlights:
 
 Tested on OpenCart 4.0.2.3 with PHP 8.2 + MariaDB 11. Live integration verified with real WhatsApp customer conversations creating actual orders.
 
-The plugin is MIT licensed and open source: https://github.com/rdtvaacar/dowaba-plugins
+The plugin is MIT licensed and open source: https://github.com/acr-yazilim/dowaba-plugins
 
 Demo available: I can provide a test OpenCart instance + Dowaba demo account credentials if needed for review.
 ```
@@ -262,7 +263,7 @@ Listing #1'in long description'ı + en üstte şu kutu eklenir:
 ### Field: **Version**
 
 ```
-0.2.1
+0.2.20
 ```
 
 ### Field: **Comments** (review notes)
@@ -283,7 +284,7 @@ Schema adaptations made for OC 3.x:
 
 Live tested: real orders #1 (150 USD) and #2 (249 USD) created via Dowaba prod → Cloudflare tunnel → local Docker OC 3.0.3.9.
 
-Open source: https://github.com/rdtvaacar/dowaba-plugins
+Open source: https://github.com/acr-yazilim/dowaba-plugins
 ```
 
 ---
@@ -304,7 +305,7 @@ Submission'a basmadan önce şunları kontrol et:
 - [ ] Demo URL erişilebilir (eğer eklendiyse)
 - [ ] Privacy Policy URL canlı (dowaba.com/privacy veya marketing/PRIVACY.md)
 - [ ] License = MIT (Free)
-- [ ] GitHub releases tag'ler güncel (`opencart-v0.2.1`)
+- [ ] GitHub releases tag'ler güncel (`opencart-v0.2.20`)
 
 ---
 

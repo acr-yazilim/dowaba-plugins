@@ -44,7 +44,7 @@ Modules → Customer Service
 ### Version
 
 ```
-0.2.1
+0.2.20
 ```
 
 ### Short Description (max 200 char)
@@ -173,18 +173,19 @@ See: https://dowaba.com/pricing
 ## 🆘 Support
 
 - 📧 https://dowaba.com/destek (24h response)
-- 💬 GitHub Issues: https://github.com/rdtvaacar/dowaba-plugins/issues
+- 💬 GitHub Issues: https://github.com/acr-yazilim/dowaba-plugins/issues
 - 📚 Docs: https://docs.dowaba.com/opencart
 
 ---
 
 ## 🔄 Version History
 
+- **v0.2.20** (2026-05-29): Stability series — install + API key persistence fixes (OC3+OC4), Authorization header fallback, PHP 7.0+ compatibility, product image/gallery support
 - **v0.2.1** (2026-05-23): OC3 dual support + live order create verified
 - **v0.2.0**: Two-step confirmed order creation flow
 - **v0.1.x**: Initial release, core functions
 
-Full changelog: https://github.com/rdtvaacar/dowaba-plugins/blob/main/opencart/CHANGELOG.md
+Full changelog: https://github.com/acr-yazilim/dowaba-plugins/blob/main/opencart/CHANGELOG.md
 
 ---
 
@@ -216,7 +217,7 @@ Security highlights:
 
 Tested on OpenCart 4.0.2.3 with PHP 8.2 + MariaDB 11. Real customer orders created via WhatsApp Business and Instagram DM conversations.
 
-Open source (MIT): https://github.com/rdtvaacar/dowaba-plugins
+Open source (MIT): https://github.com/acr-yazilim/dowaba-plugins
 
 Demo available — I can provide test OpenCart admin credentials + DoWaba demo account if needed for review.
 ```
@@ -272,7 +273,7 @@ Schema adaptations for OC 3.x:
 
 Live tested: real orders #1 (150 USD) and #2 (249 USD) created via DoWaba prod → tunnel → local Docker OC 3.0.3.9.
 
-Open source: https://github.com/rdtvaacar/dowaba-plugins
+Open source: https://github.com/acr-yazilim/dowaba-plugins
 ```
 
 ---

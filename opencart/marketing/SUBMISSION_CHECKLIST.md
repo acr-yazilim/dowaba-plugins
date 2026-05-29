@@ -90,11 +90,11 @@ cd opencart/docker && docker compose ps
   - [ ] License: MIT
   - [ ] Category: Modules → Customer Service
   - [ ] Compatibility: ☑ tüm 4.0.x versiyonları
-  - [ ] Version: 0.2.1
+  - [ ] Version: 0.2.20
   - [ ] Short Description (max 200 char)
   - [ ] Long Description (markdown)
   - [ ] Comments (review notes)
-- [ ] **Upload zip**: `dist/dowaba-opencart-oc4-0.2.1.ocmod.zip`
+- [ ] **Upload zip**: `dist/dowaba-opencart-oc4-0.2.20.ocmod.zip`
 - [ ] **Upload banner**: `banner-600x300.png`
 - [ ] **Upload screenshots** (sırayla 01-08)
 - [ ] **Pricing**: Free
@@ -106,7 +106,7 @@ cd opencart/docker && docker compose ps
 Aynı flow, sadece:
 - [ ] Extension Name → "...for OpenCart 3..."
 - [ ] Compatibility → ☑ 3.0.3.x versiyonları
-- [ ] Upload zip → `dist/dowaba-opencart-oc3-0.2.1.ocmod.zip`
+- [ ] Upload zip → `dist/dowaba-opencart-oc3-0.2.20.ocmod.zip`
 - [ ] Long Description'a OC4 listing'e link ekle
 - [ ] Diğer her şey aynı
 
@@ -174,7 +174,7 @@ Hepsi check ise hazırsın:
 - [ ] **Demo URL** (opsiyonel) ayakta
 - [ ] **dowaba.com/privacy** ulaşılabilir
 - [ ] **https://dowaba.com/destek** çalışır
-- [ ] **GitHub releases** güncel (opencart-v0.2.1 tag)
+- [ ] **GitHub releases** güncel (opencart-v0.2.20 tag)
 
 Sonra: 2 listing form'unu sırayla doldur, submit et, 1-2 hafta bekle.
 

@@ -5,7 +5,7 @@
 OpenCart mağazalarını **Dowaba AI**'ya bağlar. Müşteriler WhatsApp / Instagram / Mail / Voice (telefon) kanallarından doğal dilde ürün arar, karşılaştırır, sipariş verir. 7/24 AI asistan, Türkçe + 30+ dil.
 
 [![OpenCart Marketplace](https://img.shields.io/badge/OpenCart_Marketplace-Live-success?logo=opencart)](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
-[![Latest Release](https://img.shields.io/badge/latest-v0.2.10-blue)](https://github.com/acr-yazilim/dowaba-plugins/releases/tag/opencart-v0.2.10)
+[![Latest Release](https://img.shields.io/badge/latest-v0.2.20-blue)](https://github.com/acr-yazilim/dowaba-plugins/releases/tag/opencart-v0.2.20)
 [![OpenCart 3.x](https://img.shields.io/badge/OpenCart-3.0.3.x-success)](https://www.opencart.com/)
 [![OpenCart 4.x](https://img.shields.io/badge/OpenCart-4.0.x-success)](https://www.opencart.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
@@ -14,8 +14,8 @@ OpenCart mağazalarını **Dowaba AI**'ya bağlar. Müşteriler WhatsApp / Insta
 
 Mağaza versiyonuna göre:
 
-- **OpenCart 4.x:** ⬇️ [dowaba_ai.ocmod.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.10/dowaba_ai.ocmod.zip) — ⚠️ **dosya adını DEĞİŞTİRME** (`dowaba_ai.ocmod.zip` olduğu gibi kalsın). OC4 zip ADINI `code` olarak kullanır; rename install'ı bozar.
-- **OpenCart 3.x:** ⬇️ [dowaba-opencart-oc3-0.2.10.ocmod.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.10/dowaba-opencart-oc3-0.2.10.ocmod.zip)
+- **OpenCart 4.x:** ⬇️ [dowaba_ai.ocmod.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.20/dowaba_ai.ocmod.zip) — ⚠️ **dosya adını DEĞİŞTİRME** (`dowaba_ai.ocmod.zip` olduğu gibi kalsın). OC4 zip ADINI `code` olarak kullanır; rename install'ı bozar.
+- **OpenCart 3.x:** ⬇️ [dowaba-opencart-oc3-0.2.20.ocmod.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.20/dowaba-opencart-oc3-0.2.20.ocmod.zip)
 
 > OpenCart Marketplace üzerinden de kurabilirsin (otomatik update için tercih edilir): [📦 Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
 > Tüm sürümler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
@@ -57,7 +57,7 @@ AI özet gösterir → "Onaylıyor musun?" → Müşteri "Evet"
 
 ### 1. Plugin yükle
 
-[Releases](https://github.com/rdtvaacar/dowaba-plugins/releases) sayfasından **OpenCart sürümüne uygun** zip'i indir:
+[Releases](https://github.com/acr-yazilim/dowaba-plugins/releases) sayfasından **OpenCart sürümüne uygun** zip'i indir:
 
 - **OpenCart 4.x**: `dowaba-opencart-oc4-X.Y.Z.ocmod.zip`
 - **OpenCart 3.x**: `dowaba-opencart-oc3-X.Y.Z.ocmod.zip`
@@ -140,7 +140,7 @@ bash test/e2e.sh
 ## 🆘 Destek
 
 - 📧 [dowaba.com/destek](https://dowaba.com/destek)
-- 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
+- 💬 [GitHub Issues](https://github.com/acr-yazilim/dowaba-plugins/issues)
 - 📖 [Dowaba dokümantasyonu](https://dowaba.com/docs)
 
 ## 📜 Lisans
@@ -161,7 +161,7 @@ bash test/e2e.sh
 
 ### Quick install
 
-1. Download zip from [Releases](https://github.com/rdtvaacar/dowaba-plugins/releases) (OC3 or OC4)
+1. Download zip from [Releases](https://github.com/acr-yazilim/dowaba-plugins/releases) (OC3 or OC4)
 2. Admin → **Extensions → Installer** → upload
 3. **Modules → Dowaba AI → Install → Edit** → complete 5-step wizard
 4. Copy **Manifest URL** + **API Key**
@@ -180,6 +180,6 @@ Bearer token (sha256 hashed), optional IP whitelist, scope guard (read/write tog
 ### Support
 
 - 📧 [dowaba.com/destek](https://dowaba.com/destek)
-- 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
+- 💬 [GitHub Issues](https://github.com/acr-yazilim/dowaba-plugins/issues)
 
 [MIT License](./LICENSE).
