@@ -50,11 +50,24 @@ class Dowaba extends \Opencart\System\Engine\Controller {
         if (($this->request->server['REQUEST_METHOD'] === 'POST') && $this->validate()) {
             $this->load->model('setting/setting');
 
+            // 2026-05-29 (v0.2.20) BUG FIX: editSetting() gruptaki TÜM ayarları silip yeniden yazar.
+            // Form'da api_key_hash/prefix/last_used input'u YOK (gizli) → her Kaydet'te API anahtarı
+            // hash'i siliniyordu ("API key not yet generated"). Form'da bulunmayan key alanlarını
+            // mevcut DB değerinden koru. (status/scope checkbox'ları eski mantıkla kalır: işaretsizse
+            // post'ta gelmez, silinir = pasif; bu doğru davranış.)
+            $existing = $this->model_setting_setting->getSetting('module_dowaba_ai');
+
             $settings = [];
             foreach (array_keys($this->defaults) as $key) {
                 $postKey = $this->settingPrefix . $key;
                 if (isset($this->request->post[$postKey])) {
                     $settings[$postKey] = $this->request->post[$postKey];
+                }
+            }
+            foreach (['api_key_hash', 'api_key_prefix', 'api_key_last_used'] as $keep) {
+                $keepKey = $this->settingPrefix . $keep;
+                if (!isset($settings[$keepKey]) && isset($existing[$keepKey])) {
+                    $settings[$keepKey] = $existing[$keepKey];
                 }
             }
             $this->model_setting_setting->editSetting('module_dowaba_ai', $settings);
@@ -110,13 +123,15 @@ class Dowaba extends \Opencart\System\Engine\Controller {
         $prefix = substr($plainKey, 0, 12); // 'opc_xxxxxxxx' for UI display
 
         $this->load->model('setting/setting');
-        // OC4 + PHP 8 strict types — DB::escape() null kabul etmiyor.
-        // api_key_last_used'i reset için boş string ver ('' = "henüz kullanılmadı").
-        $this->model_setting_setting->editSetting('module_dowaba_ai', [
-            $this->settingPrefix . 'api_key_hash'      => $hash,
-            $this->settingPrefix . 'api_key_prefix'    => $prefix,
-            $this->settingPrefix . 'api_key_last_used' => '',
-        ]);
+        // 2026-05-29 (v0.2.20) BUG FIX: editSetting() tüm grubu replace ediyor → sadece key alanlarını
+        // yazmak status/scope/ip_whitelist/retention ayarlarını siliyordu (modül pasifleşiyordu).
+        // Mevcut ayarları oku, sadece key alanlarını güncelle, tam set kaydet.
+        // (last_used '' — PHP 8 strict, DB::escape() null kabul etmiyor.)
+        $existing = $this->model_setting_setting->getSetting('module_dowaba_ai');
+        $existing[$this->settingPrefix . 'api_key_hash']      = $hash;
+        $existing[$this->settingPrefix . 'api_key_prefix']    = $prefix;
+        $existing[$this->settingPrefix . 'api_key_last_used'] = '';
+        $this->model_setting_setting->editSetting('module_dowaba_ai', $existing);
 
         $this->response->setOutput(json_encode([
             'success'   => true,

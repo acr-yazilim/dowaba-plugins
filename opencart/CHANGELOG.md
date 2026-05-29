@@ -2,6 +2,26 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.20] - 2026-05-29
+
+### Fixed — KRİTİK: API anahtarı kaydedilemiyor (Kaydet ↔ Yenile birbirini siliyordu)
+
+- **Admin ayar kaydı `editSetting()` replace-all bug'ı (OC3 + OC4)** — OpenCart `editSetting()` gruptaki
+  TÜM ayarları silip yeniden yazar. İki metod bunu "kısmi güncelleme" sanıp kullanıyordu:
+  - **`index()` save (Kaydet):** form'da `api_key_hash`/`prefix`/`last_used` input'u yok (gizli) →
+    her Kaydet'te **API anahtarı hash'i siliniyordu** → "API key not yet generated" → tüm çağrılar 401/503.
+  - **`regenerateKey()` (Yenile):** sadece key alanlarını yazıyordu → **status/scope/ip_whitelist/retention
+    siliniyordu** → modül pasifleşiyordu.
+  - Sonuç: "Yenile → key al → Kaydet" akışında ikisi birbirini eziyordu; anahtar hiçbir zaman kalıcı olmuyordu.
+  - **Fix:** her iki metod artık `getSetting('module_dowaba_ai')` ile mevcut ayarları okuyup MERGE ediyor —
+    Kaydet form'da olmayan key alanlarını korur, Yenile diğer ayarları korur. Tek `editSetting` tam set yazar.
+  - İlk gerçek müşteri kurulumunda (kirtasiyeistoc.com) yakalandı: yeni anahtar defalarca üretildi ama tutmadı.
+
+### Notes
+
+- Bu fix olmadan `.htaccess` düzeltmesi + doğru API anahtarı bile yetmiyordu (plugin anahtarı saklayamıyordu).
+- v0.2.19 (Authorization header strip / query-token fallback + admin `.htaccess` uyarısı) bu sürümde korunuyor.
+
 ## [0.2.19] - 2026-05-29
 
 ### Fixed — KRİTİK: Authorization header strip (gerçek-dünya shared hosting)

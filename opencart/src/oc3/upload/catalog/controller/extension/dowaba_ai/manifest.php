@@ -13,7 +13,7 @@ class ControllerExtensionDowabaAiManifest extends Controller {
      * Sonuçta her sürümde fallback '0.2.3' dönüyordu — manifest sürüm bilgisi takılı kalıyordu.
      * Çözüm: const olarak gömüldü. build.sh sed ile install.xml'deki version'la senkron tutuyor.
      */
-    const PLUGIN_VERSION = '0.2.19';
+    const PLUGIN_VERSION = '0.2.20';
 
     public function index() {
         $base = $this->resolveBaseUrl();
