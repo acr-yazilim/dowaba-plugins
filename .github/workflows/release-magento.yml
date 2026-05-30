@@ -1,0 +1,57 @@
+name: Release Magento module
+
+# Trigger: magento-vX.Y.Z tag pushed
+on:
+  push:
+    tags:
+      - 'magento-v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # for release upload
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/magento-v}"
+          echo "version=$TAG" >> "$GITHUB_OUTPUT"
+          echo "🏷️  Building magento-v$TAG"
+
+      - name: Build module zips (app/code + Marketplace package)
+        working-directory: magento
+        run: bash build.sh "${{ steps.version.outputs.version }}"
+
+      - name: List artifacts
+        run: ls -lh magento/dist/
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Magento v${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            # Dowaba AI Connector for Magento 2 v${{ steps.version.outputs.version }}
+
+            📦 İndir:
+            - **Manuel kurulum (app/code)**: `dowaba-magento-aiconnector-${{ steps.version.outputs.version }}.zip` — Magento kökünde aç, `bin/magento setup:upgrade`
+            - **Marketplace / composer package**: `Dowaba_AiConnector-${{ steps.version.outputs.version }}.zip`
+
+            📚 Kurulum: [README](./magento/README.md)
+            📝 Değişiklikler: [CHANGELOG](./magento/CHANGELOG.md)
+
+            Auto-built by GitHub Actions from tag `${{ github.ref_name }}`.
+          files: |
+            magento/dist/dowaba-magento-aiconnector-${{ steps.version.outputs.version }}.zip
+            magento/dist/Dowaba_AiConnector-${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}

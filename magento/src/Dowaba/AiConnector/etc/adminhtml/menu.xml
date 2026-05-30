@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — admin menu.
+ *
+ * Top-level "Dowaba AI" entry → "Setup & Settings" wizard page.
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Dowaba_AiConnector::main"
+             title="Dowaba AI"
+             translate="title"
+             module="Dowaba_AiConnector"
+             sortOrder="80"
+             resource="Dowaba_AiConnector::settings"/>
+        <add id="Dowaba_AiConnector::settings"
+             title="Setup &amp; Settings"
+             translate="title"
+             module="Dowaba_AiConnector"
+             sortOrder="10"
+             parent="Dowaba_AiConnector::main"
+             action="dowaba_ai/settings/index"
+             resource="Dowaba_AiConnector::settings"/>
+    </menu>
+</config>

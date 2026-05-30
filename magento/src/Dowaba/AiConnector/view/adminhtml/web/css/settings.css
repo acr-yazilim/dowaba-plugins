@@ -1,0 +1,77 @@
+/**
+ * Dowaba AI Connector — admin wizard styles.
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+
+.dwb-wizard { max-width: 880px; }
+
+.dwb-hero {
+    background: linear-gradient(135deg, #5b3df5 0%, #8b5cf6 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+}
+.dwb-hero h1 { color: #fff; font-size: 26px; margin: 0 0 6px; font-weight: 700; }
+.dwb-hero h1 span { opacity: .8; font-weight: 400; }
+.dwb-hero p { margin: 0; opacity: .92; font-size: 14px; max-width: 620px; }
+
+.dwb-step {
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+}
+.dwb-step h2 { font-size: 17px; margin: 0 0 10px; display: flex; align-items: center; }
+.dwb-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #5b3df5; color: #fff; font-size: 14px; font-weight: 700;
+    margin-right: 10px; flex: 0 0 auto;
+}
+
+.dwb-muted { color: #777; font-size: 12.5px; margin: 4px 0; }
+.dwb-warn  { color: #b8530a; font-size: 12.5px; margin: 4px 0; }
+.dwb-current code, .dwb-pre {
+    background: #f4f4f8; border-radius: 6px; padding: 2px 7px; font-family: monospace;
+}
+
+.dwb-copy-row { display: flex; gap: 8px; margin-top: 8px; }
+.dwb-copy-row input {
+    flex: 1; padding: 9px 12px; border: 1px solid #ccc; border-radius: 7px;
+    font-family: monospace; font-size: 13px; background: #fafafa;
+}
+.dwb-key-result { margin-top: 14px; padding: 14px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; }
+.dwb-key-result label { font-weight: 600; display: block; margin-bottom: 6px; }
+
+.dwb-info {
+    margin-top: 16px; padding: 14px 16px; background: #fbfaff;
+    border: 1px dashed #c9bdf7; border-radius: 8px;
+}
+.dwb-info strong { color: #5b3df5; }
+.dwb-pre { display: block; white-space: pre; padding: 10px 12px; margin: 8px 0; font-size: 12px; overflow-x: auto; }
+
+.dwb-field { margin: 14px 0; }
+.dwb-field > label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 13px; }
+.dwb-switch { font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.dwb-switch input { width: 18px; height: 18px; }
+.dwb-text { width: 100%; max-width: 520px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 7px; }
+.dwb-narrow { max-width: 120px; }
+
+.dwb-actions { margin-top: 18px; }
+
+.dwb-test-result { margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 14px; }
+.dwb-test-result.dwb-ok  { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.dwb-test-result.dwb-bad { background: #fef2f2; border: 1px solid #fecaca; }
+.dwb-test-result small { color: #666; word-break: break-all; }
+
+.dwb-audit-result { margin-top: 14px; }
+.dwb-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.dwb-table th, .dwb-table td { text-align: left; padding: 7px 10px; border-bottom: 1px solid #eee; }
+.dwb-table th { background: #f7f7fb; font-weight: 600; }
+td.dwb-ok  { color: #15803d; font-weight: 600; }
+td.dwb-bad { color: #b91c1c; font-weight: 600; }

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — default configuration values.
+ *
+ * Stored in core_config_data under the `dowaba_ai/*` path. Read via
+ * ScopeConfigInterface, written via WriterInterface (see Model\Config).
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <dowaba_ai>
+            <general>
+                <status>0</status>
+                <api_key_hash></api_key_hash>
+                <api_key_prefix></api_key_prefix>
+                <api_key_last_used></api_key_last_used>
+                <ip_whitelist></ip_whitelist>
+                <manifest_base_url></manifest_base_url>
+                <audit_retention_days>30</audit_retention_days>
+            </general>
+            <scope>
+                <read>1</read>
+                <write>0</write>
+            </scope>
+        </dowaba_ai>
+    </default>
+</config>

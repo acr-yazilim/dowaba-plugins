@@ -1,0 +1,21 @@
+{
+    "dowaba_ai_audit": {
+        "column": {
+            "audit_id": true,
+            "function_slug": true,
+            "request_ip": true,
+            "status_code": true,
+            "duration_ms": true,
+            "error_message": true,
+            "created_at": true
+        },
+        "index": {
+            "DOWABA_AI_AUDIT_CREATED_AT": true,
+            "DOWABA_AI_AUDIT_FUNCTION_SLUG": true,
+            "DOWABA_AI_AUDIT_STATUS_CODE": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

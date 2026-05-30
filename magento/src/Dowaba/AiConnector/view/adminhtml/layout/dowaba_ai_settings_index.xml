@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — settings page layout.
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="admin-1column">
+    <head>
+        <css src="Dowaba_AiConnector::css/settings.css"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Dowaba\AiConnector\Block\Adminhtml\Settings"
+                   name="dowaba_ai_settings"
+                   template="Dowaba_AiConnector::settings.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

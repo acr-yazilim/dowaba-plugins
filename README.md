@@ -30,6 +30,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 | **OpenCart 4.x** | **v0.2.20** | [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.20/dowaba_ai.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
 | **OpenCart 3.x** | **v0.2.20** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.20/dowaba-opencart-oc3-0.2.20.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
 | **WooCommerce** | **v0.2.0** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.2.0/dowaba-ai-0.2.0.zip) | ⏳ wordpress.org submission |
+| **Magento 2.4.x** | **v0.1.0** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.0/dowaba-magento-aiconnector-0.1.0.zip) | ⏳ Adobe Commerce Marketplace submission |
 | **Shopify** | — | OAuth-based (download yok) | ⏳ App Store Billing API resubmit |
 | **İkas** | — | OAuth-based (download yok) | ⏳ Partner App onayı |
 
@@ -55,6 +56,11 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 2. WP admin → Plugins → Add New → Upload Plugin → ZIP'i yükle → Activate
 3. **DoWaba AI** menü → 5-step wizard → Bundle Import
 
+### Magento 2
+1. `composer require dowaba/module-ai-connector` **veya** [⬇️ Magento ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.0/dowaba-magento-aiconnector-0.1.0.zip)'i Magento kökünde aç
+2. `bin/magento module:enable Dowaba_AiConnector && bin/magento setup:upgrade && bin/magento cache:flush`
+3. Admin → **Dowaba AI → Setup & Settings** → 5-step wizard → Bundle Import
+
 Detaylı kurulum: her plugin'in kendi README'sinde.
 
 ## 📁 Repo yapısı
@@ -73,6 +79,13 @@ dowaba-plugins/
 │  ├─ admin/views/        # Settings page
 │  ├─ docker/             # Lokal WP+WC test
 │  └─ readme.txt          # wp.org format
+├─ magento/               # Magento 2.4.x (Dowaba_AiConnector)
+│  ├─ src/Dowaba/AiConnector/   # Modül kaynağı (etc/, Controller/, Model/, Block/, view/, i18n/)
+│  ├─ docker/             # bitnami Magento + MariaDB + OpenSearch
+│  ├─ marketing/          # Listing, privacy, submission checklist
+│  ├─ build.sh            # app/code zip + Marketplace package zip
+│  ├─ CHANGELOG.md
+│  └─ README.md
 ├─ .github/workflows/     # GH Actions release per platform
 ├─ LESSONS_LEARNED.md     # 🧠 Retrospective + reusable patterns
 └─ README.md              # bu dosya
@@ -97,8 +110,10 @@ dowaba-plugins/
 ## 📚 Documentation
 
 - [LESSONS_LEARNED.md](./LESSONS_LEARNED.md) — Mimari pattern, reusable artifacts, bug catalog
+- [PLUGIN_DEV_GUIDE.md](./PLUGIN_DEV_GUIDE.md) — Yeni platform yazma rehberi (tek otorite)
 - [opencart/README.md](./opencart/README.md) — OpenCart-spesifik
 - [woocommerce/README.md](./woocommerce/README.md) — WooCommerce-spesifik
+- [magento/README.md](./magento/README.md) — Magento 2-spesifik
 
 ## 💰 Pricing
 

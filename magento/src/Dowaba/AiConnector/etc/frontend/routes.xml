@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — frontend (storefront) routes.
+ *
+ * frontName "dowaba_ai" exposes:
+ *   GET  /dowaba_ai/manifest   → Controller\Manifest\Index  (public bundle JSON)
+ *   GET  /dowaba_ai/api?action=...  → Controller\Api\Index  (10 function dispatcher)
+ *   POST /dowaba_ai/api?action=...  → same (write functions; CSRF bypassed, Bearer auth)
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <route id="dowaba_ai" frontName="dowaba_ai">
+            <module name="Dowaba_AiConnector"/>
+        </route>
+    </router>
+</config>

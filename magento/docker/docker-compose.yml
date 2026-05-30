@@ -1,0 +1,62 @@
+# Lokal Magento test ortamı — DB + Search servisleri.
+#
+# ⚠️ NEDEN sadece MySQL + OpenSearch?
+#   Bitnami'nin hazır `bitnami/magento` imajı 2025'te ücretsiz katalogdan KALDIRILDI
+#   (artık çekilemiyor). `composer create-project magento/project-community-edition`
+#   ise Adobe `repo.magento.com` auth key'i ister. EN GÜVENİLİR no-auth yol:
+#   Magento'yu PUBLIC GitHub source'undan kurmak (self-contained, key gerektirmez) —
+#   bu compose sadece Magento'nun ihtiyaç duyduğu DB + arama motorunu sağlar,
+#   Magento'nun kendisi host'ta (veya bir PHP container'ında) kurulur.
+#   Tam runbook: docker/README.md  (2026-05-30 canlı doğrulandı — e2e 7/0 PASS)
+#
+# Usage:
+#   cd docker/ && docker compose up -d
+#   # sonra README.md'deki GitHub-source kurulum adımlarını izle
+#
+# Servisler:
+#   MySQL 8.0      → 127.0.0.1:3309  (db=magento, user=magento/magento, root=magento_root)
+#   OpenSearch 2.x → 127.0.0.1:9201
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: dwb-mag-mysql
+    restart: unless-stopped
+    command: >-
+      --default-authentication-plugin=mysql_native_password
+      --log_bin_trust_function_creators=1
+    environment:
+      MYSQL_ROOT_PASSWORD: magento_root
+      MYSQL_DATABASE: magento
+      MYSQL_USER: magento
+      MYSQL_PASSWORD: magento
+    ports:
+      - "127.0.0.1:3309:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-uroot", "-pmagento_root"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  opensearch:
+    image: opensearchproject/opensearch:2.12.0
+    container_name: dwb-mag-os
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      plugins.security.disabled: "true"
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: Dowaba_OS_2026!
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
+    ports:
+      - "127.0.0.1:9201:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+
+volumes:
+  mysql-data:
+  opensearch-data:

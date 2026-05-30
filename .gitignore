@@ -36,3 +36,6 @@ composer.lock
 # OS-specific test artifacts
 **/test/output/
 **/test/screenshots/
+
+# Şirket legal bilgileri (tax/MERSİS/telefon) — git'e girmez
+COMPANY.md

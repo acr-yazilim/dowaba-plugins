@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — admin ACL resources.
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Dowaba_AiConnector::main" title="Dowaba AI" translate="title" sortOrder="80">
+                    <resource id="Dowaba_AiConnector::settings" title="Setup &amp; Settings" translate="title" sortOrder="10"/>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>

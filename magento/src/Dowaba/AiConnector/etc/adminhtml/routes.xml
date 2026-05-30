@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — admin routes.
+ *
+ * Admin frontName "dowaba_ai" → Controller\Adminhtml\*:
+ *   /admin/dowaba_ai/settings/index          setup wizard
+ *   /admin/dowaba_ai/settings/regeneratekey  (AJAX) new API key
+ *   /admin/dowaba_ai/settings/testconnection (AJAX) fetch own manifest
+ *   /admin/dowaba_ai/settings/auditlog       (AJAX) recent audit rows
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="admin">
+        <route id="dowaba_ai" frontName="dowaba_ai">
+            <module name="Dowaba_AiConnector" before="Magento_Backend"/>
+        </route>
+    </router>
+</config>

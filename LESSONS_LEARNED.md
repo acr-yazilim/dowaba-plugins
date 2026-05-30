@@ -350,7 +350,7 @@ OpenCart pattern reuse oranı:
 | **PrestaShop** | %80 (PHP, OpenCart benzeri) | 1-2 hafta | ~%1.5 global, %5+ Avrupa, TR'de yaygın |
 | **İkas** | %50 (Türkiye SaaS, ayrı API) | 1-2 hafta | Türkiye'de 50K+ mağaza |
 | **Shopify** | %30 (Liquid+GraphQL+OAuth yeni dünya) | 3-4 hafta | Global #1 SaaS, premium |
-| **Magento 2** | %60 (PHP + composer) | 3-4 hafta | Enterprise |
+| ~~**Magento 2**~~ ✅ | %60 (PHP + composer) | **v0.1.0 yazıldı 2026-05-30** — bkz [PLUGIN_DEV_GUIDE §18](PLUGIN_DEV_GUIDE.md) | Enterprise |
 | **Ticimax** | %40 (Türkiye SaaS) | 1 hafta | TR'de 30K+ |
 | **Zapier** | %20 (sadece adapter) | 1 hafta | 6000+ uygulama bağlantısı |
 | **n8n.io** | %20 | 1 hafta | Open-source Zapier |

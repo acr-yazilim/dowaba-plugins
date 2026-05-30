@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — declarative DB schema.
+ *
+ * `dowaba_ai_audit` — every inbound API request is logged (function slug, ip,
+ * status, duration, error). 30-day retention (lazy purge in AuditLogger).
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="dowaba_ai_audit" resource="default" engine="innodb" comment="Dowaba AI API audit log">
+        <column xsi:type="int" name="audit_id" unsigned="true" nullable="false" identity="true" comment="Audit ID"/>
+        <column xsi:type="varchar" name="function_slug" nullable="false" length="64" default="" comment="Manifest function slug"/>
+        <column xsi:type="varchar" name="request_ip" nullable="false" length="45" default="" comment="Client request IP"/>
+        <column xsi:type="smallint" name="status_code" unsigned="true" nullable="false" default="0" comment="HTTP response status"/>
+        <column xsi:type="int" name="duration_ms" unsigned="true" nullable="false" default="0" comment="Endpoint execution time (ms)"/>
+        <column xsi:type="text" name="error_message" nullable="true" comment="Short error description when status >= 400"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="audit_id"/>
+        </constraint>
+        <index referenceId="DOWABA_AI_AUDIT_CREATED_AT" indexType="btree">
+            <column name="created_at"/>
+        </index>
+        <index referenceId="DOWABA_AI_AUDIT_FUNCTION_SLUG" indexType="btree">
+            <column name="function_slug"/>
+        </index>
+        <index referenceId="DOWABA_AI_AUDIT_STATUS_CODE" indexType="btree">
+            <column name="status_code"/>
+        </index>
+    </table>
+</schema>

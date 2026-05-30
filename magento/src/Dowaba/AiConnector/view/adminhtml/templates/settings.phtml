@@ -1,0 +1,249 @@
+<?php
+/**
+ * Dowaba AI Connector — setup wizard template.
+ *
+ * @var \Dowaba\AiConnector\Block\Adminhtml\Settings $block
+ * @var \Magento\Framework\Escaper $escaper
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+?>
+<div class="dwb-wizard" id="dwb-wizard"
+     data-regenerate-url="<?= $escaper->escapeHtmlAttr($block->getRegenerateUrl()) ?>"
+     data-test-url="<?= $escaper->escapeHtmlAttr($block->getTestUrl()) ?>"
+     data-audit-url="<?= $escaper->escapeHtmlAttr($block->getAuditUrl()) ?>"
+     data-form-key="<?= $escaper->escapeHtmlAttr($block->getDowabaFormKey()) ?>">
+
+    <div class="dwb-hero">
+        <h1>Dowaba AI <span>Connector</span></h1>
+        <p><?= $escaper->escapeHtml(__('Connect your Magento store to Dowaba AI. Customers search, compare and order via WhatsApp / Instagram / Email / Voice — 24/7, multilingual.')) ?></p>
+    </div>
+
+    <!-- ============================================ STEP 1: API KEY -->
+    <section class="dwb-step">
+        <h2><span class="dwb-num">1</span><?= $escaper->escapeHtml(__('Generate API Key')) ?></h2>
+        <p class="dwb-muted"><?= $escaper->escapeHtml(__('The Bearer token Dowaba uses to call your store. Shown only once — copy it now.')) ?></p>
+
+        <?php if ($block->hasApiKey()): ?>
+            <p class="dwb-current">
+                <?= $escaper->escapeHtml(__('Current key prefix:')) ?>
+                <code><?= $escaper->escapeHtml($block->getApiKeyPrefixValue()) ?>…</code>
+                <?php if ($block->getApiKeyLastUsedValue() !== ''): ?>
+                    <span class="dwb-muted"> · <?= $escaper->escapeHtml(__('last used: %1', $block->getApiKeyLastUsedValue())) ?></span>
+                <?php endif; ?>
+            </p>
+        <?php else: ?>
+            <p class="dwb-warn"><?= $escaper->escapeHtml(__('No API key yet — generate one to activate the connection.')) ?></p>
+        <?php endif; ?>
+
+        <button type="button" class="action-default" id="dwb-regenerate">
+            <?= $escaper->escapeHtml(__('Generate / Regenerate Key')) ?>
+        </button>
+
+        <div id="dwb-key-result" class="dwb-key-result" style="display:none;">
+            <label><?= $escaper->escapeHtml(__('Your new API key (copy now, it will not be shown again):')) ?></label>
+            <div class="dwb-copy-row">
+                <input type="text" id="dwb-plain-key" readonly value="" onclick="this.select();"/>
+                <button type="button" class="action-secondary" data-copy="#dwb-plain-key"><?= $escaper->escapeHtml(__('Copy')) ?></button>
+            </div>
+        </div>
+
+        <div class="dwb-info">
+            <strong><?= $escaper->escapeHtml(__('Recommended: Authorization header passthrough')) ?></strong>
+            <p><?= $escaper->escapeHtml(__('On some Apache/LiteSpeed/FastCGI hosts the Authorization header is stripped. If so, add these two lines to your store root .htaccess:')) ?></p>
+            <pre class="dwb-pre" style="user-select:all;">RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]</pre>
+            <p class="dwb-muted"><?= $escaper->escapeHtml(__('If you cannot edit .htaccess, the connection still works — the token is also passed as a query parameter automatically.')) ?></p>
+        </div>
+    </section>
+
+    <!-- ============================================ STEP 2: MANIFEST URL -->
+    <section class="dwb-step">
+        <h2><span class="dwb-num">2</span><?= $escaper->escapeHtml(__('Copy the Manifest URL')) ?></h2>
+        <p class="dwb-muted"><?= $escaper->escapeHtml(__('Paste this together with your API key into the Dowaba panel → Site → Integrations → Bundle Import.')) ?></p>
+        <div class="dwb-copy-row">
+            <input type="text" id="dwb-manifest-url" readonly value="<?= $escaper->escapeHtmlAttr($block->getManifestUrl()) ?>" onclick="this.select();"/>
+            <button type="button" class="action-secondary" data-copy="#dwb-manifest-url"><?= $escaper->escapeHtml(__('Copy')) ?></button>
+        </div>
+    </section>
+
+    <!-- ============================================ SETTINGS FORM (steps 3 & 4) -->
+    <form action="<?= $escaper->escapeUrl($block->getSaveUrl()) ?>" method="post" id="dwb-settings-form">
+        <input name="form_key" type="hidden" value="<?= $escaper->escapeHtmlAttr($block->getDowabaFormKey()) ?>"/>
+
+        <section class="dwb-step">
+            <h2><span class="dwb-num">3</span><?= $escaper->escapeHtml(__('Activation & Scopes')) ?></h2>
+
+            <div class="dwb-field">
+                <label class="dwb-switch">
+                    <input type="checkbox" name="status" value="1" <?= $block->isModuleEnabled() ? 'checked' : '' ?>/>
+                    <?= $escaper->escapeHtml(__('Module enabled')) ?>
+                </label>
+                <p class="dwb-muted"><?= $escaper->escapeHtml(__('Master switch — when off, every API call returns 503.')) ?></p>
+            </div>
+
+            <div class="dwb-field">
+                <label class="dwb-switch">
+                    <input type="checkbox" name="scope_read" value="1" <?= $block->isScopeRead() ? 'checked' : '' ?>/>
+                    <?= $escaper->escapeHtml(__('Read scope (products, stock, orders, customers)')) ?>
+                </label>
+            </div>
+
+            <div class="dwb-field">
+                <label class="dwb-switch">
+                    <input type="checkbox" name="scope_write" value="1" <?= $block->isScopeWrite() ? 'checked' : '' ?>/>
+                    <?= $escaper->escapeHtml(__('Write scope (create orders)')) ?>
+                </label>
+                <p class="dwb-warn"><?= $escaper->escapeHtml(__('Off by default. Enable only when you want the AI to place orders (2-step customer confirmation always applies).')) ?></p>
+            </div>
+        </section>
+
+        <section class="dwb-step">
+            <h2><span class="dwb-num">4</span><?= $escaper->escapeHtml(__('Security (optional)')) ?></h2>
+
+            <div class="dwb-field">
+                <label><?= $escaper->escapeHtml(__('IP whitelist (comma-separated)')) ?></label>
+                <input type="text" name="ip_whitelist" class="dwb-text"
+                       value="<?= $escaper->escapeHtmlAttr($block->getIpWhitelistValue()) ?>"
+                       placeholder="<?= $escaper->escapeHtmlAttr($block->getSuggestedIps()) ?>"/>
+                <p class="dwb-muted"><?= $escaper->escapeHtml(__('Leave empty to allow any IP. Dowaba production: %1', $block->getSuggestedIps())) ?></p>
+            </div>
+
+            <div class="dwb-field">
+                <label><?= $escaper->escapeHtml(__('Manifest base URL override (advanced)')) ?></label>
+                <input type="text" name="manifest_base_url" class="dwb-text"
+                       value="<?= $escaper->escapeHtmlAttr($block->getManifestBaseUrlOverride()) ?>"
+                       placeholder="https://store.example.com"/>
+                <p class="dwb-muted"><?= $escaper->escapeHtml(__('Only needed behind a CDN/tunnel where the request host differs from your public URL.')) ?></p>
+            </div>
+
+            <div class="dwb-field">
+                <label><?= $escaper->escapeHtml(__('Audit log retention (days)')) ?></label>
+                <input type="number" name="audit_retention_days" class="dwb-text dwb-narrow" min="1" max="365"
+                       value="<?= $escaper->escapeHtmlAttr((string) $block->getAuditRetentionValue()) ?>"/>
+            </div>
+
+            <div class="dwb-actions">
+                <button type="submit" class="action-primary"><?= $escaper->escapeHtml(__('Save settings')) ?></button>
+            </div>
+        </section>
+    </form>
+
+    <!-- ============================================ STEP 5: TEST -->
+    <section class="dwb-step">
+        <h2><span class="dwb-num">5</span><?= $escaper->escapeHtml(__('Test the connection')) ?></h2>
+        <button type="button" class="action-default" id="dwb-test"><?= $escaper->escapeHtml(__('Run connection test')) ?></button>
+        <div id="dwb-test-result" class="dwb-test-result" style="display:none;"></div>
+    </section>
+
+    <!-- ============================================ AUDIT LOG -->
+    <section class="dwb-step">
+        <h2><?= $escaper->escapeHtml(__('Audit log')) ?></h2>
+        <p class="dwb-muted"><?= $escaper->escapeHtml(__('Every inbound API call is logged. Use this to verify Dowaba is reaching your store.')) ?></p>
+        <button type="button" class="action-default" id="dwb-audit-refresh"><?= $escaper->escapeHtml(__('Load recent calls')) ?></button>
+        <div id="dwb-audit-result" class="dwb-audit-result"></div>
+    </section>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var root = document.getElementById('dwb-wizard');
+    if (!root) { return; }
+
+    var regenerateUrl = root.getAttribute('data-regenerate-url');
+    var testUrl = root.getAttribute('data-test-url');
+    var auditUrl = root.getAttribute('data-audit-url');
+
+    function copyToClipboard(selector) {
+        var el = document.querySelector(selector);
+        if (!el) { return; }
+        el.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        if (navigator.clipboard) { navigator.clipboard.writeText(el.value).catch(function () {}); }
+    }
+
+    document.querySelectorAll('[data-copy]').forEach(function (btn) {
+        btn.addEventListener('click', function () { copyToClipboard(btn.getAttribute('data-copy')); });
+    });
+
+    // --- Regenerate key
+    var regen = document.getElementById('dwb-regenerate');
+    if (regen) {
+        regen.addEventListener('click', function () {
+            regen.disabled = true;
+            fetch(regenerateUrl, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    regen.disabled = false;
+                    if (data && data.success) {
+                        var box = document.getElementById('dwb-key-result');
+                        document.getElementById('dwb-plain-key').value = data.plain_key;
+                        box.style.display = 'block';
+                    } else {
+                        alert((data && data.error) || 'Error');
+                    }
+                })
+                .catch(function () { regen.disabled = false; alert('Request failed'); });
+        });
+    }
+
+    // --- Test connection
+    var test = document.getElementById('dwb-test');
+    if (test) {
+        test.addEventListener('click', function () {
+            var out = document.getElementById('dwb-test-result');
+            test.disabled = true;
+            out.style.display = 'block';
+            out.className = 'dwb-test-result';
+            out.textContent = '…';
+            fetch(testUrl, { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    test.disabled = false;
+                    if (data && data.success) {
+                        out.classList.add('dwb-ok');
+                        out.innerHTML = '✅ schema ' + data.schema_version + ' · ' + data.function_count + ' functions<br><small>' + data.url + '</small>';
+                    } else {
+                        out.classList.add('dwb-bad');
+                        out.innerHTML = '❌ ' + ((data && data.error) || 'Error') + '<br><small>' + ((data && data.url) || '') + '</small>';
+                    }
+                })
+                .catch(function () { test.disabled = false; out.classList.add('dwb-bad'); out.textContent = 'Request failed'; });
+        });
+    }
+
+    // --- Audit log
+    var auditBtn = document.getElementById('dwb-audit-refresh');
+    if (auditBtn) {
+        auditBtn.addEventListener('click', function () {
+            var out = document.getElementById('dwb-audit-result');
+            auditBtn.disabled = true;
+            out.innerHTML = '<p>…</p>';
+            fetch(auditUrl + '?limit=50', { method: 'GET', headers: { 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    auditBtn.disabled = false;
+                    if (!data || !data.success) { out.innerHTML = '<p class="dwb-bad">Error</p>'; return; }
+                    if (!data.rows.length) { out.innerHTML = '<p class="dwb-muted">No calls yet.</p>'; return; }
+                    var html = '<table class="dwb-table"><thead><tr><th>Function</th><th>IP</th><th>Status</th><th>ms</th><th>When</th></tr></thead><tbody>';
+                    data.rows.forEach(function (row) {
+                        var cls = row.status_code >= 400 ? 'dwb-bad' : 'dwb-ok';
+                        html += '<tr><td>' + esc(row.function_slug) + '</td><td>' + esc(row.request_ip) + '</td><td class="' + cls + '">' + row.status_code + '</td><td>' + row.duration_ms + '</td><td>' + esc(row.created_at) + '</td></tr>';
+                    });
+                    html += '</tbody></table>';
+                    out.innerHTML = html;
+                })
+                .catch(function () { auditBtn.disabled = false; out.innerHTML = '<p class="dwb-bad">Request failed</p>'; });
+        });
+    }
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+})();
+</script>

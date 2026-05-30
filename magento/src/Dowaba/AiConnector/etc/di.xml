@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Dowaba AI Connector — dependency injection.
+ *
+ * Wires a dedicated log channel (var/log/dowaba_ai.log) into the API layer so
+ * production debugging does not get lost in system.log. (See PLUGIN_DEV_GUIDE §10
+ * "AI Exception Suppression" — a dedicated audit/log trail is the primary debug tool.)
+ *
+ * @author    Aydın Acar <destek@dowaba.com>
+ * @copyright 2026 Dowaba (https://dowaba.com)
+ * @license   MIT
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <virtualType name="Dowaba\AiConnector\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/dowaba_ai.log</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Dowaba\AiConnector\Logger\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="name" xsi:type="string">dowaba_ai</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Dowaba\AiConnector\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Dowaba\AiConnector\Model\Api\Dispatcher">
+        <arguments>
+            <argument name="logger" xsi:type="object">Dowaba\AiConnector\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Dowaba\AiConnector\Model\AuditLogger">
+        <arguments>
+            <argument name="logger" xsi:type="object">Dowaba\AiConnector\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Dowaba\AiConnector\Controller\Api\Index">
+        <arguments>
+            <argument name="logger" xsi:type="object">Dowaba\AiConnector\Logger\Logger</argument>
+        </arguments>
+    </type>
+</config>

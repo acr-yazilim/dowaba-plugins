@@ -489,68 +489,13 @@ Bkz: `app/Http/Controllers/Api/ShopifyOAuthController.php`, `IkasOAuthController
 
 ## 8. PrestaShop Validator Compliance (zorunlu)
 
-[validator.prestashop.com](https://validator.prestashop.com/) → tüm kategoriler 0 error olmalı, yoksa Addons reddediyor.
+> 📦 **Detaylar taşındı → [prestashop/MARKETPLACE.md § 5](prestashop/MARKETPLACE.md)** (PrestaShop tek otoritesi).
+> Tam kod örnekleri (her klasörde `index.php`, root `.htaccess`, license header, structure exit, PSR-12, SQL_MODE
+> tuzağı) + Marketplace submission/validation/fee süreci orada.
 
-### Security (en sık fail)
-
-**Eksik index.php** (her klasörde):
-```php
-<?php
-/**
- * Dowaba AI Integration for PrestaShop
- *
- * @author    Aydın Acar <support@dowaba.com>
- * @copyright 2024 Aydın Acar (DoWaba)
- * @license   https://opensource.org/licenses/MIT  MIT License
- */
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Pragma: no-cache");
-header("Location: ../");
-exit;
-```
-
-**Eksik .htaccess** (root):
-```apache
-Options -Indexes
-<FilesMatch "\.(php|inc|tpl|sql)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-<Files "index.php">
-    Order allow,deny
-    Allow from all
-</Files>
-```
-
-### Structure (her PHP dosyasının başı)
-
-```php
-<?php
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-```
-
-### Licenses (her PHP dosyasının file doc comment)
-
-```php
-/**
- * Dowaba AI Integration for PrestaShop — <module description>
- *
- * @author    Aydın Acar <support@dowaba.com>
- * @copyright 2024 Aydın Acar (DoWaba)
- * @license   https://opensource.org/licenses/MIT  MIT License
- */
-```
-
-Eksik field varsa validator "Missing @author tag in file comment" verir.
-
-### Translations / Standards
-
-- `$this->l('...')` runtime translate, OK
-- PSR-12 spacing, brace position, control structure braces (`if () { ... }` zorunlu, tek-satır if yasak)
+Özet: [validator.prestashop.com](https://validator.prestashop.com/) → tüm kategoriler **0 error** olmalı, yoksa
+Addons reddeder. PrestaShop-özel zorunluluklar: her klasörde `index.php`, root `.htaccess`, her PHP dosyasında
+`if (!defined('_PS_VERSION_')) { exit; }` + `@author/@copyright/@license` file doc comment, PSR-12 (tek-satır if yasak).
 
 ---
 
@@ -722,13 +667,14 @@ Manifest controller `HTTP_HOST`'tan resolve ettiği için tunnel domain'ine otom
 | 7 | Cloudflare quick tunnel her açışta URL değişir | Manifest re-import gerekir veya persistent tunnel kur |
 | 8 | OpenCart `editSetting()` aynı code grupta DELETE+INSERT — sıralı çağrılar önceki key'leri siler | Tek call'da tüm key'leri ver |
 | 9 | UnifiedAIService Gemini exception swallow | DB'den AI cevabını + audit log'unu oku, binary search |
-| 10 | PrestaShop validator strict SQL_MODE — INSERT'lerde tüm NOT NULL kolonlar dolu | `SET SESSION sql_mode=''` ile relax |
+| 10 | PrestaShop validator strict SQL_MODE — INSERT'lerde tüm NOT NULL kolonlar dolu | `SET SESSION sql_mode=''` — detay [prestashop/MARKETPLACE.md § 5.5](prestashop/MARKETPLACE.md) |
 
 ---
 
 ## 16. İlgili Dokümanlar (cross-reference)
 
 - **Bu repo:** `opencart/`, `woocommerce/`, `prestashop/`, `shopify/`, `ikas/` — her plugin kendi README + CHANGELOG
+- **PrestaShop Marketplace/validation tek otoritesi:** [prestashop/MARKETPLACE.md](prestashop/MARKETPLACE.md) — submission, validator compliance (§8 buraya taşındı), 99 € fee, 9.0 uyumluluk, panel izleme
 - **Dowaba ana proje:** `../dowaba/PROJE_HARITASI.md` — Dowaba backend mimarisi
 - **Function gateway:** `../dowaba/.../UnifiedAIService.php`, `BundleImporter.php`, `HttpHandler.php`
 - **OpenCart memory:** `~/.claude/projects/-Users-aydinacar-Documents-dowaba/memory/feature_brand_resolver_service.md` benzeri
@@ -741,7 +687,59 @@ Manifest controller `HTTP_HOST`'tan resolve ettiği için tunnel domain'ine otom
 | Tarih | Değişiklik |
 |---|---|
 | 2026-05-26 | İlk versiyon — OpenCart 3 e2e demo + Gemini schema regression fix |
+| 2026-05-30 | Magento 2 (`Dowaba_AiConnector`) port — §18 Magento-spesifik notlar eklendi |
 
 ---
 
 **Bir plugin yazarken bu dokümana eklemek istediğin ders varsa: `## 18. Senin notların` bölümü aç ve yaz.** Sonraki geliştirici sana teşekkür edecek.
+
+---
+
+## 18. Magento 2 — platform-spesifik notlar (2026-05-30)
+
+`magento/src/Dowaba/AiConnector/` — OpenCart paritesinde 10 function, ama Magento'nun enterprise framework yapısı her katmanı değiştirir. Slug prefix **`mgm_`** (opc/wcm/psm konvansiyonu). Yeni Magento işine başlamadan oku.
+
+### 18.1 Mimari eşleme (OpenCart → Magento)
+
+| Konu | OpenCart | Magento 2 |
+|---|---|---|
+| Config storage | `oc_setting` (model_setting_setting) | `core_config_data` (ScopeConfigInterface read + WriterInterface write) |
+| Routing | `?route=ext/dowaba_ai/api&action=` | `frontName` → `/dowaba_ai/api?action=` (clean URL, **dot/pipe bug YOK**) |
+| DB schema | install.xml runtime CREATE | **declarative `etc/db_schema.xml`** + `db_schema_whitelist.json` (setup:upgrade auto) |
+| Audit/SQL | `$this->db->query()` | `ResourceConnection::getConnection()` select builder |
+| Cache | OC File cache | `CacheInterface` + `SerializerInterface` (Json) |
+| Sipariş | `model_checkout_order->addOrder()` | **Quote API** (QuoteFactory + QuoteManagement::submit) |
+| Admin UI | Twig + AJAX | adminhtml controller + Block + phtml + layout XML + ACL + menu.xml |
+| Logging | yok | dedicated `di.xml` virtualType → `var/log/dowaba_ai.log` |
+
+### 18.2 Magento-spesifik 6 tuzak (hepsi koda işlendi)
+
+1. **CSRF — frontend POST API 403.** `Controller\Api\Index implements CsrfAwareActionInterface` → `validateForCsrf()=true`, `createCsrfValidationException()=null`. write function'lar (order_preview/confirm POST) bu olmadan 403 alır. **Kritik.**
+2. **Config cache staleness.** WriterInterface DB'ye yazar ama ScopeConfig merged cache'i eski kalır → yeni API key auth ETMEZ. Çözüm: `Save`/`RegenerateKey` controller'da `WriterInterface::save` SONRASI `TypeListInterface::cleanType('config')`. (`Model\Config::flushConfigCache`)
+3. **`api_key_last_used` her istekte yazılır → config cache flush ETME.** Her API call'da Writer+flush = felaket (her request config rebuild). Çözüm: `Config::saveValueDirect()` raw `core_config_data` insertOnDuplicate (flush yok) + okuma da `getValueDirect()`.
+4. **Order create = Quote flow.** Guest order: `quoteFactory->create()` → setCustomerIsGuest + setCustomerEmail → addProduct → billing/shipping addData → `collectShippingRates()->setShippingMethod('flatrate_flatrate')` → `setPaymentMethod('checkmo')` → save → `payment->importData(['method'=>'checkmo'])` → collectTotals → `quoteManagement->submit($quote)`. **flatrate + checkmo default-enabled** (sample data). v0.1 sadece simple product (configurable/bundle addProduct options ister).
+5. **Authorization header strip (OpenCart'la aynı).** Apache/LiteSpeed HTTP_AUTHORIZATION düşürür → `Auth::authHeader()` `getServer()` + `getallheaders()` + `?token=` query fallback. Manifest her query_template'e `token:{{connection.credentials.token}}` enjekte eder.
+6. **`ObjectManager` doğrudan kullanımı = EQP red.** Sadece constructor DI. `_redirect()` deprecated → `resultRedirectFactory`. phtml'de `$escaper->escapeHtml/Url/HtmlAttr` zorunlu.
+
+### 18.3 base_url farkı
+
+OpenCart: `base_url = host/index.php`, route query'de. Magento: clean URL → `connection.base_url = https://store.com` (sadece scheme+host), `url_template = {{connection.base_url}}/dowaba_ai/api`. **base_url'a path/query KOYMA** (HttpHandler query-drop bug'ı path'i etkilemez ama temiz tut).
+
+### 18.4 Lokal test — 2 ENGEL + çözüm (canlı doğrulandı 2026-05-30)
+
+Magento kurulumu OpenCart/Woo'dan zor. İki tuzak:
+1. **`bitnami/magento` imajı KALDIRILDI** (Bitnami 2025 ücretsiz katalog deprecation). Çekilemiyor — kullanma.
+2. **`composer create-project magento/...` Adobe `repo.magento.com` auth key ister.**
+
+**Çözüm = public GitHub source** (auth GEREKMEZ): `magento/magento2` repo `app/code/Magento`'da 220 modülü vendor'lar, `composer.json` repo.magento.com deklare etmez → packagist yeter.
+```bash
+git clone --depth1 -b 2.4.7 https://github.com/magento/magento2.git && composer install --no-dev   # auth yok
+# DB+search: magento/docker/docker-compose.yml (MySQL 8 :3309 + OpenSearch 2.12 :9201)
+# setup:install + modülü app/code'a kopyala + setup:upgrade → tam runbook: magento/docker/README.md
+php -S 127.0.0.1:8087 -t pub phpserver/router.php   # localhost kullan, 127.0.0.1 base_url'a 302 yapar
+```
+Host PHP 8.1–8.3 + standart extension'lar yeter (ayrı container şart değil). Manifest strict-schema testi Magento'suz da çalışır (Manifest model bağımsız). **Canlı sonuç:** e2e 7/0 PASS, gerçek sipariş `#000000001` (Quote API), write flow + replay 410 + IDOR 404 + audit log hepsi DOĞRULANDI. Tuzaklar: MySQL 8 trigger uyarısı (`log_bin_trust_function_creators=1` ile sus), `show_out_of_stock` ayarı product_search'i etkiler (saygı duyar — bug değil), developer mode ilk istek ~2s (DI üretimi).
+
+### 18.5 Marketplace farkı (OpenCart'tan zor)
+
+Adobe Commerce Marketplace **EQP otomatik kod analizi** yapar (OpenCart manuel form, hızlı approval). PHPCS `Magento2` ruleset 0 error + malware scan + manuel QA (1-4 hafta). Package zip = module root (composer.json top-level). `bash build.sh` iki zip üretir: app/code (manuel install) + Marketplace package. Detay: [magento/marketing/SUBMISSION_CHECKLIST.md](magento/marketing/SUBMISSION_CHECKLIST.md).
