@@ -2,6 +2,20 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.21] - 2026-05-30
+
+### Added — Kurulum sihirbazında DoWaba'ya yönlendirme (upsell CTA)
+
+- **Sihirbaz üstü CTA kutusu (OC3 + OC4, TR + EN)** — "DoWaba'da Ücretsiz Başla" (login → kayıt
+  orada açılır) + "Mesaj Paketleri & Fiyatlar" (pricing) butonları. Eklenti ücretsiz; yapay zekâ
+  mesaj paketleri (1.000 / 5.000 / 50.000 mesaj/ay) DoWaba'da satılır — şeffaflık notu (OpenCart
+  freemium-bridge kuralı gereği listing'de açıkça belirtilir).
+- **Manifest adımı altında "Bundle Import'a Git" butonu** → DoWaba admin paneli.
+- Tüm dış linkler `?ref=opencart` attribution parametresiyle; `target="_blank"` + `rel="noopener"`
+  (tabnabbing koruması).
+- i18n korundu: 4 dil dosyası + 2 Twig template. İşlevsel/davranışsal değişiklik YOK — sadece
+  yönlendirme + bilgilendirme katmanı.
+
 ## [0.2.20] - 2026-05-29
 
 ### Fixed — KRİTİK: API anahtarı kaydedilemiyor (Kaydet ↔ Yenile birbirini siliyordu)
