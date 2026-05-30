@@ -41,7 +41,12 @@ docker compose up -d
 - PrestaShop 8.1 + PHP 8.2 + MariaDB 11
 - Live integration verified via Dowaba prod tunnel
 
+## 🛠️ Geliştirici / Marketplace
+
+- 📦 Addons Marketplace yayın + validation süreci, 99 € fee, validator compliance, 9.0 uyumluluk → **[MARKETPLACE.md](./MARKETPLACE.md)**
+- 📋 Submission öncesi adım-adım hazırlık → [marketing/SUBMISSION_CHECKLIST.md](./marketing/SUBMISSION_CHECKLIST.md)
+
 ## 🆘 Destek
 
 - 📧 [dowaba.com/destek](https://dowaba.com/destek)
-- 💬 [GitHub Issues](https://github.com/rdtvaacar/dowaba-plugins/issues)
+- 💬 [GitHub Issues](https://github.com/acr-yazilim/dowaba-plugins/issues)

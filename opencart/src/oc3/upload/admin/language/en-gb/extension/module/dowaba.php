@@ -45,6 +45,13 @@ $_['button_regenerate']        = 'Regenerate API Key';
 $_['button_copy']              = 'Copy';
 $_['button_test']              = 'Test connection';
 
+// DoWaba connect / plan CTA (top of wizard — plugin is free, message packs live on DoWaba)
+$_['text_dowaba_cta_title']    = 'First, connect your DoWaba account';
+$_['text_dowaba_cta_desc']     = 'This plugin is free. AI message packs (1,000 / 5,000 / 50,000 messages per month) are offered on DoWaba — create your account and pick a plan first, then connect with the API key + Manifest URL below.';
+$_['button_dowaba_register']   = 'Start Free on DoWaba';
+$_['button_dowaba_pricing']    = 'Message Packs & Pricing';
+$_['button_dowaba_bundle']     = 'Go to Bundle Import in DoWaba';
+
 // Audit Log
 $_['text_audit_log_title']     = 'Audit Log — Recent API requests';
 $_['text_audit_log_desc']      = 'Last requests from Dowaba. Filter by function slug or status code (4xx/5xx for errors).';

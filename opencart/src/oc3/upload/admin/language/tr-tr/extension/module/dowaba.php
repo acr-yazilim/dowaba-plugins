@@ -45,6 +45,13 @@ $_['button_regenerate']        = 'API Anahtarı Yenile';
 $_['button_copy']              = 'Kopyala';
 $_['button_test']              = 'Bağlantı testi';
 
+// DoWaba bağlantı / paket CTA (sihirbaz üstü — eklenti ücretsiz, mesaj paketleri DoWaba'da)
+$_['text_dowaba_cta_title']    = 'Önce DoWaba hesabını bağla';
+$_['text_dowaba_cta_desc']     = 'Bu eklenti ücretsizdir. Yapay zekâ mesaj paketleri (1.000 / 5.000 / 50.000 mesaj/ay) DoWaba\'da sunulur — önce hesabını oluştur ve planını seç, sonra aşağıdaki API anahtarı + Manifest URL ile bağlan.';
+$_['button_dowaba_register']   = 'DoWaba\'da Ücretsiz Başla';
+$_['button_dowaba_pricing']    = 'Mesaj Paketleri & Fiyatlar';
+$_['button_dowaba_bundle']     = 'DoWaba Panelinde Bundle Import\'a Git';
+
 // Audit Log
 $_['text_audit_log_title']     = 'Audit Log — Son API istekleri';
 $_['text_audit_log_desc']      = 'Dowaba\'dan gelen son istekler. Function slug veya status code ile filtreleyebilirsin (4xx/5xx = hata).';

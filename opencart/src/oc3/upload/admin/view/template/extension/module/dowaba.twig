@@ -30,6 +30,24 @@
 
         <form action="{{ action }}" method="post" id="form-dowaba" class="form-horizontal">
 
+          {# DoWaba Bağlan CTA — eklenti ücretsiz, mesaj paketleri DoWaba'da #}
+          <div class="alert alert-info" style="margin-bottom:20px;">
+            <div class="row">
+              <div class="col-sm-8">
+                <h4 style="margin-top:0;"><i class="fa fa-rocket"></i> {{ text_dowaba_cta_title }}</h4>
+                <p style="margin-bottom:0;">{{ text_dowaba_cta_desc }}</p>
+              </div>
+              <div class="col-sm-4 text-right">
+                <a href="https://dowaba.com/login?ref=opencart" target="_blank" rel="noopener" class="btn btn-primary" style="margin-bottom:6px;">
+                  <i class="fa fa-user-plus"></i> {{ button_dowaba_register }}
+                </a>
+                <a href="https://dowaba.com/pricing?ref=opencart" target="_blank" rel="noopener" class="btn btn-default">
+                  <i class="fa fa-tags"></i> {{ button_dowaba_pricing }}
+                </a>
+              </div>
+            </div>
+          </div>
+
           {# STEP 1 — API Key #}
           <fieldset>
             <legend>{{ text_step_1_title }}</legend>
@@ -81,6 +99,13 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]</pre>
                   </span>
                 </div>
                 <small class="text-muted">{{ help_manifest_url }}</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <a href="https://dowaba.com/admin?ref=opencart" target="_blank" rel="noopener" class="btn btn-success">
+                  <i class="fa fa-external-link"></i> {{ button_dowaba_bundle }}
+                </a>
               </div>
             </div>
           </fieldset>
