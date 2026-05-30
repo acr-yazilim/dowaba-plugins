@@ -93,10 +93,14 @@ class Dispatcher
             ? $product->getCustomAttribute('description')->getValue() : '');
         $cleanDescription = trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode($description, ENT_QUOTES, 'UTF-8'))));
 
+        $gallery = $this->shapeGallery($product);
+
         $body = array_merge($this->shapeProduct($product), [
-            'description' => $cleanDescription,
-            'weight'      => $product->getWeight() !== null ? (float) $product->getWeight() : null,
-            'attributes'  => $this->shapeAttributes($product),
+            'description'   => $cleanDescription,
+            'weight'        => $product->getWeight() !== null ? (float) $product->getWeight() : null,
+            'attributes'    => $this->shapeAttributes($product),
+            'gallery'       => $gallery,        // ek ürün görselleri (OpenCart paritesi)
+            'gallery_count' => count($gallery),
         ]);
 
         return ['status' => 200, 'body' => ['data' => $body]];
@@ -527,6 +531,40 @@ class Dispatcher
             'thumb'          => $imageUrl,
             'image'          => $imageUrl,
         ];
+    }
+
+    /**
+     * All product images (media gallery) as {thumb, image} URL pairs — OpenCart
+     * product_detail parity. Best-effort: a gallery read failure never breaks the
+     * detail response. getUrl() is preferred; falls back to building the URL from
+     * the raw 'file' path against the media base.
+     *
+     * @return array<int,array{thumb:string,image:string}>
+     */
+    private function shapeGallery($product): array
+    {
+        $gallery = [];
+        try {
+            $store = $this->storeManager->getStore();
+            $mediaBase = rtrim($store->getBaseUrl(UrlInterface::URL_TYPE_MEDIA), '/') . '/catalog/product';
+            $images = $product->getMediaGalleryImages();
+            if ($images) {
+                foreach ($images as $img) {
+                    $url = (string) $img->getUrl();
+                    if ($url === '') {
+                        $file = (string) $img->getData('file');
+                        if ($file === '' || $file === 'no_selection') {
+                            continue;
+                        }
+                        $url = $mediaBase . '/' . ltrim($file, '/');
+                    }
+                    $gallery[] = ['thumb' => $url, 'image' => $url];
+                }
+            }
+        } catch (\Throwable $e) {
+            // best-effort — detail still returns without gallery
+        }
+        return $gallery;
     }
 
     /**

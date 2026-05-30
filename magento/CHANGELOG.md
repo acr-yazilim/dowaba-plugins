@@ -52,7 +52,16 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 
 ## [Unreleased]
 
+### Added
+- **product_detail çoklu-görsel galeri (OpenCart paritesi)** — `Dispatcher::shapeGallery()`
+  `getMediaGalleryImages()` ile ürünün tüm görsellerini `gallery[]` (`{thumb, image}`) + `gallery_count`
+  olarak döner. `getUrl()` öncelikli, boşsa `file` path'inden media base ile kurar. Best-effort try/catch
+  (galeri okunamazsa detay yine döner). **Test bekliyor** — env açılınca galerili ürünle doğrulanacak,
+  sonra v0.1.1 release.
+
+### Planlanan
 - order_confirm configurable/bundle product desteği
 - Gerçek shipping/payment method seçimi (admin config)
+- Görsel resize (thumb 200×200 / image 600×600 — şu an orijinal boy)
 - cart_recover auto-login token DB bind
 - Marketplace submission (Adobe Commerce Marketplace)
