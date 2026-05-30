@@ -39,3 +39,7 @@ composer.lock
 
 # Şirket legal bilgileri (tax/MERSİS/telefon) — git'e girmez
 COMPANY.md
+
+# Magento/Adobe Marketplace credentials (account, API key, private key) — ASLA commit
+magento.md
+*.pem
