@@ -43,7 +43,7 @@ jobs:
             # Dowaba AI Integration for OpenCart v${{ steps.version.outputs.version }}
 
             📦 İndir:
-            - **OpenCart 4.x**: `dowaba-opencart-oc4-${{ steps.version.outputs.version }}.ocmod.zip`
+            - **OpenCart 4.x**: `dowaba_ai.ocmod.zip` (sabit ad — installer zip adını `code` olarak kullanır, DEĞİŞTİRME)
             - **OpenCart 3.x**: `dowaba-opencart-oc3-${{ steps.version.outputs.version }}.ocmod.zip`
 
             📚 Kurulum: [README](./opencart/README.md)
@@ -52,6 +52,6 @@ jobs:
             Auto-built by GitHub Actions from tag `${{ github.ref_name }}`.
           files: |
             opencart/dist/dowaba-opencart-oc3-${{ steps.version.outputs.version }}.ocmod.zip
-            opencart/dist/dowaba-opencart-oc4-${{ steps.version.outputs.version }}.ocmod.zip
+            opencart/dist/dowaba_ai.ocmod.zip
           draft: false
           prerelease: ${{ contains(steps.version.outputs.version, '-') }}
