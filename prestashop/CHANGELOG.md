@@ -11,6 +11,9 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 ### ✅ Test — 2026-06-01 (CANLI, uçtan uca)
 - Docker PrestaShop 8.1: Configure 3-adım panel + Connect butonu render ✓; Regenerate → "Finish on DoWaba →" ✓.
 - Cloudflare tunnel ile gerçek Bundle Import → dowaba.com'a **10 AI fonksiyonu import edildi** ✓.
+- **Görsel + fonksiyon e2e (CANLI, 19 demo ürün, fresh install):** product_search → her ürün `cover_image` ✓
+  (Hummingbird kataloğu); product_detail id=1 → `gallery_images` **2 görsel** ✓; **10/10 fonksiyon** doğru
+  (compare/category OK, order/customer IDOR guard "not found", write'lar scope-guard ile default-deny).
 - **Release: GitHub `prestashop-v0.2.9`** (zip + PDF). Validator test hesabı: `prestashop-reviewer@dowaba.com` (2FA bypass'lı).
 
 ## [0.2.8] - 2026-05-27

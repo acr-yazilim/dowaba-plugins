@@ -34,19 +34,20 @@
 |---|---|---|---|---|
 | **OpenCart** (OC4 4.0.2.3) | ✅ `thumb`/`image` | ✅ **5 görsel** (bug bulundu+düzeltildi) | ✅ 10/10 + gerçek sipariş #10 | **CANLI** (19 demo ürün) |
 | **Magento** (2.4.7) | ✅ `thumb`/`image` | ✅ **3 görsel** ("Test bekliyor"→doğrulandı) | ✅ 10/10 | **CANLI** (seed ürün) |
-| **PrestaShop** (1.7/8) | ✅ `cover_image` | ✅ `gallery_images` | ✅ (önceki e2e import) | Kod doğrulama + önceki e2e |
-| **WooCommerce** | ✅ `cover` | ✅ `gallery_images` | — | Kod doğrulama |
+| **PrestaShop** (8.1) | ✅ `cover_image` | ✅ **2 görsel** | ✅ 10/10 | **CANLI** (19 demo ürün) |
+| **WooCommerce** (9.5.1) | ✅ `cover`/`thumb` | ✅ **3 görsel** | ✅ 10/10 + gerçek sipariş #14 | **CANLI** (seed ürün) |
+
+**4/4 CANLI test edildi** — her birinde product_search kapak görseli + product_detail galeri görselleri + 10
+fonksiyon (read'ler OK, order/customer IDOR guard, write'lar scope-guard ile default-deny; scope açılınca
+order_preview→order_confirm gerçek sipariş). 4 farklı framework: OpenCart (PHP/Twig), Magento (DI/getMediaGalleryImages),
+PrestaShop (Product::getCover/getImages), WooCommerce (WP REST/get_gallery_image_ids).
 
 **🐛 Bulunan + düzeltilen bug (OpenCart OC3+OC4):** `product_detail` galeri görselleri OC4'te **HİÇ
 dönmüyordu** (`gallery_count: 0`). Kök neden: galeri `method_exists($model,'getProductImages')` guard'lı;
 OpenCart model'i bir **Proxy** (`__get` magic) olduğu için `method_exists` daima `false` → galeri sessizce
 boştu. + OC4 metot adı `getImages`'e rename edilmiş. Fix: guard kaldırıldı, doğrudan çağrı + sürüm fallback.
-Detay: [opencart/CHANGELOG.md](./opencart/CHANGELOG.md).
-
-**PS/Woo not:** OC bug'ı **mimari olarak OC'ye özgü** (Proxy/method_exists). PrestaShop `Product::getCover()`
-+ `getImages()`, WooCommerce `get_image_id()` + `get_gallery_image_ids()` — ikisi de **doğrudan framework
-çağrısı**, bu bug sınıfı imkansız. PS + Woo'nun local Docker DB'leri bu session'da silindi; istenirse
-yeniden kurup canlı doğrulanabilir (PS daha önce uçtan uca import testinden geçmişti).
+Detay: [opencart/CHANGELOG.md](./opencart/CHANGELOG.md). **Diğer 3 plugin'de bu bug YOK** — doğrudan framework
+çağrısı kullanırlar (Proxy/method_exists pattern'i yok), canlı testte galeri hepsinde döndü.
 
 ## Yayın için kalan (kaynak hazır)
 - **OpenCart**: galeri bug fix dahil → version bump + zip + release (fix önemli, öncelikli).

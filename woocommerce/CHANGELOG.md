@@ -6,9 +6,13 @@
 - Ayar ekranına **"Connect to DoWaba"** butonu → `dowaba.com/admin/connect?platform=woocommerce&manifest=…` (manifest pre-filled). **Regenerate API Key** sonrası plain key butonun URL fragment'ine (`#k=`) eklenir → tam tek-tık (PrestaShop paritesi; fragment sunucuya/log'a gitmez).
 
 ### ✅ Test — 2026-06-01 (CANLI)
-- Docker WP 6.7 + WooCommerce (localhost:8090), gerçek wp-admin "DoWaba AI Settings".
+- Docker WP 6.7 + WooCommerce 9.5.1 (localhost:8090), gerçek wp-admin "DoWaba AI Settings".
 - Connect butonu **render oluyor** ✓; href doğrulandı: `dowaba.com/admin/connect?platform=woocommerce&manifest=<…/wp-json/dowaba/v1/manifest>` ✓; manifest input dolu ✓.
-- Henüz release edilmedi (sadece kaynak).
+- **Görsel + fonksiyon e2e (CANLI, görselli seed ürün):** product_search → `cover` + `thumb` (300×300) ✓;
+  product_detail → `gallery_images` **3 görsel** (`is_cover`/`position`/`thumb`/`medium`/`full`) ✓; **10/10
+  fonksiyon** doğru (compare 2-id validasyonu, stock=100, order/customer IDOR guard, cart_recover OK,
+  write'lar scope-guard ile default-deny; scope açılınca order_preview→order_confirm **gerçek sipariş #14**
+  447 USD).
 
 ## [0.3.0] - 2026-05-28
 
