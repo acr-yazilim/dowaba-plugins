@@ -7,9 +7,9 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 ### Added
 - `settings.phtml` Step 2'ye **"Connect to DoWaba →"** butonu → `dowaba.com/admin/connect?platform=magento&manifest=…` (`escapeUrl` + `rawurlencode`; Block/composer'a dokunulmadı).
 
-### ⚙️ Test — 2026-06-01 (kod-doğrulandı; canlı render BEKLİYOR)
-- PHP lint OK; mevcut Copy butonunun yanına standart phtml `<a href>` — **aynı deep-link deseni WooCommerce + OpenCart'ta CANLI kanıtlandı** (iki farklı framework).
-- Canlı render-testi YAPILMADI: Magento Docker ortamı ağır (OpenSearch + ~30-45 dk composer/setup:install). İstenirse kurulup test edilir.
+### ✅ Test — 2026-06-01 (CANLI)
+- Magento **2.4.7** sıfırdan kuruldu (public GitHub source + MySQL/OpenSearch Docker + `php -S localhost:8087`, runbook ile); modül `app/code/Dowaba/AiConnector` enable + setup:upgrade.
+- Gerçek Magento admin **"Dowaba AI — Setup & Settings"** sayfası: **"Connect to DoWaba" butonu render oluyor** ✓; href doğrulandı: `dowaba.com/admin/connect?platform=magento&manifest=<…/dowaba_ai/manifest>` ✓; manifest input dolu ✓.
 - Henüz release edilmedi (sadece kaynak).
 
 ## [0.1.0] - 2026-05-30
