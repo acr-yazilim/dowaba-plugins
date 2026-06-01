@@ -66,8 +66,18 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 - **product_detail çoklu-görsel galeri (OpenCart paritesi)** — `Dispatcher::shapeGallery()`
   `getMediaGalleryImages()` ile ürünün tüm görsellerini `gallery[]` (`{thumb, image}`) + `gallery_count`
   olarak döner. `getUrl()` öncelikli, boşsa `file` path'inden media base ile kurar. Best-effort try/catch
-  (galeri okunamazsa detay yine döner). **Test bekliyor** — env açılınca galerili ürünle doğrulanacak,
-  sonra v0.1.1 release.
+  (galeri okunamazsa detay yine döner).
+
+### ✅ Test — 2026-06-01 (CANLI, galeri doğrulandı)
+- Magento 2.4.7 (localhost:8087) — görselli test ürünü seed edildi (`dowaba-test-phone`: 1 kapak + 2 galeri;
+  `addImageToMediaGallery` → media_gallery 3 kayıt + image/small_image/thumbnail rolleri).
+- **product_search** → kapak `thumb`/`image` döndü ✓ (`/media/catalog/product/d/w/dwb_cover_1.jpg`).
+- **product_detail** → `gallery_count: 3` + 3 görsel URL'i ✓ (önceki "Test bekliyor" maddesi **doğrulandı**).
+- **10/10 fonksiyon** doğru: read'ler OK, product_compare 2-3 id validasyonu, order/customer IDOR guard
+  "not found", write'lar scope-guard ile bloklu (default-deny). (order_preview→confirm gerçek sipariş akışı
+  `[0.1.0]` notunda zaten `#000000001` ile kanıtlanmıştı.)
+- OpenCart'taki Proxy/`method_exists` galeri bug'ı Magento'da **YOK** — `getMediaGalleryImages()` doğrudan
+  ürün nesnesinden çağrılır (proxy katmanı yok). v0.1.1 release'e hazır.
 
 ### Planlanan
 - order_confirm configurable/bundle product desteği

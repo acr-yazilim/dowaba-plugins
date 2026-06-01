@@ -133,10 +133,24 @@ class Api extends \Opencart\System\Engine\Controller {
         // Galeri (ek ürün görselleri) — oc_product_image tablosu
         $gallery = [];
         $baseUrl = rtrim((string)($this->config->get('config_url') ?: ''), '/');
-        if (method_exists($this->model_catalog_product, 'getProductImages')) {
+        // OC4 catalog/product model metodu `getImages`, OC3'te `getProductImages` idi.
+        // KRİTİK: model bir Proxy (__get bilinmeyen key'de Exception fırlatır) — bu yüzden
+        // method_exists($proxy, ...) DAİMA false döner → eski method_exists guard'ı OC4'te
+        // galeriyi SESSİZCE boş bırakıyordu (gallery_count hep 0). Çözüm: doğrudan çağır,
+        // ilki throw ederse diğer sürümün adını dene (hepsi try/catch içinde).
+        $rawImages = [];
+        try {
+            $rawImages = $this->model_catalog_product->getImages($productId);           // OC4
+        } catch (\Throwable $e) {
+            try {
+                $rawImages = $this->model_catalog_product->getProductImages($productId); // OC3 fallback
+            } catch (\Throwable $e2) {
+                $rawImages = [];
+            }
+        }
+        if (is_array($rawImages) && $rawImages) {
             try {
                 $this->load->model('tool/image');
-                $rawImages = $this->model_catalog_product->getProductImages($productId);
                 foreach ($rawImages as $img) {
                     $path = $img['image'] ?? null;
                     if (!$path) continue;

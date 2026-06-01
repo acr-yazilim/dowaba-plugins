@@ -27,7 +27,7 @@ class Settings extends Template
     public function __construct(
         Context $context,
         private readonly Config $config,
-        private readonly FormKey $formKey,
+        private readonly FormKey $formKeyProvider,
         private readonly StoreManagerInterface $storeManager,
         array $data = []
     ) {
@@ -91,7 +91,7 @@ class Settings extends Template
 
     public function getDowabaFormKey(): string
     {
-        return $this->formKey->getFormKey();
+        return $this->formKeyProvider->getFormKey();
     }
 
     public function getSaveUrl(): string

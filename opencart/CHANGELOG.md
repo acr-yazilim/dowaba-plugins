@@ -4,12 +4,32 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 
 ## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
 
+### Fixed — 🐛 product_detail galeri görselleri OC4'te HİÇ dönmüyordu (KRİTİK, OC3+OC4)
+- **Kök neden:** galeri yükleme `method_exists($this->model_catalog_product, 'getProductImages')`
+  guard'ı ile korunuyordu. OpenCart model'i bir **`Proxy`** (`__get` magic, bilinmeyen key'de Exception)
+  olduğu için `method_exists()` proxy'de DAİMA `false` döner → guard hiçbir zaman geçilmiyordu →
+  `gallery: []`, `gallery_count: 0` **sessizce**. Ayrıca OC4'te metot adı `getImages`, OC3'te
+  `getProductImages` (OC4 rename'i) — eski kod yalnızca OC3 adını kontrol ediyordu.
+- **Çözüm:** `method_exists` guard'ı kaldırıldı. Model doğrudan çağrılıyor (OC4 `getImages`, başarısızsa
+  OC3 `getProductImages` fallback — Proxy `__get` bilinmeyen metotta zaten Exception fırlatır, try/catch yakalar).
+- **Canlı doğrulama (OC4 4.0.2.3, localhost:8080):** product_detail `id=40` (iPhone) artık **5 galeri görseli**
+  döndürüyor (önceden 0). product_search kapak görseli (`thumb` 200×200 + `image` 600×600) zaten çalışıyordu —
+  o `getProducts` direkt çağrı (guard'sız) olduğu için etkilenmemişti.
+
 ### Changed
 - OC3 + OC4: mevcut "DoWaba'ya git / Bundle Import" butonu artık **deep-link** → `dowaba.com/admin/connect?platform=opencart&manifest={{ manifest_url|url_encode }}` (manifest pre-filled).
 
 ### ✅ Test — 2026-06-01 (CANLI)
 - Docker OpenCart 4.0.2.3 (localhost:8080) — env sıfırdan restore edildi (kaynak indirildi + config.php yazıldı + modül `extension/dowaba_ai/` altına yerleştirildi + permission).
 - Gerçek OC4 admin "Dowaba AI Integration" settings: Connect butonu **render oluyor** ✓; href doğrulandı: `dowaba.com/admin/connect?platform=opencart&manifest=<encoded>` ✓ (twig `url_encode` çalışıyor); manifest input dolu ✓.
+- **Görsel + fonksiyon e2e (CANLI, 19 demo ürün):** product_search → her ürün kapak `thumb`/`image` ✓; product_detail
+  id=40 → 5 galeri görseli ✓; **10/10 fonksiyon** doğru (read'ler OK, order/customer IDOR guard "not found",
+  write'lar scope-guard ile bloklu; scope_write açılınca order_preview→order_confirm **gerçek sipariş #10**
+  oluşturdu — subtotal 202 + kargo 49 = 251).
+- **OC4 catalog route notu:** manuel kurulumda extension catalog controller'ları + system library'leri OC4
+  autoloader kuralı gereği **ana `catalog/controller/extension/dowaba_ai/` + `system/library/extension/dowaba_ai/`**
+  dizinlerine konmalı (namespace `Opencart\Catalog`/`Opencart\System` → ana dizin). Marketplace zip installer bunu
+  otomatik yapar; manuel `cp` test kurulumlarında elle yerleştirilir.
 - Henüz release edilmedi (sadece kaynak).
 
 ## [0.2.21] - 2026-05-30
