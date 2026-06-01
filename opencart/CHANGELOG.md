@@ -2,6 +2,16 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
+
+### Changed
+- OC3 + OC4: mevcut "DoWaba'ya git / Bundle Import" butonu artık **deep-link** → `dowaba.com/admin/connect?platform=opencart&manifest={{ manifest_url|url_encode }}` (manifest pre-filled).
+
+### ✅ Test — 2026-06-01 (CANLI)
+- Docker OpenCart 4.0.2.3 (localhost:8080) — env sıfırdan restore edildi (kaynak indirildi + config.php yazıldı + modül `extension/dowaba_ai/` altına yerleştirildi + permission).
+- Gerçek OC4 admin "Dowaba AI Integration" settings: Connect butonu **render oluyor** ✓; href doğrulandı: `dowaba.com/admin/connect?platform=opencart&manifest=<encoded>` ✓ (twig `url_encode` çalışıyor); manifest input dolu ✓.
+- Henüz release edilmedi (sadece kaynak).
+
 ## [0.2.21] - 2026-05-30
 
 ### Added — Kurulum sihirbazında DoWaba'ya yönlendirme (upsell CTA)

@@ -2,6 +2,17 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [0.2.9] - 2026-06-01 — Tek-tık "Connect to DoWaba" + entegrasyon rehberi
+
+### Added
+- Configure ekranına "Connect to DoWaba in 3 steps" paneli + tek-tık **Connect to DoWaba** butonu (deep-link `dowaba.com/admin/connect?platform=prestashop&manifest=…#k=KEY`, key URL fragment'inde — sunucuya/log'a gitmez). Regenerate sonrası yeşil **"Finish on DoWaba →"**.
+- Entegrasyon rehberi PDF modül paketine gömüldü (`docs/`) — gerçek ekran görüntüleri + validator test hesabı.
+
+### ✅ Test — 2026-06-01 (CANLI, uçtan uca)
+- Docker PrestaShop 8.1: Configure 3-adım panel + Connect butonu render ✓; Regenerate → "Finish on DoWaba →" ✓.
+- Cloudflare tunnel ile gerçek Bundle Import → dowaba.com'a **10 AI fonksiyonu import edildi** ✓.
+- **Release: GitHub `prestashop-v0.2.9`** (zip + PDF). Validator test hesabı: `prestashop-reviewer@dowaba.com` (2FA bypass'lı).
+
 ## [0.2.8] - 2026-05-27
 
 ### Added (Shopify paritesi — görsel zenginleştirme)

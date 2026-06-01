@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
+
+### Added
+- Ayar ekranına **"Connect to DoWaba"** butonu → `dowaba.com/admin/connect?platform=woocommerce&manifest=…` (manifest pre-filled). **Regenerate API Key** sonrası plain key butonun URL fragment'ine (`#k=`) eklenir → tam tek-tık (PrestaShop paritesi; fragment sunucuya/log'a gitmez).
+
+### ✅ Test — 2026-06-01 (CANLI)
+- Docker WP 6.7 + WooCommerce (localhost:8090), gerçek wp-admin "DoWaba AI Settings".
+- Connect butonu **render oluyor** ✓; href doğrulandı: `dowaba.com/admin/connect?platform=woocommerce&manifest=<…/wp-json/dowaba/v1/manifest>` ✓; manifest input dolu ✓.
+- Henüz release edilmedi (sadece kaynak).
+
 ## [0.3.0] - 2026-05-28
 
 ### Added — Görsel desteği (tüm kanallar)

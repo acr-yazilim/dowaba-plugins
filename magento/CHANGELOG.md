@@ -2,6 +2,16 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
+## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
+
+### Added
+- `settings.phtml` Step 2'ye **"Connect to DoWaba →"** butonu → `dowaba.com/admin/connect?platform=magento&manifest=…` (`escapeUrl` + `rawurlencode`; Block/composer'a dokunulmadı).
+
+### ⚙️ Test — 2026-06-01 (kod-doğrulandı; canlı render BEKLİYOR)
+- PHP lint OK; mevcut Copy butonunun yanına standart phtml `<a href>` — **aynı deep-link deseni WooCommerce + OpenCart'ta CANLI kanıtlandı** (iki farklı framework).
+- Canlı render-testi YAPILMADI: Magento Docker ortamı ağır (OpenSearch + ~30-45 dk composer/setup:install). İstenirse kurulup test edilir.
+- Henüz release edilmedi (sadece kaynak).
+
 ## [0.1.0] - 2026-05-30
 
 ### Added — İlk sürüm (OpenCart plugin'inden port)
