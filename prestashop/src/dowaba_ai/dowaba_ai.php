@@ -25,7 +25,7 @@ class Dowaba_Ai extends Module
     {
         $this->name = 'dowaba_ai';
         $this->tab = 'administration';
-        $this->version = '0.2.8';
+        $this->version = '0.2.9';
         $this->author = 'Aydın Acar (DoWaba)';
         $this->need_instance = 0;
         // Explicit min/max — addons.prestashop.com static analyzer requires literal strings,
@@ -131,27 +131,40 @@ class Dowaba_Ai extends Module
         }
 
         // Regenerate key action
+        $fresh_key = null;
         if (Tools::isSubmit('regenerate_key')) {
             require_once __DIR__ . '/classes/Auth.php';
-            $plain_key = DowabaAuth::generateKey();
-            $output .= $this->displayConfirmation($this->l('New API Key (save now, shown ONCE): ') . '<code>' . htmlspecialchars($plain_key) . '</code>');
+            $fresh_key = DowabaAuth::generateKey();
+            $output .= $this->displayConfirmation($this->l('New API Key generated (shown once — copy it now): ') . '<code>' . htmlspecialchars($fresh_key) . '</code>');
         }
 
-        return $output . $this->renderForm();
+        return $output . $this->renderForm($fresh_key);
     }
 
-    private function renderForm()
+    /**
+     * @param string|null $fresh_key Plain API key just regenerated this request (for 1-click connect).
+     */
+    private function renderForm($fresh_key = null)
     {
         $manifest_url = $this->getManifestUrl();
         $api_key_prefix = (string) Configuration::get('DOWABA_AI_API_KEY_PREFIX');
 
+        // One-click connect deep-link → opens DoWaba "Connect store" with the manifest
+        // URL pre-filled. The plain API key (when just regenerated) is carried in the URL
+        // FRAGMENT (#k=) — fragments are client-side only (never sent to servers / logs /
+        // Referer), so the secret is not exposed in query strings.
+        $connect_base = 'https://dowaba.com/admin/connect?platform=prestashop&manifest=' . rawurlencode($manifest_url);
+        $connect_with_key = $fresh_key ? ($connect_base . '#k=' . rawurlencode($fresh_key)) : '';
+
         // 2026-05-26: Validator requirement — HTML must live in Smarty templates,
-        // not PHP code. Header (manifest URL + API key + regenerate button) rendered
+        // not PHP code. Header (manifest URL + API key + regenerate + connect) rendered
         // via views/templates/admin/configure_header.tpl.
         $this->context->smarty->assign([
             'dowaba_manifest_url' => $manifest_url,
             'dowaba_api_key_prefix' => $api_key_prefix,
             'dowaba_regenerate_url' => AdminController::$currentIndex . '&configure=' . $this->name . '&regenerate_key=1&token=' . Tools::getAdminTokenLite('AdminModules'),
+            'dowaba_connect_url' => $connect_base,
+            'dowaba_connect_with_key' => $connect_with_key,
         ]);
         $headerHtml = $this->display(__FILE__, 'views/templates/admin/configure_header.tpl');
 

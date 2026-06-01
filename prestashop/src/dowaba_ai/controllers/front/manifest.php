@@ -32,7 +32,7 @@ class Dowaba_AiManifestModuleFrontController extends ModuleFrontController
         $manifest = [
             'schema_version' => '1.0',
             'name' => 'PrestaShop — ' . $store_name,
-            'plugin_version' => '0.1.0',
+            'plugin_version' => '0.2.9',
             'platform' => 'prestashop',
             'connection' => [
                 'type' => 'http_api',

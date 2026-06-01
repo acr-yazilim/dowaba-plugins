@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>DoWaba AI for PrestaShop — Integration Guide</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: #1f2430; font-size: 11.5px; line-height: 1.55; margin: 0; }
+  h1 { font-size: 25px; margin: 0 0 4px; letter-spacing: -.5px; }
+  h2 { font-size: 16.5px; margin: 22px 0 8px; padding-bottom: 5px; border-bottom: 2px solid #6d4ad8; color: #4c2fb0; page-break-after: avoid; }
+  p { margin: 6px 0; }
+  code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 10.5px; background: #f2f0fb; color: #4c2fb0; padding: 1px 5px; border-radius: 4px; word-break: break-all; }
+  .lead { color: #525873; font-size: 12.5px; }
+  .cover { text-align: center; padding: 24px 0 10px; border-bottom: 1px solid #e6e4dc; margin-bottom: 16px; }
+  .cover img { width: 58px; height: 58px; }
+  .badge { display: inline-block; background: #ede9fb; color: #4c2fb0; font-weight: 700; font-size: 10px; padding: 3px 10px; border-radius: 999px; letter-spacing: .4px; }
+  ol, ul { margin: 6px 0 6px 18px; padding: 0; }
+  li { margin: 5px 0; }
+  .big { background: #faf9ff; border: 1px solid #e7e2fb; border-left: 4px solid #6d4ad8; border-radius: 8px; padding: 11px 15px; margin: 11px 0; page-break-inside: avoid; }
+  .big b.num { display: inline-block; background: #6d4ad8; color: #fff; width: 21px; height: 21px; border-radius: 50%; text-align: center; line-height: 21px; font-size: 12px; margin-right: 7px; }
+  figure { margin: 10px 0 14px; page-break-inside: avoid; text-align: center; }
+  figure img { width: 100%; max-width: 100%; border: 1px solid #d8dae0; border-radius: 8px; box-shadow: 0 2px 8px rgba(15,23,42,.08); }
+  figcaption { font-size: 10px; color: #6b7280; margin-top: 5px; font-style: italic; }
+  .note { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  .warn { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  .flow { display: flex; align-items: stretch; gap: 6px; margin: 12px 0; font-size: 9.5px; text-align: center; }
+  .flow .box { flex: 1; border: 1px solid #d8d4f0; border-radius: 8px; padding: 8px 4px; background: #faf9ff; }
+  .flow .box b { display: block; color: #4c2fb0; font-size: 10.5px; margin-bottom: 2px; }
+  .flow .arr { align-self: center; color: #6d4ad8; font-weight: 700; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 10.5px; }
+  th, td { border: 1px solid #e6e4dc; padding: 5px 8px; text-align: left; vertical-align: top; }
+  th { background: #f2f0fb; color: #4c2fb0; }
+  .tg { color: #047857; font-weight: 700; } .tr { color: #b45309; font-weight: 700; }
+  .pagebreak { page-break-before: always; }
+  .cred { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px 15px; margin: 10px 0; font-size: 12px; }
+  .cred .kv { font-family: "SF Mono", Menlo, monospace; font-size: 11.5px; color: #9a3412; font-weight: 700; }
+  footer { margin-top: 18px; padding-top: 8px; border-top: 1px solid #e6e4dc; color: #9aa0ad; font-size: 9.5px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <img src="file:///Users/aydinacar/Documents/dowaba-plugins/prestashop/marketing/logo.png" alt="DoWaba">
+  <h1>DoWaba AI for PrestaShop</h1>
+  <p class="lead">Integration Guide — connect your store in under 2 minutes</p>
+  <p><span class="badge">MODULE v0.2.9</span> &nbsp; <span class="badge">PrestaShop 1.7.x &amp; 8.x</span> &nbsp; <span class="badge">PHP 8.0+</span></p>
+</div>
+
+<h2>What this module does</h2>
+<p>DoWaba AI is a <b>connector</b>. It does not change your storefront. It securely exposes your PrestaShop catalog
+(products, stock, categories, orders) to the <b>DoWaba AI</b> sales platform, so your customers can search, compare and
+order through <b>WhatsApp</b>, <b>Instagram DM</b> and <b>TikTok</b>. Your data stays in your shop — DoWaba reads it on
+demand through a signed REST endpoint.</p>
+
+<div class="flow">
+  <div class="box"><b>PrestaShop</b>Your store + this module</div>
+  <div class="arr">→</div>
+  <div class="box"><b>One click</b>"Connect to DoWaba"</div>
+  <div class="arr">→</div>
+  <div class="box"><b>DoWaba</b>Pick store → Import</div>
+  <div class="arr">→</div>
+  <div class="box"><b>WhatsApp / IG / TikTok</b>Customers chat &amp; buy</div>
+</div>
+
+<div class="note"><b>For PrestaShop validators:</b> a ready-to-use DoWaba test account is provided in <b>Section 4</b>
+(2-factor login is waived for it). Install the module on your own test shop, click <b>Connect to DoWaba</b>, log in with
+the test account and complete the import — no sign-up needed.</div>
+
+<h2>1. Install the module</h2>
+<ol>
+  <li>In PrestaShop admin, open <b>Modules → Module Manager → Upload a module</b>.</li>
+  <li>Drop <code>dowaba-ai-prestashop-0.2.9.zip</code>. PrestaShop installs and enables it.</li>
+  <li>Click <b>Configure</b> on the "DoWaba AI" row.</li>
+</ol>
+
+<h2>2. Connect — one click</h2>
+<p>The Configure screen opens with a <b>"Connect to DoWaba in 3 steps"</b> panel at the top.</p>
+
+<div class="big"><b class="num">1</b> In the settings form, switch <b>Module enabled = ON</b> and <b>Read scope = ON</b>
+  (turn on <b>Write scope</b> too if you want the AI to place orders), then click <b>Save</b>.</div>
+
+<figure>
+  <img src="file:///Users/aydinacar/Documents/dowaba-plugins/prestashop/marketing/screenshots/02-module-config.png" alt="Module configure screen">
+  <figcaption>The module Configure screen: the "Connect to DoWaba in 3 steps" panel, the Manifest URL &amp; API Key, and the settings switches.</figcaption>
+</figure>
+
+<div class="big"><b class="num">2</b> Click <b>🔑 Regenerate API Key</b>. The key is shown once (and stored hashed). A green box
+  appears with a <b>"Finish on DoWaba →"</b> button.</div>
+
+<figure>
+  <img src="file:///Users/aydinacar/Documents/dowaba-plugins/prestashop/marketing/screenshots/03-api-key-connect.png" alt="API key generated + Finish on DoWaba">
+  <figcaption>After "Regenerate API Key": the one-time key and the green "Finish on DoWaba →" one-click button.</figcaption>
+</figure>
+
+<div class="big"><b class="num">3</b> Click <b>"Finish on DoWaba →"</b>. DoWaba opens with your <b>Manifest URL and API Key already
+  filled in</b> (the key travels in the URL fragment, so it is never logged on any server). Log in (or create a free
+  account), pick your store, and click <b>Connect &amp; Import</b>.</div>
+
+<figure>
+  <img src="file:///Users/aydinacar/Documents/dowaba-plugins/prestashop/marketing/screenshots/04-dowaba-connect.png" alt="DoWaba connect store page">
+  <figcaption>The DoWaba "Connect your store" page — Manifest URL and API Key pre-filled, store selector, and the "Connect &amp; Import" button.</figcaption>
+</figure>
+
+<figure>
+  <img src="file:///Users/aydinacar/Documents/dowaba-plugins/prestashop/marketing/screenshots/05-import-success.png" alt="Import success — 10 functions">
+  <figcaption>Success: the 10 AI functions are imported and activated automatically. Integration complete.</figcaption>
+</figure>
+
+<p class="lead"><b>Manual alternative:</b> instead of the one-click button, copy the <b>Manifest URL</b> and <b>API Key</b>
+from the module, then on DoWaba open <b>Integrations → "Connect store"</b> (top of the page), paste both, pick your store
+and click <b>Connect &amp; Import</b>.</p>
+
+<div class="pagebreak"></div>
+
+<h2>3. How synchronization works &amp; how to verify</h2>
+<p>DoWaba does <b>not</b> copy your catalog. Synchronization is <b>live and on demand</b>: when a customer asks something
+on WhatsApp/Instagram/TikTok, the AI calls the matching function on your PrestaShop store in real time and returns the
+current data — always up to date, nothing stored externally, limited to the scopes you enabled.</p>
+
+<table>
+<tr><th>Function</th><th>What the AI can do</th><th>Scope</th></tr>
+<tr><td><code>product_search</code> · <code>product_detail</code> · <code>product_compare</code></td><td>Find, detail and compare products</td><td class="tg">read</td></tr>
+<tr><td><code>stock_check</code> · <code>category_list</code></td><td>Live stock &amp; category browsing</td><td class="tg">read</td></tr>
+<tr><td><code>order_status</code> · <code>customer_lookup</code> · <code>cart_recover</code></td><td>Order status, customer lookup, cart recovery</td><td class="tg">read</td></tr>
+<tr><td><code>order_preview</code></td><td>Build an order summary before confirming</td><td class="tg">read</td></tr>
+<tr><td><code>order_confirm</code></td><td>Create the actual order (2-step confirmation)</td><td class="tr">write</td></tr>
+</table>
+
+<p><b>Verify it works:</b> after the import (screenshot above), open the connected channel (or the built-in test chat on
+the DoWaba site) and send <i>"Show me your products"</i> or <i>"Is product X in stock?"</i>. The AI replies with real
+products pulled live from the store.</p>
+
+<h2>4. Test access for PrestaShop validators</h2>
+<div class="cred">
+  <p><b>DoWaba test account</b> (2-factor login waived — no mailbox needed):</p>
+  <p>Login URL: <span class="kv">https://dowaba.com/admin/login</span><br>
+     Email: <span class="kv">prestashop-reviewer@dowaba.com</span><br>
+     Password: <span class="kv">PrestaReview-2026</span></p>
+  <p>A store named <b>"Reviewer Test Store"</b> is already created on this account, ready for the import.</p>
+</div>
+<p><b>How to validate:</b> install the module on your own PrestaShop test shop → <b>Configure</b> →
+<b>Regenerate API Key</b> → <b>Finish on DoWaba →</b>. Log in with the test account above → pick "Reviewer Test Store" →
+<b>Connect &amp; Import</b>. You will see the 10 functions import (as in the screenshot in Section 2). The whole flow takes
+under two minutes.</p>
+
+<h2>5. Troubleshooting</h2>
+<table>
+<tr><th>Symptom</th><th>Fix</th></tr>
+<tr><td>"Manifest could not be fetched"</td><td>The Manifest URL must be reachable publicly — open it in a browser, it must return JSON. Behind a proxy? Set <b>Manifest base URL override</b> in the module.</td></tr>
+<tr><td>"Invalid API key" / 401</td><td>Regenerate the key in the module and use the fresh one (the old key is replaced on each regenerate).</td></tr>
+<tr><td>Import works but no data</td><td>Turn ON <b>Module enabled</b> and <b>Read scope</b>, then Save.</td></tr>
+<tr><td>403 from the store</td><td>An <b>IP Whitelist</b> is set that excludes DoWaba. Clear it for first setup.</td></tr>
+</table>
+
+<footer>DoWaba AI for PrestaShop · Integration Guide · v0.2.9 · dowaba.com · Powered by DoWaba AI SaaS</footer>
+</body>
+</html>
