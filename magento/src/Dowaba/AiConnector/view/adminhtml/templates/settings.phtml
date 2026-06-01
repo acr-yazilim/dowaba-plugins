@@ -67,6 +67,13 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]</pre>
             <input type="text" id="dwb-manifest-url" readonly value="<?= $escaper->escapeHtmlAttr($block->getManifestUrl()) ?>" onclick="this.select();"/>
             <button type="button" class="action-secondary" data-copy="#dwb-manifest-url"><?= $escaper->escapeHtml(__('Copy')) ?></button>
         </div>
+        <p style="margin-top:12px;">
+            <a class="action-primary" target="_blank" rel="noopener"
+               href="<?= $escaper->escapeUrl('https://dowaba.com/admin/connect?platform=magento&manifest=' . rawurlencode($block->getManifestUrl())) ?>">
+                <?= $escaper->escapeHtml(__('Connect to DoWaba →')) ?>
+            </a>
+            <span class="dwb-muted">&nbsp;<?= $escaper->escapeHtml(__('Opens DoWaba with the Manifest URL pre-filled — pick your store and paste the API key.')) ?></span>
+        </p>
     </section>
 
     <!-- ============================================ SETTINGS FORM (steps 3 & 4) -->

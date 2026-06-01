@@ -42,6 +42,13 @@ $nonce = wp_create_nonce('dowaba_ai_ajax');
           <button type="button" class="button" id="btn-copy-manifest">📋 Copy</button>
         </td>
       </tr>
+      <tr>
+        <th>Connect</th>
+        <td>
+          <a id="dowaba-connect-btn" href="https://dowaba.com/admin/connect?platform=woocommerce&manifest=<?php echo rawurlencode($manifest_url); ?>" target="_blank" rel="noopener" class="button button-primary">🔗 Connect to DoWaba</a>
+          <p class="description">Opens DoWaba with the Manifest URL pre-filled — just pick your store and paste the API key. (No DoWaba account yet? You can create one for free in this step.)</p>
+        </td>
+      </tr>
     </table>
 
     <h2>Step 3 — IP Whitelist (optional)</h2>
@@ -165,6 +172,10 @@ $nonce = wp_create_nonce('dowaba_ai_ajax');
       document.getElementById('api-key-display').value = res.data.prefix + '... (hash stored)';
       document.getElementById('api-key-plain').value = res.data.plain_key;
       document.getElementById('api-key-plain-banner').style.display = 'block';
+      // One-click: carry the fresh key in the Connect button's URL fragment (#k=) —
+      // fragments are client-side only, never sent to servers/logs.
+      var cbtn = document.getElementById('dowaba-connect-btn');
+      if (cbtn) cbtn.href = cbtn.href.split('#')[0] + '#k=' + encodeURIComponent(res.data.plain_key);
     } else {
       alert('❌ ' + (res.data?.error || 'Error'));
     }
