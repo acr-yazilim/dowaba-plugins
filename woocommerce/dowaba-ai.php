@@ -3,7 +3,7 @@
  * Plugin Name:       DoWaba AI — Sell on WhatsApp, Instagram & TikTok
  * Plugin URI:        https://dowaba.com
  * Description:       Turn your WooCommerce store into a social commerce machine. AI chatbot sells your products directly on WhatsApp, Instagram DM, and TikTok — 24/7, 30+ languages.
- * Version:           0.3.0
+ * Version:           0.3.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Aydın Acar (DoWaba)
@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
 // CONSTANTS
 // ============================================================
 
-define('DOWABA_AI_VERSION', '0.3.0');
+define('DOWABA_AI_VERSION', '0.3.1');
 define('DOWABA_AI_PLUGIN_FILE', __FILE__);
 define('DOWABA_AI_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DOWABA_AI_PLUGIN_URL', plugin_dir_url(__FILE__));
