@@ -4,7 +4,7 @@
 
 Magento 2 (Adobe Commerce / Open Source) mağazalarını **Dowaba AI**'ya bağlar. Müşteriler WhatsApp / Instagram / Mail / Voice (telefon) kanallarından doğal dilde ürün arar, karşılaştırır, sipariş verir. 7/24 AI asistan, Türkçe + 30+ dil.
 
-[![Latest Release](https://img.shields.io/badge/latest-v0.1.0-blue)](https://github.com/acr-yazilim/dowaba-plugins/releases)
+[![Latest Release](https://img.shields.io/badge/latest-v0.1.1-blue)](https://github.com/acr-yazilim/dowaba-plugins/releases/tag/magento-v0.1.1)
 [![Magento 2.4.x](https://img.shields.io/badge/Magento-2.4.x-success)](https://magento.com/)
 [![PHP 8.1+](https://img.shields.io/badge/PHP-8.1%E2%80%938.3-777bb3)](https://www.php.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)

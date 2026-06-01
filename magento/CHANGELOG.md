@@ -2,7 +2,7 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
-## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
+## [0.1.1] - 2026-06-01 — Galeri doğrulandı + Tek-tık "Connect to DoWaba"
 
 ### Added
 - `settings.phtml` Step 2'ye **"Connect to DoWaba →"** butonu → `dowaba.com/admin/connect?platform=magento&manifest=…` (`escapeUrl` + `rawurlencode`; Block/composer'a dokunulmadı).
@@ -10,7 +10,7 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 ### ✅ Test — 2026-06-01 (CANLI)
 - Magento **2.4.7** sıfırdan kuruldu (public GitHub source + MySQL/OpenSearch Docker + `php -S localhost:8087`, runbook ile); modül `app/code/Dowaba/AiConnector` enable + setup:upgrade.
 - Gerçek Magento admin **"Dowaba AI — Setup & Settings"** sayfası: **"Connect to DoWaba" butonu render oluyor** ✓; href doğrulandı: `dowaba.com/admin/connect?platform=magento&manifest=<…/dowaba_ai/manifest>` ✓; manifest input dolu ✓.
-- Henüz release edilmedi (sadece kaynak).
+- **Yayınlandı:** `magento-v0.1.1` (2026-06-01).
 
 ## [0.1.0] - 2026-05-30
 
@@ -60,9 +60,9 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
   `show_out_of_stock` ayarına saygı duyar (storefront ile tutarlı). Runbook: [docker/README.md](./docker/README.md).
   Sıradaki: Dowaba prod → Bundle Import canlı entegrasyon (Cloudflare tunnel).
 
-## [Unreleased]
+## product_detail galeri (v0.1.1'de yayınlandı) + sonraki planlar
 
-### Added
+### Added (0.1.1)
 - **product_detail çoklu-görsel galeri (OpenCart paritesi)** — `Dispatcher::shapeGallery()`
   `getMediaGalleryImages()` ile ürünün tüm görsellerini `gallery[]` (`{thumb, image}`) + `gallery_count`
   olarak döner. `getUrl()` öncelikli, boşsa `file` path'inden media base ile kurar. Best-effort try/catch
@@ -77,7 +77,7 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
   "not found", write'lar scope-guard ile bloklu (default-deny). (order_preview→confirm gerçek sipariş akışı
   `[0.1.0]` notunda zaten `#000000001` ile kanıtlanmıştı.)
 - OpenCart'taki Proxy/`method_exists` galeri bug'ı Magento'da **YOK** — `getMediaGalleryImages()` doğrudan
-  ürün nesnesinden çağrılır (proxy katmanı yok). v0.1.1 release'e hazır.
+  ürün nesnesinden çağrılır (proxy katmanı yok). **`magento-v0.1.1` yayınlandı.**
 
 ### Planlanan
 - order_confirm configurable/bundle product desteği

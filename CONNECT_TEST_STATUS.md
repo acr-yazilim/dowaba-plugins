@@ -7,13 +7,13 @@
 | Eklenti | Connect butonu | Canlı test | Tarih | Release |
 |---|---|---|---|---|
 | **PrestaShop** | ✅ + tek-tık (`#k=` key fragment) | ✅ **uçtan uca** (10 fonksiyon import) | 2026-06-01 | `prestashop-v0.2.9` ✓ |
-| **WooCommerce** | ✅ + tek-tık (`#k=` key fragment) | ✅ render + href doğru | 2026-06-01 | — (kaynak, release kaldı) |
-| **OpenCart** (OC3 + OC4) | ✅ (manifest pre-filled) | ✅ render + href doğru (OC4) | 2026-06-01 | — (kaynak, release kaldı) |
-| **Magento** | ✅ (manifest pre-filled) | ✅ render + href doğru (2.4.7) | 2026-06-01 | — (kaynak, release kaldı) |
+| **WooCommerce** | ✅ + tek-tık (`#k=` key fragment) | ✅ **uçtan uca** (kapak+galeri+10 fn, sipariş #14) | 2026-06-01 | `woocommerce-v0.3.1` ✓ |
+| **OpenCart** (OC3 + OC4) | ✅ (manifest pre-filled) | ✅ **uçtan uca** (kapak+galeri+10 fn, sipariş #10; 🐛 galeri fix) | 2026-06-01 | `opencart-v0.2.22` ✓ |
+| **Magento** | ✅ (manifest pre-filled) | ✅ **uçtan uca** (kapak+galeri+10 fn, 2.4.7) | 2026-06-01 | `magento-v0.1.1` ✓ |
 | Shopify | — (OAuth modeli) | yok — zaten tek-tık "authorize" | — | — |
 | İkas | — (OAuth modeli) | yok — zaten tek-tık "authorize" | — | — |
 
-**Özet:** Bundle-Import eklentilerinin (Presta/Woo/OC/Magento) hepsine deep-link butonu eklendi. **4'ü de CANLI test edildi** (Presta uçtan uca import; Woo + OC4 + Magento 2.4.7 render+href — 4 farklı framework: PHP/WP, Twig, Magento). Shopify/İkas OAuth olduğu için zaten tek-tık.
+**Özet:** Bundle-Import eklentilerinin (Presta/Woo/OC/Magento) hepsine deep-link butonu eklendi. **4'ü de CANLI uçtan uca test edildi** (kapak görseli + galeri + 10 fonksiyon; 4 farklı framework: PHP/WP, Twig, Magento DI) ve **4'ü de yayınlandı** (Presta v0.2.9, Woo v0.3.1, OC v0.2.22, Magento v0.1.1). OpenCart'ta galeri görsel bug'ı bulunup düzeltildi. Shopify/İkas OAuth olduğu için zaten tek-tık.
 
 ## Lokal test ortamı (Docker)
 | Eklenti | URL | Admin |
@@ -49,6 +49,13 @@ boştu. + OC4 metot adı `getImages`'e rename edilmiş. Fix: guard kaldırıldı
 Detay: [opencart/CHANGELOG.md](./opencart/CHANGELOG.md). **Diğer 3 plugin'de bu bug YOK** — doğrudan framework
 çağrısı kullanırlar (Proxy/method_exists pattern'i yok), canlı testte galeri hepsinde döndü.
 
-## Yayın için kalan (kaynak hazır)
-- **OpenCart**: galeri bug fix dahil → version bump + zip + release (fix önemli, öncelikli).
-- **WooCommerce / Magento**: version bump + zip + GitHub release. (Canlı test edildi, düşük riskli.)
+## GitHub release durumu — 4/4 YAYINLANDI ✓ (2026-06-01)
+- **OpenCart** `opencart-v0.2.22` (galeri bug fix dahil) ✓
+- **Magento** `magento-v0.1.1` ✓
+- **WooCommerce** `woocommerce-v0.3.1` ✓
+- **PrestaShop** `prestashop-v0.2.9` ✓
+
+## Marketplace / mağaza başvuru durumu (GitHub'dan AYRI)
+- **PrestaShop Addons** (`addons.prestashop.com/.../97927`): v0.2.7 docs eksikliğinden reddedilmişti → **v0.2.9 zip + entegrasyon rehberi PDF** ile yeniden gönderilecek (upload formu hazırlandı; Aydın zip attach + submit yapacak). Compatibility 1.7.0 → 9.1.3.
+- **WooCommerce** → doğru kanal **WordPress.org plugin directory** (ücretsiz, connector'a uygun). WooCommerce.com Marketplace ücretli/komisyonlu + dış-SaaS upsell yasağı nedeniyle bu plugin'e UYMUYOR.
+- **OpenCart Marketplace** + **Adobe Commerce Marketplace**: opsiyonel, ileride.

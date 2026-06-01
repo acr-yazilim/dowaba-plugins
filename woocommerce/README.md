@@ -11,7 +11,7 @@ WooCommerce mağazasını **DoWaba AI**'ya bağlar. Müşteriler **WhatsApp**, *
 
 ## 📥 Direkt İndir
 
-### ⬇️ [WooCommerce v0.3.0 — dowaba-ai-0.3.0.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.0/dowaba-ai-0.3.0.zip)
+### ⬇️ [WooCommerce v0.3.1 — dowaba-ai-0.3.1.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.1/dowaba-ai-0.3.1.zip)
 
 WordPress admin → Plugins → Add New → Upload Plugin → ZIP'i yükle → Activate.
 

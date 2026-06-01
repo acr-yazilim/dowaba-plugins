@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
+## [0.3.1] - 2026-06-01 — Tek-tık "Connect to DoWaba" + canlı doğrulama
 
 ### Added
 - Ayar ekranına **"Connect to DoWaba"** butonu → `dowaba.com/admin/connect?platform=woocommerce&manifest=…` (manifest pre-filled). **Regenerate API Key** sonrası plain key butonun URL fragment'ine (`#k=`) eklenir → tam tek-tık (PrestaShop paritesi; fragment sunucuya/log'a gitmez).

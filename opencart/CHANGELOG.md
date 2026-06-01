@@ -2,7 +2,7 @@
 
 Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) formatı, [Semantic Versioning](https://semver.org/spec/v2.0.0.html) kuralları.
 
-## [Unreleased] - 2026-06-01 — Tek-tık "Connect to DoWaba"
+## [0.2.22] - 2026-06-01 — product_detail galeri fix (KRİTİK) + Tek-tık "Connect to DoWaba"
 
 ### Fixed — 🐛 product_detail galeri görselleri OC4'te HİÇ dönmüyordu (KRİTİK, OC3+OC4)
 - **Kök neden:** galeri yükleme `method_exists($this->model_catalog_product, 'getProductImages')`
@@ -30,7 +30,7 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
   autoloader kuralı gereği **ana `catalog/controller/extension/dowaba_ai/` + `system/library/extension/dowaba_ai/`**
   dizinlerine konmalı (namespace `Opencart\Catalog`/`Opencart\System` → ana dizin). Marketplace zip installer bunu
   otomatik yapar; manuel `cp` test kurulumlarında elle yerleştirilir.
-- Henüz release edilmedi (sadece kaynak).
+- **Yayınlandı:** `opencart-v0.2.22` (2026-06-01) — OC4 `dowaba_ai.ocmod.zip` + OC3 `dowaba-opencart-oc3-0.2.22.ocmod.zip`.
 
 ## [0.2.21] - 2026-05-30
 
@@ -174,7 +174,7 @@ Tüm önemli değişiklikler bu dosyada listelenir. [Keep a Changelog](https://k
 ### Pazar etkisi
 - Türkiye OpenCart pazarının yaklaşık %60'ına ulaşır (OC3 yaygınlığı). v0.1.x sadece %30-35'lik OC4 kesimine erişiyordu.
 
-## [Unreleased]
+## [0.1.0] - 2026-05-23 — ilk sürüm
 
 ### Added — v0.1.0 hedefi
 - OpenCart 4.x OCMOD paket yapısı (`install.json` + `upload/`)
