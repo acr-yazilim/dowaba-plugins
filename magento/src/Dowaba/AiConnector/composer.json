@@ -3,7 +3,7 @@
     "description": "Dowaba AI Connector — connect your Magento 2 store to Dowaba AI. Customers search products, compare, check stock and place orders via WhatsApp / Instagram / Email / Voice in natural language. 24/7 multilingual AI assistant.",
     "type": "magento2-module",
     "license": "MIT",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "authors": [
         {
             "name": "Aydın Acar",

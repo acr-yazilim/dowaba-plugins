@@ -24,7 +24,7 @@ namespace Dowaba\AiConnector\Model;
 class Manifest
 {
     /** Plugin version — single authority. build.sh keeps composer.json + module.xml in sync. */
-    public const PLUGIN_VERSION = '0.1.0';
+    public const PLUGIN_VERSION = '0.1.1';
 
     private const API_PATH = '/dowaba_ai/api';
 
