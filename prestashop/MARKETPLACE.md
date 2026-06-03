@@ -9,11 +9,11 @@
 > - **Plugin mimarisi / 10 function / manifest / auth (cross-plugin)** → [../PLUGIN_DEV_GUIDE.md](../PLUGIN_DEV_GUIDE.md)
 > - **Kurulum + kullanıcı dokümanı** → [README.md](./README.md) · **Sürüm geçmişi** → [CHANGELOG.md](./CHANGELOG.md)
 
-Son güncelleme: **2026-05-30**
+Son güncelleme: **2026-06-03**
 
 ---
 
-## 1. Canlı durum (snapshot — 2026-05-30)
+## 1. Canlı durum (snapshot — 2026-06-03)
 
 Marketplace partner panelinden okunan güncel durum. Sayfa: `https://addons.prestashop.com/sellers/en/products/97927`
 
@@ -22,9 +22,9 @@ Marketplace partner panelinden okunan güncel durum. Sayfa: `https://addons.pres
 | **Ürün ID** | `97927` |
 | **Ürün adı** | DoWaba AI — Sell on WhatsApp, Instagram & TikTok |
 | **Tip** | Module · One-time purchase |
-| **Technical validation** | 🟡 **Reviewing** — "No feedback yet from the technical validation team" |
-| **Product sheet** | 🟡 **Reviewing** |
-| **Status** | **Offline** (validation bitene kadar normal) |
+| **Technical validation** | ✅ **Approved** (2026-06-03 teyit, tarayıcıdan) |
+| **Product sheet** | ✅ **Approved** |
+| **Status** | ✅ **Online** (Published, satışta) |
 | **Submit edilen versiyon** | **0.2.7** (panel "Versions" tablosu), yükleme **26/05/2026** |
 | **Beyan edilen uyumluluk** | 1.7.0.0 – 9.1.3 |
 | **Yıllık ürün ücreti (99 €)** | ✅ **Paid** — sonraki tahsilat 26/05/2027 ("Still active until may 26, 2027") |
@@ -86,7 +86,11 @@ Red/eksik olsaydı Messages'a feedback raporu düşerdi.
 
 ---
 
-## 4. PrestaShop 9.0 uyumluluk meselesi
+## 4. PrestaShop 9.0 uyumluluk meselesi — ✅ ÇÖZÜLDÜ (2026-06-03)
+
+> **Güncelleme (2026-06-03):** Ürün artık **9.0.0 ile uyumlu** — seller panel: *"Well done! This product is
+> compatible with the latest version of PrestaShop (9.0.0)"* + "The compatibility report is available."
+> Aşağıdaki eski uyarı/aksiyon **geçersiz**, sadece tarihçe/referans için bırakıldı.
 
 Ürün sayfasında kırmızı X'li uyarı: **"Not available on PrestaShop 9.0.0 — the declared compatibility range
 for this product does not include PrestaShop 9.0.0"** (uyumluluk tablosu 1.7.0.0–9.1.3 yazsa bile).

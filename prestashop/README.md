@@ -6,15 +6,15 @@ PrestaShop 8.x + 1.7.x mağazasını **DoWaba AI**'ya bağlar. Müşteriler **Wh
 [![PHP](https://img.shields.io/badge/PHP-8.0+-purple?logo=php)](https://www.php.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](../opencart/LICENSE)
 
-## 📥 Direkt İndir
+## 📥 Edinme — PrestaShop Addons (resmi dağıtım)
 
-### ⬇️ [PrestaShop v0.2.9 — dowaba-ai-prestashop-0.2.9.zip](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.9/dowaba-ai-prestashop-0.2.9.zip)
+### 🛒 [PrestaShop Addons — DoWaba AI](https://addons.prestashop.com/en/customer-service/97927-dowaba-ai-sell-on-whatsapp-instagram-tiktok.html)
 
-> Tüm sürümler ve önceki release'ler: [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
+> Modül **yalnızca PrestaShop Addons üzerinden** dağıtılır (paid listing). Doğrudan ZIP linki kaldırıldı.
 
 ## 🚀 Kurulum
 
-1. Yukarıdaki **direkt indirme linkinden** `dowaba-ai-prestashop-0.2.9.zip` dosyasını indir
+1. **[PrestaShop Addons](https://addons.prestashop.com/en/customer-service/97927-dowaba-ai-sell-on-whatsapp-instagram-tiktok.html)**'tan modülü edin → `dowaba-ai-prestashop-0.2.9.zip` dosyasını indir
 2. PrestaShop admin → **Modules → Module Manager → Upload a module**
 3. Modülü aktive et + **Configure**
 4. Manifest URL + API Key → [dowaba.com](https://dowaba.com) Bundle Import

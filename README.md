@@ -26,7 +26,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 
 | Platform | En Son Versiyon | ZIP Download | Marketplace |
 |---|---|---|---|
-| **PrestaShop 1.7+ / 8.x / 9.x** | **v0.2.9** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.9/dowaba-ai-prestashop-0.2.9.zip) | ⏳ addons.prestashop.com submission |
+| **PrestaShop 1.7+ / 8.x / 9.x** | **v0.2.9** | — (yalnızca Addons üzerinden) | ✅ [PrestaShop Addons](https://addons.prestashop.com/en/customer-service/97927-dowaba-ai-sell-on-whatsapp-instagram-tiktok.html) |
 | **OpenCart 4.x** | **v0.2.22** | [⬇️ OC4 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.22/dowaba_ai.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) |
 | **OpenCart 3.x** | **v0.2.22** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.22/dowaba-opencart-oc3-0.2.22.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
 | **WooCommerce** | **v0.3.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.1/dowaba-ai-0.3.1.zip) | ⏳ wordpress.org submission |
@@ -39,7 +39,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 ## 🚀 Hızlı kurulum
 
 ### PrestaShop
-1. [⬇️ PrestaShop ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/prestashop-v0.2.9/dowaba-ai-prestashop-0.2.9.zip) indir
+1. **[🛒 PrestaShop Addons'tan edin](https://addons.prestashop.com/en/customer-service/97927-dowaba-ai-sell-on-whatsapp-instagram-tiktok.html)** (resmi dağıtım — ZIP yalnızca Addons üzerinden verilir)
 2. PrestaShop BO → Modules → Module Manager → Upload a module → ZIP'i sürükle
 3. **Configure** → API key + Manifest URL üret → DoWaba paneline Bundle Import yap
 
