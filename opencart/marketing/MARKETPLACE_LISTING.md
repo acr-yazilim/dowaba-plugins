@@ -133,10 +133,10 @@ OpenCart 4.0.2.3 + PHP 8.2 + MariaDB 11 ortamında **gerçek sipariş** doğrula
 
 **Plugin tamamen ücretsiz** (MIT lisanslı). Dowaba SaaS planları:
 
-- **Free**: 100 mesaj/ay — Test ve küçük mağazalar
-- **Starter**: ₺499/ay — 1.000 mesaj
-- **Pro**: ₺1.499/ay — 10.000 mesaj
-- **Enterprise**: özel teklif
+- **Ücretsiz deneme**: 50 mesaj — başlamak için (kendi AI anahtarınızla)
+- **Starter**: ₺199/ay (₺1.990/yıl) — 1.000 mesaj/ay · 1 mağaza
+- **Pro**: ₺499/ay (₺4.990/yıl) — 5.000 mesaj/ay · 3 mağaza
+- **Bayilik (Business)**: mağaza başı ₺3.999/yıl'dan — 5.000 mesaj/mağaza · white-label + alt kullanıcı · hacim indirimi
 
 Detaylar: https://dowaba.com/pricing
 

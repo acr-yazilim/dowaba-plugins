@@ -117,13 +117,13 @@ dowaba-plugins/
 
 ## 💰 Pricing
 
-Plugin'ler **100% free** (MIT License). DoWaba SaaS:
-- **Free**: 100 messages/month
-- **Starter**: $19/month — 1,000 messages
-- **Pro**: $49/month — 10,000 messages
-- **Enterprise**: Custom
+Plugins are **100% free** (MIT License). DoWaba SaaS:
+- **Free trial** — 50 messages to get started (with your own AI key)
+- **Starter** — $4.99/mo ($49.99/yr) · 1,000 messages/mo · 1 store
+- **Pro** — $12.49/mo ($124.99/yr) · 5,000 messages/mo · 3 stores
+- **Business / Reseller** — from $99.99/yr per store · 5,000 messages/store · white-label, sub-accounts, volume discounts (up to 25%)
 
-https://dowaba.com/pricing
+Prices in USD; customers in Türkiye are billed in ₺ (Starter ₺199, Pro ₺499 / month). See https://dowaba.com/pricing
 
 ## 🆘 Destek
 

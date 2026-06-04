@@ -152,12 +152,12 @@ This plugin has been live-tested with real OpenCart 4.0.2.3 + PHP 8.2 + MariaDB 
 
 **Plugin is 100% free** (MIT License). DoWaba SaaS pricing:
 
-- **Free**: 100 messages/month — Test or small stores
-- **Starter**: $19/month — 1,000 messages
-- **Pro**: $49/month — 10,000 messages
-- **Enterprise**: Custom
+- **Free trial**: 50 messages to get started (with your own AI key)
+- **Starter**: $4.99/mo ($49.99/yr) — 1,000 messages/mo · 1 store
+- **Pro**: $12.49/mo ($124.99/yr) — 5,000 messages/mo · 3 stores
+- **Business / Reseller**: from $99.99/yr per store — white-label, sub-accounts, volume discounts
 
-See: https://dowaba.com/pricing
+Prices in USD; customers in Türkiye are billed in ₺. See: https://dowaba.com/pricing
 
 ---
 

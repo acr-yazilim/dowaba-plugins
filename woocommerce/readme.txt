@@ -71,12 +71,12 @@ Customer: "Confirm"
 
 **Plugin is 100% free** (MIT License). DoWaba SaaS pricing:
 
-* Free: 100 messages/month
-* Starter: $19/month — 1,000 messages
-* Pro: $49/month — 10,000 messages
-* Enterprise: Custom
+* Free trial: 50 messages to get started (with your own AI key)
+* Starter: $4.99/month ($49.99/year) — 1,000 messages/month, 1 store
+* Pro: $12.49/month ($124.99/year) — 5,000 messages/month, 3 stores
+* Business / Reseller: from $99.99/year per store — white-label, sub-accounts, volume discounts
 
-See: https://dowaba.com/pricing
+Prices in USD; customers in Türkiye are billed in ₺. See: https://dowaba.com/pricing
 
 == Installation ==
 
