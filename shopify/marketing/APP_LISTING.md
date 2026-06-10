@@ -171,16 +171,19 @@ destek@dowaba.com · https://dowaba.com/destek
 4. **KVKK + GDPR uyumlu:** Mandatory webhooks, encrypted tokens, audit log
 5. **7 gün ücretsiz deneme:** Shopify Billing API ile, tam özellikler
 
-## 8. Pricing (Shopify App Pricing / Managed Pricing — §1.2.1 uyumlu)
+## 8. Pricing (Shopify App Pricing / Managed Pricing — §1.2.1 uyumlu, KREDİ-DAHİL model 2026-06-11)
 
-**Model:** 3 public plan, tümü Shopify hosted pricing page'den satın alınır
-(2026-06-10 §1.2.1 kök fix: Shopify-origin kullanıcı panelde başka ödeme yolu GÖRMEZ — dowaba/shopify-billing.md).
+**Model:** 4 public plan, tümü Shopify hosted pricing page'den satın alınır. Plan fiyatı = panel +
+aylık AI kredisi + %15 Shopify komisyonu gömülü. **Hiçbir planda API key zorunlu değil** — kredi cüzdana
+yüklenir (webhook + aylık cron), key giren kullanıcının kredisi harcanmaz/birikir. Shopify-origin kullanıcı
+panelde başka ödeme yolu GÖRMEZ (dowaba/shopify-billing.md).
 
-| Plan (= DB `shopify_plan_handle`) | Price | Trial | AI mesaj |
+| Plan (= DB `shopify_plan_handle`) | Price | Trial | Aylık AI kredisi |
 |---|---|---|---|
-| **DoWaba Pro** | **$19.99/month** | 7 days | BYOK (kendi Gemini key — Google faturalar) |
-| **DoWaba Pro 5000** | **$39.99/month** | 7 days | 5.000 mesaj/ay dahil (key gerekmez) |
-| **DoWaba Pro 10000** | **$59.99/month** | 7 days | 10.000 mesaj/ay dahil (key gerekmez) |
+| **DoWaba Pro** | **$29.99/month** | 7 days | $5 |
+| **DoWaba Pro Plus** | **$54.99/month** | 7 days | $25 |
+| **DoWaba Pro Max** | **$84.99/month** | 7 days | $50 |
+| **DoWaba Pro Ultra** | **$149.99/month** | 7 days | $100 |
 
 **Billing model:**
 - Charged through **Shopify Billing API** (compliant with App Store §1.2.1)
