@@ -33,7 +33,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 | **OpenCart 3.x** | **v0.2.22** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.22/dowaba-opencart-oc3-0.2.22.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
 | **WooCommerce** | **v0.3.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.1/dowaba-ai-0.3.1.zip) | ⏳ wordpress.org submission |
 | **Magento 2.4.x** | **v0.1.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.1/dowaba-magento-aiconnector-0.1.1.zip) | ⏳ Adobe Commerce Marketplace submission |
-| **Shopify** | — | OAuth-based (download yok) | ✅ Aktif — OAuth public app, DoWaba panelinden bağlanır (Shopify Billing $19.99/ay, 7 gün ücretsiz) |
+| **Shopify** | — | OAuth-based (download yok) | ⏳ App Store review — resubmitted 2026-06-10 (Managed Pricing $19.99/ay, 7 gün ücretsiz) |
 | **İkas** | — | OAuth-based (download yok) | ⏳ Partner App onayı |
 
 > 📋 **Tüm release'ler ve eski sürümler:** [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
