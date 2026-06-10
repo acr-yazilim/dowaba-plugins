@@ -171,13 +171,16 @@ destek@dowaba.com · https://dowaba.com/destek
 4. **KVKK + GDPR uyumlu:** Mandatory webhooks, encrypted tokens, audit log
 5. **7 gün ücretsiz deneme:** Shopify Billing API ile, tam özellikler
 
-## 8. Pricing (Shopify Billing API — §1.2.1 uyumlu)
+## 8. Pricing (Shopify App Pricing / Managed Pricing — §1.2.1 uyumlu)
 
-**Plan:** Paid via Shopify Billing API (`appSubscriptionCreate`)
+**Model:** 3 public plan, tümü Shopify hosted pricing page'den satın alınır
+(2026-06-10 §1.2.1 kök fix: Shopify-origin kullanıcı panelde başka ödeme yolu GÖRMEZ — dowaba/shopify-billing.md).
 
-| Plan | Price | Trial | Limit |
+| Plan (= DB `shopify_plan_handle`) | Price | Trial | AI mesaj |
 |---|---|---|---|
-| **Dowaba AI for Shopify Pro** | **$19.99/month** | 7 days free | 1 Shopify store, unlimited AI messages (BYOK Gemini) |
+| **DoWaba Pro** | **$19.99/month** | 7 days | BYOK (kendi Gemini key — Google faturalar) |
+| **DoWaba Pro 5000** | **$39.99/month** | 7 days | 5.000 mesaj/ay dahil (key gerekmez) |
+| **DoWaba Pro 10000** | **$59.99/month** | 7 days | 10.000 mesaj/ay dahil (key gerekmez) |
 
 **Billing model:**
 - Charged through **Shopify Billing API** (compliant with App Store §1.2.1)
