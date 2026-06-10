@@ -3,7 +3,9 @@
 [DoWaba](https://dowaba.com) için resmi e-commerce platform entegrasyonları. Her plugin, kendi platformunun ürün/sipariş/müşteri verilerini DoWaba AI'ya **HTTP function** olarak sunar.
 
 [![OpenCart Marketplace](https://img.shields.io/badge/OpenCart_Marketplace-Live-success?logo=opencart)](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534)
+[![PrestaShop Addons](https://img.shields.io/badge/PrestaShop_Addons-Live-success?logo=prestashop)](https://addons.prestashop.com/en/customer-service/97927-dowaba-ai-sell-on-whatsapp-instagram-tiktok.html)
 [![WordPress.org](https://img.shields.io/badge/WordPress.org-Submitted-yellow?logo=wordpress)](https://wordpress.org/plugins/)
+[![Latest Release](https://img.shields.io/github/v/release/acr-yazilim/dowaba-plugins?label=Latest%20Release)](https://github.com/acr-yazilim/dowaba-plugins/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./opencart/LICENSE)
 
 ---
@@ -120,16 +122,16 @@ dowaba-plugins/
 Plugins are **100% free** (MIT License). DoWaba SaaS:
 - **Free trial** — 50 messages to get started (with your own AI key)
 - **Starter** — $4.99/mo ($49.99/yr) · 1,000 messages/mo · 1 store
-- **Pro** — $12.49/mo ($124.99/yr) · 5,000 messages/mo · 3 stores
+- **Pro** — $12.99/mo ($124.99/yr) · 5,000 messages/mo · 3 stores
 - **Business / Reseller** — from $99.99/yr per store · 5,000 messages/store · white-label, sub-accounts, volume discounts (up to 25%)
 
-Prices in USD; customers in Türkiye are billed in ₺ (Starter ₺199, Pro ₺499 / month). See https://dowaba.com/pricing
+Prices in USD; customers in Türkiye are billed in ₺ (Starter ₺199, Pro ₺499 / month). See https://dowaba.com/#fiyat
 
 ## 🆘 Destek
 
 - 📧 [dowaba.com/destek](https://dowaba.com/destek)
 - 💬 [GitHub Issues](https://github.com/acr-yazilim/dowaba-plugins/issues)
-- 📚 [docs.dowaba.com](https://dowaba.com/docs)
+- 📚 [API Docs](https://dowaba.com/api-docs/)
 
 ## 📜 Lisans
 
