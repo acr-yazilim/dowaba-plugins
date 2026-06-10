@@ -33,7 +33,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 | **OpenCart 3.x** | **v0.2.22** | [⬇️ OC3 ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/opencart-v0.2.22/dowaba-opencart-oc3-0.2.22.ocmod.zip) | [📦 OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=48534) (aynı listing) |
 | **WooCommerce** | **v0.3.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.1/dowaba-ai-0.3.1.zip) | ⏳ wordpress.org submission |
 | **Magento 2.4.x** | **v0.1.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.1/dowaba-magento-aiconnector-0.1.1.zip) | ⏳ Adobe Commerce Marketplace submission |
-| **Shopify** | — | OAuth-based (download yok) | ⏳ App Store Billing API resubmit |
+| **Shopify** | — | OAuth-based (download yok) | ✅ Aktif — OAuth public app, DoWaba panelinden bağlanır (Shopify Billing $19.99/ay, 7 gün ücretsiz) |
 | **İkas** | — | OAuth-based (download yok) | ⏳ Partner App onayı |
 
 > 📋 **Tüm release'ler ve eski sürümler:** [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
@@ -59,7 +59,7 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 3. **DoWaba AI** menü → 5-step wizard → Bundle Import
 
 ### Magento 2
-1. `composer require dowaba/module-ai-connector` **veya** [⬇️ Magento ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.1/dowaba-magento-aiconnector-0.1.1.zip)'i Magento kökünde aç
+1. [⬇️ Magento ZIP](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.1/dowaba-magento-aiconnector-0.1.1.zip)'i Magento kökünde aç (`app/code/Dowaba/AiConnector`) — *Composer/Packagist paketi Adobe Marketplace onayıyla birlikte yayınlanacak*
 2. `bin/magento module:enable Dowaba_AiConnector && bin/magento setup:upgrade && bin/magento cache:flush`
 3. Admin → **Dowaba AI → Setup & Settings** → 5-step wizard → Bundle Import
 
@@ -98,7 +98,7 @@ dowaba-plugins/
 | Katman | Detay |
 |---|---|
 | Bearer auth | SHA-256 hashed token, plain key never stored |
-| IP whitelist | Opsiyonel — DoWaba prod IP: `178.105.68.170, 49.13.120.112` |
+| IP whitelist | Opsiyonel — DoWaba prod IPv4: `178.105.68.170, 49.13.120.112` · IPv6 etkin mağazalar için kaynak blokları: `2a01:4f8:c014:ade::/64, 2a01:4f8:c013:7891::/64` |
 | Scope guard | `read` default ON, `write` default OFF |
 | Order confirmation | 2-step preview → "yes" → confirm (replay-protected) |
 | Audit log | 30-day retention, viewable in admin |
@@ -120,10 +120,11 @@ dowaba-plugins/
 ## 💰 Pricing
 
 Plugins are **100% free** (MIT License). DoWaba SaaS:
-- **Free trial** — 50 messages to get started (with your own AI key)
-- **Starter** — $4.99/mo ($49.99/yr) · 1,000 messages/mo · 1 store
-- **Pro** — $12.99/mo ($124.99/yr) · 5,000 messages/mo · 3 stores
-- **Business / Reseller** — from $99.99/yr per store · 5,000 messages/store · white-label, sub-accounts, volume discounts (up to 25%)
+- **Free trial** — 50 AI messages + 20 AI calls per store to get started (with your own AI key)
+- **Starter** — $4.99/mo ($49.99/yr) · 1,000 AI messages + 200 AI calls /mo · 1 store
+- **Pro** — $12.99/mo ($124.99/yr) · 5,000 AI messages + 2,000 AI calls /mo · 3 stores
+- **Lifetime** — $499.99 one-time · 1,000 AI messages + 1,000 AI calls /mo · 1 store
+- **Business / Reseller** — from $99.99/yr per store · 5,000 AI messages + 1,000 AI calls /store · white-label, sub-accounts, volume discounts (up to 25%)
 
 Prices in USD; customers in Türkiye are billed in ₺ (Starter ₺199, Pro ₺499 / month). See https://dowaba.com/#fiyat
 
