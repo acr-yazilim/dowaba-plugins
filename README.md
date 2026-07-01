@@ -34,7 +34,8 @@ Müşteri: "Sipariş et" → AI özet → "Onaylıyor musun?" → "Evet"
 | **WooCommerce** | **v0.3.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/woocommerce-v0.3.1/dowaba-ai-0.3.1.zip) | ⏳ wordpress.org submission |
 | **Magento 2.4.x** | **v0.1.1** | [⬇️ ZIP indir](https://github.com/acr-yazilim/dowaba-plugins/releases/download/magento-v0.1.1/dowaba-magento-aiconnector-0.1.1.zip) | ⏳ Adobe Commerce Marketplace submission |
 | **Shopify** | — | OAuth-based (download yok) | ⏳ App Store review — resubmitted 2026-06-10 (Managed Pricing $19.99/ay, 7 gün ücretsiz) |
-| **İkas** | — | OAuth-based (download yok) | ⏳ Partner App onayı |
+| **İkas** | — | Panelden bağlanır (download yok) | ✅ **CANLI** — Private App "Hızlı Bağlan" (client_id+secret, [ikas.md](./ikas.md)); App Store onayı ayrıca sürüyor |
+| **Shopier · İdeaSoft · T-Soft · N11 · Hepsiburada · Pazarama · Çiçeksepeti · BigCommerce · Wix** | — | Panelden bağlanır (download yok) | ✅ Beta — API anahtarı yapıştır, kod DoWaba backend'inde (bu repoda dosya yok) |
 
 > 📋 **Tüm release'ler ve eski sürümler:** [GitHub Releases](https://github.com/acr-yazilim/dowaba-plugins/releases)
 
