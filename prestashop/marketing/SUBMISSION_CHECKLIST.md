@@ -94,7 +94,7 @@ cd prestashop/docker && docker compose ps
   - Hata varsa düzelt + yeniden build
 - [ ] **PRIVACY.md'yi dowaba.com'a yükle**: https://dowaba.com/privacy/prestashop-plugin (veya benzer URL)
 - [ ] **Test mail at**: https://dowaba.com/destek — gerçekten gelir mi?
-- [ ] **README.md'de bağlantıları test et**: https://docs.dowaba.com/prestashop varsa, yoksa README'den çıkar
+- [ ] **README.md'de bağlantıları test et**: dokümantasyon linki GitHub README'ye gider (https://github.com/acr-yazilim/dowaba-plugins/tree/main/prestashop) — docs.dowaba.com KULLANMA (subdomain yok)
 - [ ] **dowaba.com/privacy** + **dowaba.com/terms** sayfaları canlı
 
 ### Phase 6: Demo URL (opsiyonel ama önerilir)

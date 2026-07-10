@@ -180,7 +180,7 @@ Dowaba hesabı silme: https://dowaba.com/account/delete
 
 ## Yasal Notlar
 
-This privacy policy may be updated. Current version always at: https://github.com/rdtvaacar/dowaba-plugins/blob/main/prestashop/marketing/PRIVACY.md
+This privacy policy may be updated. Current version always at: https://github.com/acr-yazilim/dowaba-plugins/blob/main/prestashop/marketing/PRIVACY.md
 
 For binding legal terms, see Dowaba's main Privacy Policy at https://dowaba.com/privacy (Turkish + English).
 

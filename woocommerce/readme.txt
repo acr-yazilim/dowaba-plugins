@@ -143,5 +143,5 @@ Initial release. No upgrade needed.
 == Support ==
 
 * Support: https://dowaba.com/destek
-* GitHub: https://github.com/rdtvaacar/dowaba-plugins
-* Documentation: https://docs.dowaba.com/woocommerce
+* GitHub: https://github.com/acr-yazilim/dowaba-plugins
+* Documentation: https://github.com/acr-yazilim/dowaba-plugins/tree/main/woocommerce

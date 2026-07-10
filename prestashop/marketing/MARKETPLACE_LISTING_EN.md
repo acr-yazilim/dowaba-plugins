@@ -189,8 +189,8 @@ See: https://dowaba.com/pricing
 ## 🆘 Support
 
 - 📧 https://dowaba.com/destek (24h response)
-- 💬 GitHub Issues: https://github.com/rdtvaacar/dowaba-plugins/issues
-- 📚 Docs: https://docs.dowaba.com/prestashop
+- 💬 GitHub Issues: https://github.com/acr-yazilim/dowaba-plugins/issues
+- 📚 Docs: https://github.com/acr-yazilim/dowaba-plugins/tree/main/prestashop
 
 ---
 
@@ -198,7 +198,7 @@ See: https://dowaba.com/pricing
 
 - **v0.1.0** (2026-05-26): Initial public release — 10 functions, PrestaShop 1.7 + 8.x dual support
 
-Full changelog: https://github.com/rdtvaacar/dowaba-plugins/blob/main/prestashop/CHANGELOG.md
+Full changelog: https://github.com/acr-yazilim/dowaba-plugins/blob/main/prestashop/CHANGELOG.md
 
 ---
 
@@ -234,7 +234,7 @@ PrestaShop Validator: passed with 0 errors.
 Module bootstrap=true (HelperForm config page).
 Install/uninstall hooks: tested with PrestaShop CLI module:install / module:uninstall.
 
-Open source (MIT): https://github.com/rdtvaacar/dowaba-plugins/tree/main/prestashop
+Open source (MIT): https://github.com/acr-yazilim/dowaba-plugins/tree/main/prestashop
 
 Demo available — I can provide test PrestaShop admin credentials + DoWaba demo account if needed for review.
 ```

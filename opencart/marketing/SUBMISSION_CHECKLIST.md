@@ -66,7 +66,7 @@ cd opencart/docker && docker compose ps
 
 - [ ] **PRIVACY.md'yi dowaba.com'a yükle**: https://dowaba.com/privacy/opencart-plugin (veya benzer URL)
 - [ ] **Test mail at**: https://dowaba.com/destek — gerçekten gelir mi?
-- [ ] **README.md'de bağlantıları test et**: https://docs.dowaba.com/opencart varsa, yoksa README'den çıkar
+- [ ] **README.md'de bağlantıları test et**: dokümantasyon linki GitHub README'ye gider (https://github.com/acr-yazilim/dowaba-plugins/tree/main/opencart) — docs.dowaba.com KULLANMA (subdomain yok)
 
 ### Phase 6: Demo URL (opsiyonel ama önerilir)
 

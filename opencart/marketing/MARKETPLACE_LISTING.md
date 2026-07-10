@@ -144,7 +144,7 @@ Detaylar: https://dowaba.com/pricing
 
 - 📧 https://dowaba.com/destek (24 saat içinde yanıt)
 - 💬 GitHub Issues: https://github.com/acr-yazilim/dowaba-plugins/issues
-- 📚 Dokümantasyon: https://docs.dowaba.com/opencart
+- 📚 Dokümantasyon: https://github.com/acr-yazilim/dowaba-plugins/tree/main/opencart
 - 🎬 Video demo: [YouTube link burada]
 
 ## 📋 Sistem Gereksinimleri

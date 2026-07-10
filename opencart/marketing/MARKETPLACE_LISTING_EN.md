@@ -174,7 +174,7 @@ Prices in USD; customers in Türkiye are billed in ₺. See: https://dowaba.com/
 
 - 📧 https://dowaba.com/destek (24h response)
 - 💬 GitHub Issues: https://github.com/acr-yazilim/dowaba-plugins/issues
-- 📚 Docs: https://docs.dowaba.com/opencart
+- 📚 Docs: https://github.com/acr-yazilim/dowaba-plugins/tree/main/opencart
 
 ---
 

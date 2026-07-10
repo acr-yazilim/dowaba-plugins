@@ -154,8 +154,8 @@ Detaylar: https://dowaba.com/pricing
 ## 🆘 Destek
 
 - 📧 https://dowaba.com/destek (24 saat içinde yanıt)
-- 💬 GitHub Issues: https://github.com/rdtvaacar/dowaba-plugins/issues
-- 📚 Dokümantasyon: https://docs.dowaba.com/prestashop
+- 💬 GitHub Issues: https://github.com/acr-yazilim/dowaba-plugins/issues
+- 📚 Dokümantasyon: https://github.com/acr-yazilim/dowaba-plugins/tree/main/prestashop
 - 🎬 Video demo: [YouTube link burada]
 
 ## 📋 Sistem Gereksinimleri
@@ -169,7 +169,7 @@ Detaylar: https://dowaba.com/pricing
 
 - **v0.1.0** (2026-05-26): İlk public release — 10 function, PS 1.7 + 8.x dual support
 
-Tam değişiklik geçmişi: [CHANGELOG](https://github.com/rdtvaacar/dowaba-plugins/blob/main/prestashop/CHANGELOG.md)
+Tam değişiklik geçmişi: [CHANGELOG](https://github.com/acr-yazilim/dowaba-plugins/blob/main/prestashop/CHANGELOG.md)
 
 ## 🌍 Dil Desteği
 
@@ -196,7 +196,7 @@ Security highlights:
 
 Tested on PrestaShop 8.1 with PHP 8.2 + MariaDB 11. Live integration verified with real WhatsApp customer conversations creating actual PrestaShop orders.
 
-The module is MIT licensed and open source: https://github.com/rdtvaacar/dowaba-plugins/tree/main/prestashop
+The module is MIT licensed and open source: https://github.com/acr-yazilim/dowaba-plugins/tree/main/prestashop
 
 PrestaShop Validator: passed (no errors).
 ZIP structure: dowaba_ai/ folder with bootstrap=true HelperForm config page.
