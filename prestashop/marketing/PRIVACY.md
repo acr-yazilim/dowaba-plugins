@@ -3,7 +3,7 @@
 **Effective Date**: 2026-05-26
 **Last Updated**: 2026-05-26
 
-This document describes how the Dowaba AI Integration module processes data from your PrestaShop store and customers. The module is open source ([MIT License](../LICENSE)); the connected SaaS service is **Dowaba** (https://dowaba.com), operated by Aydın Acar (Turkey).
+This document describes how the Dowaba AI Integration module processes data from your PrestaShop store and customers. The module is open source ([MIT License](../LICENSE)); the connected SaaS service is **Dowaba** (https://dowaba.com), operated by ACR Yapay Zeka Eğitim ve Bilişim Teknolojileri Ltd. Şti. (Burdur Teknokent, Turkey).
 
 > 🇹🇷 [Türkçe versiyon aşağıda](#turkce)
 

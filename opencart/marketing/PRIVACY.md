@@ -3,7 +3,7 @@
 **Effective Date**: 2026-05-23
 **Last Updated**: 2026-05-23
 
-This document describes how the Dowaba AI Integration plugin processes data from your OpenCart store and customers. Plugin is open source ([MIT License](../LICENSE)); the connected SaaS service is **Dowaba** (https://dowaba.com), operated by Aydın Acar (Turkey).
+This document describes how the Dowaba AI Integration plugin processes data from your OpenCart store and customers. Plugin is open source ([MIT License](../LICENSE)); the connected SaaS service is **Dowaba** (https://dowaba.com), operated by ACR Yapay Zeka Eğitim ve Bilişim Teknolojileri Ltd. Şti. (Burdur Teknokent, Turkey).
 
 > 🇹🇷 [Türkçe versiyon aşağıda](#turkce)
 
