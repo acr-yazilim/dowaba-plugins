@@ -21,7 +21,7 @@ dowaba_ai
 ### Author / Author URL
 
 ```
-Aydın Acar (DoWaba)
+ACR Yapay Zeka (DoWaba)
 https://dowaba.com
 ```
 

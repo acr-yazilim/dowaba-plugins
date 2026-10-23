@@ -17,7 +17,7 @@
     <name>Dowaba AI Integration</name>
     <code>dowaba_ai</code>
     <version>0.2.21</version>
-    <author>Aydın Acar (Dowaba)</author>
+    <author>ACR Yapay Zeka (Dowaba)</author>
     <link>https://github.com/rdtvaacar/dowaba-plugins</link>
 
     <!-- Admin column_left menüye "Dowaba AI" item ekle (OC4 default theme) -->

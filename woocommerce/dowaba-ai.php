@@ -6,7 +6,7 @@
  * Version:           0.3.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
- * Author:            Aydın Acar (DoWaba)
+ * Author:            ACR Yapay Zeka (DoWaba)
  * Author URI:        https://dowaba.com
  * License:           MIT
  * License URI:       https://opensource.org/licenses/MIT

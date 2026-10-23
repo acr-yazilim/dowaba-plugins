@@ -14,7 +14,7 @@ Adım adım kontrol listesi. Her checkbox tamamlanınca işaretle. Tahmini topla
   - Email doğrula (inbox + spam'i kontrol et)
   - **24-48 saat bekle** — onay manuel (PrestaShop ekibi)
 - [ ] **Partner profil doldur**
-  - Display name: `Aydın Acar` veya `Dowaba`
+  - Display name: `ACR Yapay Zeka` veya `Dowaba`
   - Country: Türkiye (Avrupa pazar için EU notu ekle)
   - Bio: "AI customer engagement platform — WhatsApp/Instagram/TikTok/Mail/Voice integrations for e-commerce"
   - Website: https://dowaba.com

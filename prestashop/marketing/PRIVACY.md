@@ -12,7 +12,7 @@ This document describes how the Dowaba AI Integration module processes data from
 ## 1. Data Controller
 
 - **Module operator**: You (the PrestaShop store owner)
-- **Data processor**: Dowaba (Aydın Acar, Turkey)
+- **Data processor**: Dowaba (ACR Yapay Zeka Eğitim ve Bilişim Teknolojileri Ltd. Şti., Burdur Teknokent, Turkey)
 - **Contact**: https://dowaba.com/destek
 
 ## 2. What data flows where
@@ -117,7 +117,7 @@ Dowaba account deletion (separate): https://dowaba.com/account/delete
 ### 1. Veri Sorumlusu
 
 - **Modül operatörü**: Mağaza sahibi (sen)
-- **Veri işleyen**: Dowaba (Aydın Acar, Türkiye)
+- **Veri işleyen**: Dowaba (ACR Yapay Zeka Eğitim ve Bilişim Teknolojileri Ltd. Şti., Burdur Teknokent, Türkiye)
 - **İletişim**: https://dowaba.com/destek
 
 ### 2. Hangi veriler nereye gidiyor?

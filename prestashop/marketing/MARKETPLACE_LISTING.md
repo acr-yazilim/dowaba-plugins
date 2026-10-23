@@ -24,7 +24,7 @@ dowaba_ai
 ### Field: **Author / Developer Name**
 
 ```
-Aydın Acar (Dowaba)
+ACR Yapay Zeka (Dowaba)
 ```
 
 ### Field: **Author URL / Website**

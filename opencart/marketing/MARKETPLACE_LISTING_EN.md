@@ -15,7 +15,7 @@ DoWaba AI — Sell on WhatsApp, Instagram & TikTok
 ### Author / Author URL
 
 ```
-Aydın Acar (DoWaba)
+ACR Yapay Zeka (DoWaba)
 https://dowaba.com
 ```
 

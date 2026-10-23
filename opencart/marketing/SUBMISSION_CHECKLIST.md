@@ -15,7 +15,7 @@ Adım adım kontrol listesi. Her checkbox tamamlanınca işaretle. Tahmini topla
   - **24 saat bekle** — onay manuel
 - [ ] **Partner profil doldur**
   https://www.opencart.com/index.php?route=account/account
-  - Display name: `Aydın Acar` veya `Dowaba`
+  - Display name: `ACR Yapay Zeka` veya `Dowaba`
   - Country: Türkiye
   - Bio: "AI customer engagement platform — WhatsApp/IG/Mail/Voice integrations"
   - Website: https://dowaba.com

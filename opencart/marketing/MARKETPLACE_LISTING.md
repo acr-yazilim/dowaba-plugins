@@ -17,7 +17,7 @@ Dowaba AI — WhatsApp + Instagram + Mail AI Chatbot
 ### Field: **Author Name**
 
 ```
-Aydın Acar (Dowaba)
+ACR Yapay Zeka (Dowaba)
 ```
 
 ### Field: **Author URL**
